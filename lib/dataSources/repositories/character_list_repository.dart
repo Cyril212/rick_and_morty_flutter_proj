@@ -1,3 +1,5 @@
+import 'package:enum_to_string/enum_to_string.dart';
+import 'package:prefs/prefs.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/rest_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/rest_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/abstract_repository.dart';
@@ -8,15 +10,19 @@ import 'package:rick_and_morty_flutter_proj/dataSources/sources/character_list_s
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_detail/vm/character_list_vm.dart';
 
 class CharacterListRepository extends AbstractRepository<CharacterListSource> {
-  final RestClient client;
+  final DataClient client;
   final CharacterListSource _source;
 
   CharacterListRepository(this.client, this._source);
 
   SourceException? get error => _source.error;
 
+  ListFilterMode get filterListState => EnumToString.fromString(ListFilterMode.values, Prefs.getString("listMode")) ?? ListFilterMode.none;
+
   @override
   Future<CharacterListSource> fetchData() => client.addQueryData(_source);
+
+  Future putFilterListState(ListFilterMode filterMode) => Prefs.setString("listMode", EnumToString.convertToString(filterMode));
 
   //todo: encapsulate somewhere
   putCharacterToStoreById(int characterId, bool state) {
@@ -24,7 +30,7 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
 
     if (characterById != null) {
       characterById.isFavourite = state;
-      client.putDataToStore(characterById.id.toString(), characterById.toJson());
+      client.putMapDataToStore(characterById.id.toString(), characterById.toJson());
     } else {
       //todo:Create logger to avoid prod leak
       print("character was not found");
@@ -69,7 +75,9 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
   //todo: encapsulate somewhere
   bool getFavouriteCharacterStateById(int characterId) {
     final characterFromStore = client.getDataFromStore(characterId.toString());
-    return characterFromStore != null ? characterFromStore["isFavourite"] : false;
+    bool isFavourite = characterFromStore?["isFavourite"] ?? false;
+
+    return characterFromStore != null ? isFavourite : false;
   }
 
   @override

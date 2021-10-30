@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:prefs/prefs.dart';
 import 'package:provider/provider.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/rest_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/rest_manager.dart';
@@ -12,7 +13,7 @@ import 'core/repository/store/store.dart';
 
 void main() async {
   await initHiveForFlutter();
-  
+  await Prefs.init();
   
   runApp(const MyApp());
 }
@@ -43,9 +44,9 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return Provider<RestClient>(
+    return Provider<DataClient>(
       lazy: false,
-      create: (context) => RestClient(manager: RestManager("https://rickandmortyapi.com/api/")),
+      create: (context) => DataClient(manager: RestManager("https://rickandmortyapi.com/api/")),
       child: MaterialApp(
         title: 'Rick and Morty',
         onGenerateRoute: onGenerateRoute,

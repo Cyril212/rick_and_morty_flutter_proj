@@ -27,6 +27,8 @@ class CharacterListVM extends Cubit<CharacterListEvent> {
   void _getCharacters([shouldFetch = true]) {
     emit(const CharacterListEvent(CharacterListState.loading));
 
+    listFilterMode = repository.filterListState;
+
     repository.getCharactersWithFavouriteState(listFilterMode, shouldFetch).then((response) {
       if (repository.error != null) {
         emit(CharacterListEvent(CharacterListState.error, error: repository.error));
@@ -40,12 +42,17 @@ class CharacterListVM extends Cubit<CharacterListEvent> {
     _getCharacters(true);
   }
 
-  void updateCharacterList(bool isFilter){
+  void updateCharacterList(bool isFilter) async {
+
+    //move to func
     if(isFilter){
       listFilterMode = ListFilterMode.favourite;
     } else {
       listFilterMode = ListFilterMode.none;
     }
+
+    await repository.putFilterListState(listFilterMode);
+
     _getCharacters(false);
   }
 

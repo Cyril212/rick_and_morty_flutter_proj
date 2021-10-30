@@ -1,15 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/rest_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';
+import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_detail/vm/character_list_vm.dart';
 
-class RestClient {
+class DataClient {
   @protected
   final Store? store;
 
   @protected
   final RestManager manager;
 
-  RestClient({Store? store, required this.manager}) : store = store ?? HiveStore();
+  DataClient({Store? store, required this.manager})
+      : store = store ?? HiveStore();
 
   Future<T> addQueryData<T extends DataTask>(T dataTask) async {
     return manager.queryData<T>(dataTask, store!);
@@ -19,10 +21,9 @@ class RestClient {
     return manager.queryData(dataTask, store!);
   }
 
-  void putDataToStore(String dataId, Map<String,dynamic> data) =>
-    store!.put(dataId, data);
+  void putMapDataToStore(String dataId, Map<String, dynamic> data) => store!.put(dataId, data);
 
-  Map<String,dynamic>? getDataFromStore(String dataId) => store!.get(dataId);
+  void putEnumToStore(String dataId, ListFilterMode mode) => store!.put(dataId, {"listMode": mode});
 
-
+  Map<String, dynamic>? getDataFromStore(String dataId) => store!.get(dataId);
 }

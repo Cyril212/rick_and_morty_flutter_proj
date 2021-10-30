@@ -48,6 +48,13 @@ class FilterWidget extends StatefulWidget {
 
 class _FilterWidgetState extends State<FilterWidget> {
   @override
+  void initState() {
+    super.initState();
+
+    widget.isChoosen = context.read<CharacterListVM>().listFilterMode == ListFilterMode.favourite;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return IconButton(
         onPressed: () {

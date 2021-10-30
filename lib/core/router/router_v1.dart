@@ -24,8 +24,8 @@ Route<Object> onGenerateRoute(RouteSettings settings) {
       case RickMortyListScreen.route:
         return createRoute(
             (BuildContext context) => RepositoryProvider(
-                create: (context) => CharacterListRepository(context.read<RestClient>(),
-                    CharacterListSource(context.read<RestClient>().manager, CharacterListRequest("character"))),
+                create: (context) => CharacterListRepository(context.read<DataClient>(),
+                    CharacterListSource(context.read<DataClient>().manager, CharacterListRequest("character"))),
                 child:
                     BlocProvider(create: (context) => CharacterListVM(context.read<CharacterListRepository>()), child: const RickMortyListScreen())),
             settings);
