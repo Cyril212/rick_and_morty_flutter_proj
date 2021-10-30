@@ -69,7 +69,7 @@ abstract class AbstractScreenState<T extends AbstractScreen> extends AbstractSta
             top: false,
             child: theContent,
           );
-        }
+        }else {
           theContent = SizedBox(
             width: double.infinity,
             height: double.infinity,
@@ -82,6 +82,7 @@ abstract class AbstractScreenState<T extends AbstractScreen> extends AbstractSta
               ],
             ),
           );
+        }
         return Scaffold(
           backgroundColor: Theme.of(context).backgroundColor,
           appBar: createAppBar(context),

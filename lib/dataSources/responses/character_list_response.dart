@@ -1,11 +1,12 @@
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/data_model.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/response_data_model.dart';
 
 import 'character_response.dart';
 import 'info_response.dart';
 
-class CharacterListResponse extends DataModel{
+class CharacterListResponse extends ResponseDataModel{
   late final Info info;
-  late final List<Character> results;
+  late List<Character> results;
 
 
   CharacterListResponse.fromJson(Map<String, dynamic> json) : super.fromJson(json) {

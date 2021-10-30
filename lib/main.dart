@@ -1,12 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/main_data_provider.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/rest_client.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/rest_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/router/router_v1.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'core/repository/store/store.dart';
 
-void main() {
+void main() async {
+  await initHiveForFlutter();
+  
+  
   runApp(const MyApp());
 }
+
+Future<void> initHiveForFlutter({String? subDir,  Iterable<String> boxes = const [ HiveStore.defaultBoxName ] }) async {
+
+  await Hive.initFlutter();
+  await Hive.openBox(HiveStore.defaultBoxName);
+  // WidgetsFlutterBinding.ensureInitialized();
+  //
+  // var appDir = await getApplicationDocumentsDirectory();
+  // var path = appDir.path;
+  // if (subDir != null) {
+  //   path = join(path, subDir);
+  // }
+  //  Hive.init(path);
+  //
+  // for (var box in boxes){
+  //   await Hive.openBox(box);
+  // }
+
+}
+
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -14,11 +43,9 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return Provider<MainDataProvider>(
-      create: (context) => MainDataProvider(
-          options: MainDataProviderOptions(
-          httpClientOptions: HTTPClientOptions(hostUrl: 'https://rickandmortyapi.com/api/character'),
-      )),
+    return Provider<RestClient>(
+      lazy: false,
+      create: (context) => RestClient(manager: RestManager("https://rickandmortyapi.com/api/")),
       child: MaterialApp(
         title: 'Rick and Morty',
         onGenerateRoute: onGenerateRoute,
@@ -34,6 +61,8 @@ class MyApp extends StatelessWidget {
           // Notice that the counter didn't reset back to zero; the application
           // is not restarted.
           primarySwatch: Colors.blue,
+          backgroundColor: Color(0xFF736AB7),
+          textTheme: TextTheme(bodyText1: TextStyle(color: Colors.white),bodyText2: TextStyle(color: Colors.white),caption: TextStyle(color: Colors.white),overline: TextStyle(color: Colors.white)),
         ),
       ),
     );

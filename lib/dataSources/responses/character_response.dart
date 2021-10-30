@@ -14,7 +14,9 @@ class Character extends DataModel{
   late final String image;
   late final List<String> episode;
   late final String url;
-  late final String created;
+  late final DateTime created;
+
+  bool isFavourite = false;
 
   Character.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
     id = json['id'];
@@ -28,7 +30,7 @@ class Character extends DataModel{
     image = json['image'];
     episode = json['episode'].cast<String>();
     url = json['url'];
-    created = json['created'];
+    created = DateTime.parse(json['created']);
   }
 
   @override
@@ -46,6 +48,7 @@ class Character extends DataModel{
     data['episode'] = episode;
     data['url'] = url;
     data['created'] = created;
+    data['isFavourite'] = isFavourite;
     return data;
   }
 }
