@@ -6,7 +6,6 @@ import 'package:rick_and_morty_flutter_proj/core/repository/abstract_repository.
 import 'package:rick_and_morty_flutter_proj/core/utlis/list.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/responses/character_response.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/sources/character_list_source.dart';
-import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/character_list_vm.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 
 class CharacterListRepository extends AbstractRepository<CharacterListSource> {

@@ -8,7 +8,6 @@ class CharacterListResponse extends ResponseDataModel{
   late final Info info;
   late List<Character> results;
 
-
   CharacterListResponse.fromJson(Map<String, dynamic> json) : super.fromJson(json) {
     info = Info.fromJson(json['info']);
     results = <Character>[];

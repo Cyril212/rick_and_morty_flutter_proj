@@ -4,15 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/rest_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/router/router_v1.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/repositories/character_list_repository.dart';
-import 'package:rick_and_morty_flutter_proj/dataSources/responses/character_list_response.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/responses/character_response.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_detail/rick_morty_detail.dart';
 
-enum CharacterListState { idle, loading, success, error }
-enum ListFilterMode {
-  none,
-  favourite
-}
+enum CharacterListState { idle, loading, success, empty, error }
+enum ListFilterMode { none, favourite }
 
 class CharacterListEvent {
   final CharacterListState state;
@@ -39,20 +35,22 @@ class RickMortyListVM extends Cubit<CharacterListEvent> {
       if (repository.error != null) {
         emit(CharacterListEvent(CharacterListState.error, error: repository.error));
       } else {
-        emit(CharacterListEvent(CharacterListState.success, characterList: response));
+        if (response!.isNotEmpty) {
+          emit(CharacterListEvent(CharacterListState.success, characterList: response));
+        } else {
+          emit(const CharacterListEvent(CharacterListState.empty));
+        }
       }
     });
   }
 
-  void fetchCharacterList() =>
-    _getCharacters(true);
-
+  void fetchCharacterList() => _getCharacters(true);
 
   void updateCharacterList([bool? isFilter]) async {
     isFilter ??= repository.filterListState == ListFilterMode.favourite;
 
     //move to func
-    if(isFilter){
+    if (isFilter) {
       listFilterMode = ListFilterMode.favourite;
     } else {
       listFilterMode = ListFilterMode.none;
@@ -67,6 +65,5 @@ class RickMortyListVM extends Cubit<CharacterListEvent> {
 
   void getFavouriteCharacterState(character) => repository.getFavouriteCharacterStateById(character.id);
 
-  void moveToDetailScreen(BuildContext context)=>
-    pushNamed(context, RickMortyDetailScreen.route);
+  void moveToDetailScreen(BuildContext context) => pushNamed(context, RickMortyDetailScreen.route);
 }

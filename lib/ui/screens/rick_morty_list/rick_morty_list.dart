@@ -15,6 +15,7 @@ class RickMortyListScreen extends AbstractScreen {
 }
 
 class _RickMortyListScreenState extends AbstractScreenState<RickMortyListScreen> {
+
   @override
   firstBuildOnly(BuildContext context) {
     context.read<RickMortyListVM>().fetchCharacterList();
@@ -33,9 +34,9 @@ class _RickMortyListScreenState extends AbstractScreenState<RickMortyListScreen>
           child: BlocBuilder<RickMortyListVM, CharacterListEvent>(builder: (BuildContext context, snapshot) {
             switch (snapshot.state) {
               case CharacterListState.idle:
-                return Text("idle");
+                return const Center(child: Text("idle"));
               case CharacterListState.loading:
-                return Text("loading");
+                return const Center(child: Text("loading"));
               case CharacterListState.success:
                 final characters = snapshot.characterList!.map((character) {
                   return CharacterCardWidget(
@@ -48,7 +49,9 @@ class _RickMortyListScreenState extends AbstractScreenState<RickMortyListScreen>
                   children: characters,
                 ));
               case CharacterListState.error:
-                return Container(child: Text("error"));
+                return const Center(child: Text("error"));
+              case CharacterListState.empty:
+                return const Center(child: Text("List is empty"),);
             }
           }),
         ),
