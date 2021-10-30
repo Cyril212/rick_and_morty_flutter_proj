@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rick_and_morty_flutter_proj/core/ui/screen/abstract_screen.dart';
-import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_detail/vm/character_list_vm.dart';
+import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 import 'package:rick_and_morty_flutter_proj/ui/widgets/character_card_widget.dart';
 import 'package:rick_and_morty_flutter_proj/ui/widgets/primary_app_bar.dart';
 
@@ -17,7 +17,7 @@ class RickMortyListScreen extends AbstractScreen {
 class _RickMortyListScreenState extends AbstractScreenState<RickMortyListScreen> {
   @override
   firstBuildOnly(BuildContext context) {
-    context.read<CharacterListVM>().fetchCharacterList();
+    context.read<RickMortyListVM>().fetchCharacterList();
     return super.firstBuildOnly(context);
   }
 
@@ -30,7 +30,7 @@ class _RickMortyListScreenState extends AbstractScreenState<RickMortyListScreen>
     return Column(
       children: [
         Expanded(
-          child: BlocBuilder<CharacterListVM, CharacterListEvent>(builder: (BuildContext context, snapshot) {
+          child: BlocBuilder<RickMortyListVM, CharacterListEvent>(builder: (BuildContext context, snapshot) {
             switch (snapshot.state) {
               case CharacterListState.idle:
                 return Text("idle");
@@ -54,7 +54,7 @@ class _RickMortyListScreenState extends AbstractScreenState<RickMortyListScreen>
         ),
         //todo: uncomment for test purpose
         OutlinedButton(onPressed: () {
-          context.read<CharacterListVM>().fetchCharacterList();
+          context.read<RickMortyListVM>().fetchCharacterList();
         }, child: Text("Refresh"))
       ],
     );

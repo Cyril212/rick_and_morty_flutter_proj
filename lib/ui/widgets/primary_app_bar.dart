@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/src/provider.dart';
-import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_detail/vm/character_list_vm.dart';
+
+import '../screens/rick_morty_list/widgets/favourite_mode_widget.dart';
 
 class PrimaryAppbar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -17,7 +17,7 @@ class PrimaryAppbar extends StatelessWidget implements PreferredSizeWidget {
       height: preferredSize.height + statusBarHeight,
       child: Stack(
         children: [
-          Align(alignment: Alignment.centerRight, child: FilterWidget()),
+          Align(alignment: Alignment.centerRight, child: FilterModeWidget()),
           Center(
               child: Text(title, style: const TextStyle(color: Colors.white, fontFamily: 'Schwifty', fontWeight: FontWeight.w600, fontSize: 24.0))),
         ],
@@ -35,45 +35,4 @@ class PrimaryAppbar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => const Size(double.infinity, 48);
-}
-
-class FilterWidget extends StatefulWidget {
-  bool isChoosen = false;
-
-  FilterWidget({Key? key, this.isChoosen = false}) : super(key: key);
-
-  @override
-  _FilterWidgetState createState() => _FilterWidgetState();
-}
-
-class _FilterWidgetState extends State<FilterWidget> {
-  @override
-  void initState() {
-    super.initState();
-
-    widget.isChoosen = context.read<CharacterListVM>().listFilterMode == ListFilterMode.favourite;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-        onPressed: () {
-          setState(() {
-            widget.isChoosen = !widget.isChoosen;
-            context.read<CharacterListVM>().updateCharacterList(widget.isChoosen);
-          });
-        },
-        icon: Icon(
-          widget.isChoosen ? Icons.filter_alt : Icons.filter_alt_outlined,
-          color: Colors.amber,
-        ));
-    // return InkWell(
-    //     onTap: () {
-
-    //     },
-    //     child: Icon(
-    //       widget.isChoosen ? Icons.favorite : Icons.favorite_border,
-    //       color: Colors.amber,
-    //     ));
-  }
 }

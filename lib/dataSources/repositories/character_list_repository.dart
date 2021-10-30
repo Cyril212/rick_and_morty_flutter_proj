@@ -4,25 +4,26 @@ import 'package:rick_and_morty_flutter_proj/core/dataProvider/rest_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/rest_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/abstract_repository.dart';
 import 'package:rick_and_morty_flutter_proj/core/utlis/list.dart';
-import 'package:rick_and_morty_flutter_proj/dataSources/responses/character_list_response.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/responses/character_response.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/sources/character_list_source.dart';
-import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_detail/vm/character_list_vm.dart';
+import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/character_list_vm.dart';
+import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 
 class CharacterListRepository extends AbstractRepository<CharacterListSource> {
+  final String listModePrefKey = "listMode";
   final DataClient client;
   final CharacterListSource _source;
 
-  CharacterListRepository(this.client, this._source);
-
   SourceException? get error => _source.error;
 
-  ListFilterMode get filterListState => EnumToString.fromString(ListFilterMode.values, Prefs.getString("listMode")) ?? ListFilterMode.none;
+  ListFilterMode get filterListState => EnumToString.fromString(ListFilterMode.values, Prefs.getString(listModePrefKey)) ?? ListFilterMode.none;
+
+  CharacterListRepository(this.client, this._source);
 
   @override
   Future<CharacterListSource> fetchData() => client.addQueryData(_source);
 
-  Future putFilterListState(ListFilterMode filterMode) => Prefs.setString("listMode", EnumToString.convertToString(filterMode));
+  Future putFilterListState(ListFilterMode filterMode) => Prefs.setString(listModePrefKey, EnumToString.convertToString(filterMode));
 
   //todo: encapsulate somewhere
   putCharacterToStoreById(int characterId, bool state) {

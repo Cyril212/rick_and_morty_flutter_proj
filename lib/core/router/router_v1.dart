@@ -7,8 +7,8 @@ import 'package:rick_and_morty_flutter_proj/dataSources/repositories/character_l
 import 'package:rick_and_morty_flutter_proj/dataSources/requests/character_list_request.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/sources/character_list_source.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_detail/rick_morty_detail.dart';
-import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_detail/vm/character_list_vm.dart';
-import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list.dart';
+import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/rick_morty_list.dart';
+import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/character_list_vm.dart';
 
 import 'fade_animation_page_route.dart';
 import 'no_animation_page_route.dart';
@@ -22,15 +22,9 @@ Route<Object> onGenerateRoute(RouteSettings settings) {
   if (arguments != null) {
     switch (arguments.route) {
       case RickMortyListScreen.route:
-        return createRoute(
-            (BuildContext context) => RepositoryProvider(
-                create: (context) => CharacterListRepository(context.read<DataClient>(),
-                    CharacterListSource(context.read<DataClient>().manager, CharacterListRequest("character"))),
-                child:
-                    BlocProvider(create: (context) => CharacterListVM(context.read<CharacterListRepository>()), child: const RickMortyListScreen())),
-            settings);
+        return createRoute((BuildContext context) => const RickMortyListScreen(),settings);
       case RickMortyDetailScreen.route:
-        return createRoute((BuildContext context) => const RickMortyDetailScreen(), settings);
+        return createRoute((BuildContext context) => RickMortyDetailScreen(), settings);
       default:
         throw Exception('Implement OnGenerateRoute in app');
     }

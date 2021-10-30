@@ -1,8 +1,12 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/rest_manager.dart';
+import 'package:rick_and_morty_flutter_proj/core/router/router_v1.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/repositories/character_list_repository.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/responses/character_list_response.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/responses/character_response.dart';
+import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_detail/rick_morty_detail.dart';
 
 enum CharacterListState { idle, loading, success, error }
 enum ListFilterMode {
@@ -18,11 +22,13 @@ class CharacterListEvent {
   const CharacterListEvent(this.state, {this.characterList, this.error});
 }
 
-class CharacterListVM extends Cubit<CharacterListEvent> {
+class RickMortyListVM extends Cubit<CharacterListEvent> {
   final CharacterListRepository repository;
-  ListFilterMode listFilterMode;
 
-  CharacterListVM(this.repository, {this.listFilterMode = ListFilterMode.none}) : super(const CharacterListEvent(CharacterListState.idle));
+  ListFilterMode listFilterMode;
+  int? currentCharacterId;
+
+  RickMortyListVM(this.repository, {this.listFilterMode = ListFilterMode.none}) : super(const CharacterListEvent(CharacterListState.idle));
 
   void _getCharacters([shouldFetch = true]) {
     emit(const CharacterListEvent(CharacterListState.loading));
@@ -38,11 +44,12 @@ class CharacterListVM extends Cubit<CharacterListEvent> {
     });
   }
 
-  void fetchCharacterList(){
+  void fetchCharacterList() =>
     _getCharacters(true);
-  }
 
-  void updateCharacterList(bool isFilter) async {
+
+  void updateCharacterList([bool? isFilter]) async {
+    isFilter ??= repository.filterListState == ListFilterMode.favourite;
 
     //move to func
     if(isFilter){
@@ -56,7 +63,10 @@ class CharacterListVM extends Cubit<CharacterListEvent> {
     _getCharacters(false);
   }
 
-  void setFavouriteForCharacter(int characterId, bool state) => repository.putCharacterToStoreById(characterId, state);
+  void setFavouriteCharacterState(int characterId, bool state) => repository.putCharacterToStoreById(characterId, state);
 
   void getFavouriteCharacterState(character) => repository.getFavouriteCharacterStateById(character.id);
+
+  void moveToDetailScreen(BuildContext context)=>
+    pushNamed(context, RickMortyDetailScreen.route);
 }
