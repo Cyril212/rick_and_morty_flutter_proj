@@ -51,6 +51,7 @@ class CharacterCardWidget extends StatelessWidget {
               Container(height: 10.0),
               if (!horizontal)
                 FavoriteWidget(
+                  key:UniqueKey(),
                   isChosen: character.isFavourite,
                   characterId: character.id,
                 )
@@ -59,6 +60,7 @@ class CharacterCardWidget extends StatelessWidget {
           if (horizontal) Spacer(),
           if (horizontal)
             FavoriteWidget(
+              key:UniqueKey(),
               isChosen: character.isFavourite,
               characterId: character.id,
             )
@@ -125,13 +127,12 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
     // TODO: implement didUpdateWidget
     super.didUpdateWidget(oldWidget);
 
-    widget.isChosen = context.read<RickMortyListVM>().getFavouriteCharacterState(widget.characterId);
+    // widget.isChosen = context.read<RickMortyListVM>().getFavouriteCharacterState(widget.characterId);
   }
 
   void _setFavouriteState() {
-    context.read<RickMortyListVM>()
-      ..setFavouriteCharacterState(widget.characterId, widget.isChosen)
-      ..updateCharacterList();
+    context.read<RickMortyListVM>().setFavouriteCharacterState(widget.characterId, widget.isChosen);
+    context.read<RickMortyListVM>().updateCharacterList();
   }
 
   void _updateWidgetState() {

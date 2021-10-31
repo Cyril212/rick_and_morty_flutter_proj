@@ -25,7 +25,7 @@ class _FilterModeWidgetState extends State<FilterModeWidget> {
         onPressed: () {
           setState(() {
             widget.isChoosen = !widget.isChoosen;
-            context.read<RickMortyListVM>().updateCharacterList(widget.isChoosen);
+            context.read<RickMortyListVM>().setFilterMode(widget.isChoosen);
           });
         },
         icon: Icon(

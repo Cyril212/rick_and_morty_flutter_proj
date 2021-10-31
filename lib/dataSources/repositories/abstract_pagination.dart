@@ -10,15 +10,12 @@ abstract class AbstractPagination<T extends DataModel> {
   int pageNum;
 
   @protected
-  ListFilterMode get filterListState => EnumToString.fromString(ListFilterMode.values, Prefs.getString(listModePrefKey)) ?? ListFilterMode.none;
-
-  @protected
   List<T> mergedList;
 
   @protected
   List<T> filteredListByMode;
 
-  String get listModePrefKey;
+  String get favouriteListTag;
 
   AbstractPagination({this.pageNum = 0})
       : mergedList = [],

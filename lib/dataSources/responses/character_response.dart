@@ -31,6 +31,10 @@ class Character extends DataModel{
     episode = json['episode'].cast<String>();
     url = json['url'];
     created = json['created'];
+
+    if(json['isFavourite'] != null) {
+      isFavourite = json['isFavourite'];
+    }
   }
 
   @override

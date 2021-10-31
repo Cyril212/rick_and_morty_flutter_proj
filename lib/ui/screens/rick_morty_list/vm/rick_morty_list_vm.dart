@@ -48,19 +48,18 @@ class RickMortyListVM extends Cubit<CharacterListEvent> {
 
   void fetchCharacterList() => _getCharacters(true);
 
-  void updateCharacterList([bool? isFilter]) async {
-    isFilter ??= repository.filterCharacterListState == ListFilterMode.favourite;
+  void updateCharacterList() async {
+    _getCharacters(false);
+  }
 
+  void setFilterMode(bool isFilter){
     //move to func
     if (isFilter) {
       listFilterMode = ListFilterMode.favourite;
     } else {
       listFilterMode = ListFilterMode.none;
     }
-
-    await repository.putFilterListState(listFilterMode);
-
-    _getCharacters(false);
+    updateCharacterList();
   }
 
   void setFavouriteCharacterState(int characterId, bool state,{VoidCallback? shouldActualizeList}) => repository.putFavouriteCharacterStateById(characterId, state, shouldActualizeList);

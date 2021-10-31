@@ -18,12 +18,10 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
 
   List<Character> get characterListByMode => filteredListByMode;
 
-  ListFilterMode get filterCharacterListState => super.filterListState;
-
   SourceException? get error => _source.error;
 
   @override
-  String get listModePrefKey => "listMode";
+  String get favouriteListTag => "favouriteList";
 
   @override
   bool get hasNextPage => _source.response?.info.next != null;
@@ -31,13 +29,11 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
   @override
   Future<CharacterListSource> fetchPage() => client.executeQuery(_source);
 
-  Future putFilterListState(ListFilterMode filterMode) => Prefs.setString(listModePrefKey, EnumToString.convertToString(filterMode));
-
   List<Character> _mergeFavouritesCharacterFromStore() {
-    List<Character> list = _source.response!.results
-      ..forEach((character) {
-        character.isFavourite = getFavouriteCharacterStateById(character.id);
-      });
+    List<Character> list = _source.response?.results ?? [];
+    list.forEach((character) {
+      character.isFavourite = getFavouriteCharacterStateById(character.id);
+    });
     return list;
   }
 
@@ -65,35 +61,40 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
   //todo: encapsulate somewhere
   void putFavouriteCharacterStateById(int characterId, bool state, VoidCallback? actualizeList) {
     final Character? characterById = mergedList.firstWhereOrNull((character) => character.id == characterId);
-    characterById?.isFavourite = state;
 
-    Prefs.setBool(characterId.toString(), state);
+    List<Character> filteredList = List<Character>.from(getFavouriteCharactersState());
 
-    List<Character>? filteredList = List<Character>.from(getFavouriteCharactersState());
+    final alreadyContainsFavourite = filteredList.firstWhereOrNull((character) => character.id == characterId) != null;
+    if (alreadyContainsFavourite && state == false) {
+      filteredList.removeWhere((character) => character.id == characterId);
 
-    if (filteredList != null) {
-      final alreadyContainsFavourite = filteredList.firstWhereOrNull((character) => character.id == characterId) != null;
-      if (alreadyContainsFavourite && state == false) {
-        filteredList.removeWhere((character) => character.id == characterId);
-        if (actualizeList != null) {
-          actualizeList();
-        }
-      } else if (alreadyContainsFavourite == false) {
-        filteredList.add(characterById!);
+      if (actualizeList != null) {
+        actualizeList();
       }
+    } else if (alreadyContainsFavourite) {
+      filteredList.firstWhere((character) => character.id == characterId).isFavourite = state;
     } else {
-      filteredList = [];
+      characterById?.isFavourite = state;
+      filteredList.add(characterById!);
     }
 
-    client.store!.put("filteredList", json.encode(filteredList));
+    client.store!.put(favouriteListTag, json.encode(filteredList));
   }
 
   //todo: encapsulate somewhere
-  bool getFavouriteCharacterStateById(int characterId) => Prefs.getBool(characterId.toString());
+  bool getFavouriteCharacterStateById(int characterId) {
+    Character? character = getFavouriteCharactersState().firstWhereOrNull((character) => character.id == characterId);
+
+    if (character != null) {
+      return character.isFavourite;
+    } else {
+      return false;
+    }
+  }
 
   //todo: encapsulate somewhere
   List<Character> getFavouriteCharactersState() {
-    String characterListAsString = client.getDataFromStore("filteredList") ?? "";
+    String characterListAsString = client.getDataFromStore(favouriteListTag) ?? "";
 
     List<Map<String, dynamic>> characterStringList =
         characterListAsString.isNotEmpty ? (List<Map<String, dynamic>>.from(json.decode(characterListAsString))) : [];
