@@ -47,13 +47,12 @@ class CharacterCardWidget extends StatelessWidget {
               Container(height: 10.0),
               Text("Gender: ${character.gender}"),
               Container(height: 10.0),
-              Text("Birth: ${DateFormat.yMd().format(character.created).toUpperCase()}"),
+              // Text("Birth: ${DateFormat.yMd().format(character.created).toUpperCase()}"),
               Container(height: 10.0),
               if (!horizontal)
                 FavoriteWidget(
                   isChosen: character.isFavourite,
                   characterId: character.id,
-                  shouldRefreshList: true,
                 )
             ],
           ),
@@ -121,12 +120,18 @@ class FavoriteWidget extends StatefulWidget {
 }
 
 class _FavoriteWidgetState extends State<FavoriteWidget> {
+  @override
+  void didUpdateWidget(covariant FavoriteWidget oldWidget) {
+    // TODO: implement didUpdateWidget
+    super.didUpdateWidget(oldWidget);
 
-  void _setFavouriteState(){
-    context.read<RickMortyListVM>().setFavouriteCharacterState(widget.characterId, widget.isChosen);
-    if (widget.shouldRefreshList) {
-      context.read<RickMortyListVM>().updateCharacterList();
-    }
+    widget.isChosen = context.read<RickMortyListVM>().getFavouriteCharacterState(widget.characterId);
+  }
+
+  void _setFavouriteState() {
+    context.read<RickMortyListVM>()
+      ..setFavouriteCharacterState(widget.characterId, widget.isChosen)
+      ..updateCharacterList();
   }
 
   void _updateWidgetState() {

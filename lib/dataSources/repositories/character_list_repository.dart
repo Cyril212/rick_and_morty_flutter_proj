@@ -1,108 +1,134 @@
 import 'package:enum_to_string/enum_to_string.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:prefs/prefs.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/data_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/rest_manager.dart';
-import 'package:rick_and_morty_flutter_proj/core/repository/abstract_list_repository.dart';
+import 'package:rick_and_morty_flutter_proj/core/repository/abstract_repository.dart';
 import 'package:rick_and_morty_flutter_proj/core/utlis/list.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/responses/character_response.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/sources/character_list_source.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
+import 'dart:convert';
 
-class CharacterListRepository extends AbstractListRepository<CharacterListSource> {
-  final String listModePrefKey = "listMode";
+class CharacterListRepository extends AbstractRepository<CharacterListSource> {
   final DataClient client;
   final CharacterListSource _source;
 
-  List<Character> _mergedCharacterList;
+  CharacterListRepository(this.client, this._source);
 
-  List<Character> characterListByMode;
+  List<Character> get characterListByMode => filteredListByMode;
+
+  ListFilterMode get filterCharacterListState => super.filterListState;
 
   SourceException? get error => _source.error;
 
-  ListFilterMode get filterListState => EnumToString.fromString(ListFilterMode.values, Prefs.getString(listModePrefKey)) ?? ListFilterMode.none;
+  @override
+  String get listModePrefKey => "listMode";
 
-  CharacterListRepository(this.client, this._source)
-      : _mergedCharacterList = [],
-        characterListByMode = [];
+  @override
+  bool get hasNextPage => _source.response?.info.next != null;
 
   @override
   Future<CharacterListSource> fetchPage() => client.executeQuery(_source);
 
-  @override
-  Future<CharacterListSource> unsubscribe() => Future.value();
-
   Future putFilterListState(ListFilterMode filterMode) => Prefs.setString(listModePrefKey, EnumToString.convertToString(filterMode));
 
   List<Character> _mergeFavouritesCharacterFromStore() {
-    List<Character> list = _source.response!.results..forEach((character) {
+    List<Character> list = _source.response!.results
+      ..forEach((character) {
         character.isFavourite = getFavouriteCharacterStateById(character.id);
       });
     return list;
   }
 
+  @override
   void incrementPage() => _source.requestDataModel.pageNum++;
 
-  List<Character>? _filterCharacterListByFilterMode(ListFilterMode listFilterMode, bool shouldFetch) {
-    List<Character> mergeFavouritesCharacterFromStore = _mergeFavouritesCharacterFromStore();
-
-    switch (listFilterMode) {
-      case ListFilterMode.none:
-        if (shouldFetch) {
-          if (_mergedCharacterList.isNotEmpty) {
-            _mergedCharacterList.addAll(mergeFavouritesCharacterFromStore);
-          } else {
-            _mergedCharacterList = mergeFavouritesCharacterFromStore;
-          }
-        }
-        characterListByMode
-          ..clear()
-          ..addAll(_mergedCharacterList);
-        break;
-      case ListFilterMode.favourite:
-        if (characterListByMode.isNotEmpty) {
-          characterListByMode.removeWhere((character) => character.isFavourite == false);
-        } else {
-          final listFilteredByFavourite = _mergedCharacterList.where((character) => character.isFavourite == false);
-          characterListByMode.addAll(listFilteredByFavourite);
-        }
-        break;
-    }
-  }
-
-  Future<void> getCharactersWithFavouriteState([ListFilterMode listFilterMode = ListFilterMode.none, bool shouldFetch = false]) async {
+  Future<void> actualizeCharacters([ListFilterMode listFilterMode = ListFilterMode.none, bool shouldFetch = false]) async {
     if (shouldFetch) {
       return fetchPage().then((value) {
         if (_source.response != null) {
-          _filterCharacterListByFilterMode(listFilterMode, shouldFetch);
+          filterListByFilterMode(listFilterMode, shouldFetch);
 
-          incrementPage();
+          if (hasNextPage) {
+            incrementPage();
+          }
         } else {
           return null;
         }
       });
     } else {
-      _filterCharacterListByFilterMode(listFilterMode, shouldFetch);
+      filterListByFilterMode(listFilterMode, shouldFetch);
     }
   }
 
   //todo: encapsulate somewhere
-  void putFavouriteCharacterStateById(int characterId, bool state) {
-    final Character? characterById = _mergedCharacterList.firstWhereOrNull((character) => character.id == characterId);
+  void putFavouriteCharacterStateById(int characterId, bool state, VoidCallback? actualizeList) {
+    final Character? characterById = mergedList.firstWhereOrNull((character) => character.id == characterId);
+    characterById?.isFavourite = state;
 
-    if (characterById != null) {
-      characterById.isFavourite = state;
-      client.putMapDataToStore(characterById.id.toString(), characterById.toJson());
+    Prefs.setBool(characterId.toString(), state);
+
+    List<Character>? filteredList = List<Character>.from(getFavouriteCharactersState());
+
+    if (filteredList != null) {
+      final alreadyContainsFavourite = filteredList.firstWhereOrNull((character) => character.id == characterId) != null;
+      if (alreadyContainsFavourite && state == false) {
+        filteredList.removeWhere((character) => character.id == characterId);
+        if (actualizeList != null) {
+          actualizeList();
+        }
+      } else if (alreadyContainsFavourite == false) {
+        filteredList.add(characterById!);
+      }
     } else {
-      //todo:Create logger to avoid prod leak
-      print("character was not found");
+      filteredList = [];
     }
+
+    client.store!.put("filteredList", json.encode(filteredList));
   }
 
   //todo: encapsulate somewhere
-  bool getFavouriteCharacterStateById(int characterId) {
-    final characterFromStore = client.getDataFromStore(characterId.toString());
-    bool isFavourite = characterFromStore?["isFavourite"] ?? false;
+  bool getFavouriteCharacterStateById(int characterId) => Prefs.getBool(characterId.toString());
 
-    return characterFromStore != null ? isFavourite : false;
+  //todo: encapsulate somewhere
+  List<Character> getFavouriteCharactersState() {
+    String characterListAsString = client.getDataFromStore("filteredList") ?? "";
+
+    List<Map<String, dynamic>> characterStringList =
+        characterListAsString.isNotEmpty ? (List<Map<String, dynamic>>.from(json.decode(characterListAsString))) : [];
+
+    return characterStringList.map((json) => Character.fromJson(json)).toList();
+  }
+
+  @override
+  List<Character>? filterListByFilterMode(ListFilterMode listFilterMode, bool shouldFetch) {
+    List<Character> mergeFavouritesCharacterFromStore = _mergeFavouritesCharacterFromStore();
+
+    switch (listFilterMode) {
+      case ListFilterMode.none:
+        if (shouldFetch) {
+          if (mergedList.isNotEmpty) {
+            mergedList.addAll(mergeFavouritesCharacterFromStore);
+          } else {
+            mergedList = mergeFavouritesCharacterFromStore;
+          }
+        }
+        filteredListByMode
+          ..clear()
+          ..addAll(mergedList);
+        break;
+      case ListFilterMode.favourite:
+        filteredListByMode = getFavouriteCharactersState();
+        // if (filteredListByMode.isNotEmpty) {
+        //   filteredListByMode.removeWhere((character) => character.isFavourite == false);
+        // } else {
+        //   final listFilteredByFavourite = mergedList.where((character) => character.isFavourite == false);
+        //   filteredListByMode.addAll(listFilteredByFavourite);
+        // }
+        break;
+      case ListFilterMode.search:
+        break;
+    }
   }
 }

@@ -14,9 +14,9 @@ abstract class AbstractDataClient<T extends AbstractManager> {
     return manager.processData<R>(dataSource, store!);
   }
 
-  void putMapDataToStore(String dataId, Map<String, dynamic> data) => store!.put(dataId, data);
+  void putDataToStore(String dataId, Map<String, dynamic> data) => store!.put(dataId, data);
 
   void putEnumToStore(String dataId, ListFilterMode mode) => store!.put(dataId, {dataId: mode});
 
-  Map<String, dynamic>? getDataFromStore(String dataId) => store!.get(dataId);
+  dynamic getDataFromStore(String dataId) => store!.get(dataId);
 }

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/abstract_data_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/rest_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';
@@ -13,11 +12,11 @@ class DataClient extends AbstractDataClient<RestManager> {
   }
 
   @override
-  void putMapDataToStore(String dataId, Map<String, dynamic> data) => store!.put(dataId, data);
+  void putDataToStore(String dataId, data) => store!.put(dataId, data);
 
   @override
   void putEnumToStore(String dataId, ListFilterMode mode) => store!.put(dataId, {"listMode": mode});
 
   @override
-  Map<String, dynamic>? getDataFromStore(String dataId) => store!.get(dataId);
+  dynamic getDataFromStore(String dataId) => store!.get(dataId);
 }

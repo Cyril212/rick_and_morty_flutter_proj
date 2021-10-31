@@ -8,7 +8,7 @@ import 'package:rick_and_morty_flutter_proj/dataSources/responses/character_resp
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_detail/rick_morty_detail.dart';
 
 enum CharacterListState { idle, loading, success, empty, error }
-enum ListFilterMode { none, favourite }
+enum ListFilterMode { none, favourite, search }
 
 class CharacterListEvent {
   final CharacterListState state;
@@ -33,7 +33,7 @@ class RickMortyListVM extends Cubit<CharacterListEvent> {
 
     emit(const CharacterListEvent(CharacterListState.loading));
 
-    repository.getCharactersWithFavouriteState(listFilterMode, shouldFetch).then((response) {
+    repository.actualizeCharacters(listFilterMode, shouldFetch).then((response) {
       if (repository.error != null) {
         emit(CharacterListEvent(CharacterListState.error, error: repository.error));
       } else {
@@ -49,7 +49,7 @@ class RickMortyListVM extends Cubit<CharacterListEvent> {
   void fetchCharacterList() => _getCharacters(true);
 
   void updateCharacterList([bool? isFilter]) async {
-    isFilter ??= repository.filterListState == ListFilterMode.favourite;
+    isFilter ??= repository.filterCharacterListState == ListFilterMode.favourite;
 
     //move to func
     if (isFilter) {
@@ -63,9 +63,9 @@ class RickMortyListVM extends Cubit<CharacterListEvent> {
     _getCharacters(false);
   }
 
-  void setFavouriteCharacterState(int characterId, bool state) => repository.putFavouriteCharacterStateById(characterId, state);
+  void setFavouriteCharacterState(int characterId, bool state,{VoidCallback? shouldActualizeList}) => repository.putFavouriteCharacterStateById(characterId, state, shouldActualizeList);
 
-  void getFavouriteCharacterState(character) => repository.getFavouriteCharacterStateById(character.id);
+  bool getFavouriteCharacterState(int characterId) => repository.getFavouriteCharacterStateById(characterId);
 
   void moveToDetailScreen(BuildContext context) => pushNamed(context, RickMortyDetailScreen.route);
 }

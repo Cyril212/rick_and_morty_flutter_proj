@@ -14,7 +14,7 @@ class Character extends DataModel{
   late final String image;
   late final List<String> episode;
   late final String url;
-  late final DateTime created;
+  late final String created;
 
   bool isFavourite = false;
 
@@ -30,7 +30,7 @@ class Character extends DataModel{
     image = json['image'];
     episode = json['episode'].cast<String>();
     url = json['url'];
-    created = DateTime.parse(json['created']);
+    created = json['created'];
   }
 
   @override
