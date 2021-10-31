@@ -17,7 +17,15 @@ class PrimaryAppbar extends StatelessWidget implements PreferredSizeWidget {
       height: preferredSize.height + statusBarHeight,
       child: Stack(
         children: [
-          Align(alignment: Alignment.centerRight, child: FilterModeWidget()),
+           Align(
+             child: Row(
+               mainAxisAlignment: MainAxisAlignment.end,
+               children: [
+                 IconButton(onPressed: (){}, icon: const Icon(Icons.search,color: Colors.amber),),
+                 FilterModeWidget(),
+               ],
+             ),
+           ),
           Center(
               child: Text(title, style: const TextStyle(color: Colors.white, fontFamily: 'Schwifty', fontWeight: FontWeight.w600, fontSize: 24.0))),
         ],

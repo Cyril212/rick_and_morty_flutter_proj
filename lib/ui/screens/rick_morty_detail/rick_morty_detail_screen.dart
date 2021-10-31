@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
-import 'package:rick_and_morty_flutter_proj/dataSources/responses/character_response.dart';
+import 'package:rick_and_morty_flutter_proj/dataSources/responses/character.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_detail/vm/rick_morty_detail_vm.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 import 'package:rick_and_morty_flutter_proj/ui/widgets/character_card_widget.dart';
@@ -76,7 +76,7 @@ class RickMortyDetailScreen extends StatelessWidget {
                 Text(
                   _overviewTitle,
                 ),
-                Text(character.gender),
+                Text("An animated series on adult-swim about the infinite adventures of Rick, a genius alcoholic and careless scientist, with his grandson Morty, a 14 year-old anxious boy who is not so smart. Together, they explore the infinite universes; causing mayhem and running into trouble."),
               ],
             ),
           ),

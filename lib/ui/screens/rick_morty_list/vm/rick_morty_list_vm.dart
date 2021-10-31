@@ -4,11 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/rest_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/router/router_v1.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/repositories/character_list_repository.dart';
-import 'package:rick_and_morty_flutter_proj/dataSources/responses/character_response.dart';
-import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_detail/rick_morty_detail.dart';
+import 'package:rick_and_morty_flutter_proj/dataSources/responses/character.dart';
+import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_detail/rick_morty_detail_screen.dart';
 
 enum CharacterListState { idle, loading, success, empty, error }
-enum ListFilterMode { none, favourite, search }
+enum ListFilterMode { none, favourite }
 
 class CharacterListEvent {
   final CharacterListState state;
@@ -33,7 +33,7 @@ class RickMortyListVM extends Cubit<CharacterListEvent> {
 
     emit(const CharacterListEvent(CharacterListState.loading));
 
-    repository.actualizeCharacters(listFilterMode, shouldFetch).then((response) {
+    repository.fetchCharacterList(listFilterMode, shouldFetch).then((response) {
       if (repository.error != null) {
         emit(CharacterListEvent(CharacterListState.error, error: repository.error));
       } else {
@@ -48,9 +48,17 @@ class RickMortyListVM extends Cubit<CharacterListEvent> {
 
   void fetchCharacterList() => _getCharacters(true);
 
-  void updateCharacterList() async {
+  void updateCharacterList() =>
     _getCharacters(false);
+
+  void setSearchPhraseIfAvailable(String searchPhrase)=>
+      repository.searchPhrase = searchPhrase;
+
+  void updateCharacterListBySearchPhrase(String searchPhrase){
+    setSearchPhraseIfAvailable(searchPhrase);
+    updateCharacterList();
   }
+
 
   void setFilterMode(bool isFilter){
     //move to func

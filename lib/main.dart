@@ -5,8 +5,8 @@ import 'package:prefs/prefs.dart';
 import 'package:provider/provider.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/rest_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/router/router_v1.dart';
-import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/rick_morty_list.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/rick_morty_list_screen.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 import 'core/dataProvider/data_client.dart';
 import 'core/repository/store/store.dart';
@@ -47,15 +47,6 @@ class MyApp extends StatelessWidget {
           onGenerateRoute: onGenerateRoute,
           initialRoute: RickMortyListScreen.route,
           theme: ThemeData(
-            // This is the theme of your application.
-            //
-            // Try running your application with "flutter run". You'll see the
-            // application has a blue toolbar. Then, without quitting the app, try
-            // changing the primarySwatch below to Colors.green and then invoke
-            // "hot reload" (press "r" in the console where you ran "flutter run",
-            // or simply save your changes to "hot reload" in a Flutter IDE).
-            // Notice that the counter didn't reset back to zero; the application
-            // is not restarted.
             primarySwatch: Colors.blue,
             backgroundColor: const Color(0xFF736AB7),
             textTheme: const TextTheme(

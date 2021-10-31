@@ -5,7 +5,7 @@ import 'package:rick_and_morty_flutter_proj/core/dataProvider/data_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/rest_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/abstract_repository.dart';
 import 'package:rick_and_morty_flutter_proj/core/utlis/list.dart';
-import 'package:rick_and_morty_flutter_proj/dataSources/responses/character_response.dart';
+import 'package:rick_and_morty_flutter_proj/dataSources/responses/character.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/sources/character_list_source.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 import 'dart:convert';
@@ -13,6 +13,7 @@ import 'dart:convert';
 class CharacterListRepository extends AbstractRepository<CharacterListSource> {
   final DataClient client;
   final CharacterListSource _source;
+  String? searchPhrase;
 
   CharacterListRepository(this.client, this._source);
 
@@ -29,6 +30,9 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
   @override
   Future<CharacterListSource> fetchPage() => client.executeQuery(_source);
 
+  @override
+  void incrementPage() => _source.requestDataModel.pageNum++;
+
   List<Character> _mergeFavouritesCharacterFromStore() {
     List<Character> list = _source.response?.results ?? [];
     list.forEach((character) {
@@ -37,10 +41,7 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
     return list;
   }
 
-  @override
-  void incrementPage() => _source.requestDataModel.pageNum++;
-
-  Future<void> actualizeCharacters([ListFilterMode listFilterMode = ListFilterMode.none, bool shouldFetch = false]) async {
+  Future<void> fetchCharacterList([ListFilterMode listFilterMode = ListFilterMode.none, bool shouldFetch = false]) async {
     if (shouldFetch) {
       return fetchPage().then((value) {
         if (_source.response != null) {
@@ -58,7 +59,40 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
     }
   }
 
-  //todo: encapsulate somewhere
+  @override
+  List<Character>? filterListByFilterMode(ListFilterMode listFilterMode, bool shouldFetch) {
+    List<Character> mergeFavouritesCharacterFromStore = _mergeFavouritesCharacterFromStore();
+
+    switch (listFilterMode) {
+      case ListFilterMode.none:
+        if (shouldFetch) {
+          if (mergedList.isNotEmpty) {
+            mergedList.addAll(mergeFavouritesCharacterFromStore);
+          } else {
+            mergedList = mergeFavouritesCharacterFromStore;
+          }
+        }
+        filteredListByMode
+          ..clear()
+          ..addAll(mergedList);
+        break;
+      case ListFilterMode.favourite:
+        filteredListByMode = getFavouriteCharactersState();
+        break;
+    }
+
+    if(searchPhrase != null && searchPhrase!.isNotEmpty) {
+      final tmp = [...filteredListByMode];
+      filteredListByMode.clear();
+      tmp.forEach((character) {
+        if(character.name.contains(searchPhrase!)) {
+          filteredListByMode.add(character);
+        }
+      });
+    }
+
+  }
+
   void putFavouriteCharacterStateById(int characterId, bool state, VoidCallback? actualizeList) {
     final Character? characterById = mergedList.firstWhereOrNull((character) => character.id == characterId);
 
@@ -81,7 +115,6 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
     client.store!.put(favouriteListTag, json.encode(filteredList));
   }
 
-  //todo: encapsulate somewhere
   bool getFavouriteCharacterStateById(int characterId) {
     Character? character = getFavouriteCharactersState().firstWhereOrNull((character) => character.id == characterId);
 
@@ -92,7 +125,6 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
     }
   }
 
-  //todo: encapsulate somewhere
   List<Character> getFavouriteCharactersState() {
     String characterListAsString = client.getDataFromStore(favouriteListTag) ?? "";
 
@@ -102,34 +134,4 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
     return characterStringList.map((json) => Character.fromJson(json)).toList();
   }
 
-  @override
-  List<Character>? filterListByFilterMode(ListFilterMode listFilterMode, bool shouldFetch) {
-    List<Character> mergeFavouritesCharacterFromStore = _mergeFavouritesCharacterFromStore();
-
-    switch (listFilterMode) {
-      case ListFilterMode.none:
-        if (shouldFetch) {
-          if (mergedList.isNotEmpty) {
-            mergedList.addAll(mergeFavouritesCharacterFromStore);
-          } else {
-            mergedList = mergeFavouritesCharacterFromStore;
-          }
-        }
-        filteredListByMode
-          ..clear()
-          ..addAll(mergedList);
-        break;
-      case ListFilterMode.favourite:
-        filteredListByMode = getFavouriteCharactersState();
-        // if (filteredListByMode.isNotEmpty) {
-        //   filteredListByMode.removeWhere((character) => character.isFavourite == false);
-        // } else {
-        //   final listFilteredByFavourite = mergedList.where((character) => character.isFavourite == false);
-        //   filteredListByMode.addAll(listFilteredByFavourite);
-        // }
-        break;
-      case ListFilterMode.search:
-        break;
-    }
-  }
 }

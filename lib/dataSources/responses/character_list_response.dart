@@ -1,8 +1,9 @@
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/data_model.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/response_data_model.dart';
 
-import 'character_response.dart';
-import 'info_response.dart';
+import 'character.dart';
+import 'info.dart';
+
 
 class CharacterListResponse extends ResponseDataModel{
   late final Info info;

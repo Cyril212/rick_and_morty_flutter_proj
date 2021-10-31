@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
-import 'package:rick_and_morty_flutter_proj/dataSources/responses/character_response.dart';
 import 'package:intl/intl.dart';
+import 'package:rick_and_morty_flutter_proj/dataSources/responses/character.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 
 class CharacterCardWidget extends StatelessWidget {
@@ -47,11 +47,11 @@ class CharacterCardWidget extends StatelessWidget {
               Container(height: 10.0),
               Text("Gender: ${character.gender}"),
               Container(height: 10.0),
-              // Text("Birth: ${DateFormat.yMd().format(character.created).toUpperCase()}"),
+              Text("Birth: ${DateFormat.yMd().format(DateTime.parse(character.created))}"),
               Container(height: 10.0),
               if (!horizontal)
                 FavoriteWidget(
-                  key:UniqueKey(),
+                  key: UniqueKey(),
                   isChosen: character.isFavourite,
                   characterId: character.id,
                 )
@@ -60,7 +60,7 @@ class CharacterCardWidget extends StatelessWidget {
           if (horizontal) Spacer(),
           if (horizontal)
             FavoriteWidget(
-              key:UniqueKey(),
+              key: UniqueKey(),
               isChosen: character.isFavourite,
               characterId: character.id,
             )
@@ -122,14 +122,6 @@ class FavoriteWidget extends StatefulWidget {
 }
 
 class _FavoriteWidgetState extends State<FavoriteWidget> {
-  @override
-  void didUpdateWidget(covariant FavoriteWidget oldWidget) {
-    // TODO: implement didUpdateWidget
-    super.didUpdateWidget(oldWidget);
-
-    // widget.isChosen = context.read<RickMortyListVM>().getFavouriteCharacterState(widget.characterId);
-  }
-
   void _setFavouriteState() {
     context.read<RickMortyListVM>().setFavouriteCharacterState(widget.characterId, widget.isChosen);
     context.read<RickMortyListVM>().updateCharacterList();
