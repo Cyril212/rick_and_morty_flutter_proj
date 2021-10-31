@@ -9,6 +9,6 @@ class RickMortyDetailVM extends Cubit {
  Character? getCharacterById(BuildContext context) {
     final rickMortyListVMReference = context.read<RickMortyListVM>();
 
-    return rickMortyListVMReference.state.characterList?.firstWhere((character) => character.id == rickMortyListVMReference.currentCharacterId);
+    return rickMortyListVMReference.characterList.firstWhere((character) => character.id == rickMortyListVMReference.currentCharacterId);
   }
 }

@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/rest_client.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/repositories/character_list_repository.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/requests/character_list_request.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/sources/character_list_source.dart';

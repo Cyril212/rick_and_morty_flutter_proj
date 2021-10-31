@@ -16,7 +16,7 @@ class _FilterModeWidgetState extends State<FilterModeWidget> {
   void initState() {
     super.initState();
 
-    widget.isChoosen = context.read<RickMortyListVM>().listFilterMode == ListFilterMode.favourite;
+    widget.isChoosen = false;
   }
 
   @override

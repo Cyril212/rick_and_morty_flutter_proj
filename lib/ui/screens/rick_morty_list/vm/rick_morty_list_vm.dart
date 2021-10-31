@@ -12,10 +12,9 @@ enum ListFilterMode { none, favourite }
 
 class CharacterListEvent {
   final CharacterListState state;
-  final List<Character>? characterList;
   final SourceException? error;
 
-  const CharacterListEvent(this.state, {this.characterList, this.error});
+  const CharacterListEvent(this.state, {this.error});
 }
 
 class RickMortyListVM extends Cubit<CharacterListEvent> {
@@ -23,20 +22,23 @@ class RickMortyListVM extends Cubit<CharacterListEvent> {
 
   ListFilterMode listFilterMode;
   int? currentCharacterId;
+  bool isFetching;
 
-  RickMortyListVM(this.repository, {this.listFilterMode = ListFilterMode.none}) : super(const CharacterListEvent(CharacterListState.idle));
+  RickMortyListVM(this.repository, {this.listFilterMode = ListFilterMode.none, this.isFetching = false})
+      : super(const CharacterListEvent(CharacterListState.idle));
+
+  List<Character> get characterList => repository.characterListByMode;
 
   void _getCharacters([shouldFetch = true]) {
-    emit(const CharacterListEvent(CharacterListState.loading));
 
-    listFilterMode = repository.filterListState;
+    emit(const CharacterListEvent(CharacterListState.loading));
 
     repository.getCharactersWithFavouriteState(listFilterMode, shouldFetch).then((response) {
       if (repository.error != null) {
         emit(CharacterListEvent(CharacterListState.error, error: repository.error));
       } else {
-        if (response!.isNotEmpty) {
-          emit(CharacterListEvent(CharacterListState.success, characterList: response));
+        if (repository.characterListByMode.isNotEmpty) {
+          emit(const CharacterListEvent(CharacterListState.success));
         } else {
           emit(const CharacterListEvent(CharacterListState.empty));
         }
@@ -61,7 +63,7 @@ class RickMortyListVM extends Cubit<CharacterListEvent> {
     _getCharacters(false);
   }
 
-  void setFavouriteCharacterState(int characterId, bool state) => repository.putCharacterToStoreById(characterId, state);
+  void setFavouriteCharacterState(int characterId, bool state) => repository.putFavouriteCharacterStateById(characterId, state);
 
   void getFavouriteCharacterState(character) => repository.getFavouriteCharacterStateById(character.id);
 

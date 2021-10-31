@@ -3,13 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:prefs/prefs.dart';
 import 'package:provider/provider.dart';
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/rest_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/rest_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/router/router_v1.dart';
-import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_detail/vm/rick_morty_detail_vm.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/rick_morty_list.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
+import 'core/dataProvider/data_client.dart';
 import 'core/repository/store/store.dart';
 import 'dataSources/repositories/character_list_repository.dart';
 import 'dataSources/requests/character_list_request.dart';
@@ -25,18 +24,6 @@ void main() async {
 Future<void> initHiveForFlutter({String? subDir, Iterable<String> boxes = const [HiveStore.defaultBoxName]}) async {
   await Hive.initFlutter();
   await Hive.openBox(HiveStore.defaultBoxName);
-  // WidgetsFlutterBinding.ensureInitialized();
-  //
-  // var appDir = await getApplicationDocumentsDirectory();
-  // var path = appDir.path;
-  // if (subDir != null) {
-  //   path = join(path, subDir);
-  // }
-  //  Hive.init(path);
-  //
-  // for (var box in boxes){
-  //   await Hive.openBox(box);
-  // }
 }
 
 class MyApp extends StatelessWidget {
@@ -70,8 +57,8 @@ class MyApp extends StatelessWidget {
             // Notice that the counter didn't reset back to zero; the application
             // is not restarted.
             primarySwatch: Colors.blue,
-            backgroundColor: Color(0xFF736AB7),
-            textTheme: TextTheme(
+            backgroundColor: const Color(0xFF736AB7),
+            textTheme: const TextTheme(
                 bodyText1: TextStyle(color: Colors.white),
                 bodyText2: TextStyle(color: Colors.white),
                 caption: TextStyle(color: Colors.white),
