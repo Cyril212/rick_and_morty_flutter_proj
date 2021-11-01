@@ -15,8 +15,8 @@ class _FilterModeWidgetState extends State<FilterModeWidget> {
 
   @override
   void didUpdateWidget(covariant FilterModeWidget oldWidget) {
-    // TODO: implement didUpdateWidget
     super.didUpdateWidget(oldWidget);
+
     if(oldWidget.isChoosen != widget.isChoosen){
       widget.isChoosen = context.read<RickMortyListVM>().listFilterMode == ListFilterMode.favourite;
     }
@@ -25,7 +25,6 @@ class _FilterModeWidgetState extends State<FilterModeWidget> {
   @override
   void initState() {
     super.initState();
-
     widget.isChoosen = context.read<RickMortyListVM>().listFilterMode == ListFilterMode.favourite;
   }
 
