@@ -43,6 +43,7 @@ dependencies:
   path: ^1.8.0
   prefs: ^3.3.0
   enum_to_string: ^2.0.1
+  bloc_test: ^8.4.0
 
 dev_dependencies:
   flutter_test:

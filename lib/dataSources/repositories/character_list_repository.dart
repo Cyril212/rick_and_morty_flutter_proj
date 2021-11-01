@@ -77,7 +77,7 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
           ..addAll(mergedList);
         break;
       case ListFilterMode.favourite:
-        filteredListByMode = getFavouriteCharactersState();
+        filteredListByMode = getFavouriteCharacters();
         break;
     }
 
@@ -96,7 +96,7 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
   void putFavouriteCharacterStateById(int characterId, bool state, VoidCallback? actualizeList) {
     final Character? characterById = mergedList.firstWhereOrNull((character) => character.id == characterId);
 
-    List<Character> filteredList = List<Character>.from(getFavouriteCharactersState());
+    List<Character> filteredList = List<Character>.from(getFavouriteCharacters());
 
     final alreadyContainsFavourite = filteredList.firstWhereOrNull((character) => character.id == characterId) != null;
     if (alreadyContainsFavourite && state == false) {
@@ -116,7 +116,7 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
   }
 
   bool getFavouriteCharacterStateById(int characterId) {
-    Character? character = getFavouriteCharactersState().firstWhereOrNull((character) => character.id == characterId);
+    Character? character = getFavouriteCharacters().firstWhereOrNull((character) => character.id == characterId);
 
     if (character != null) {
       return character.isFavourite;
@@ -125,13 +125,13 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
     }
   }
 
-  List<Character> getFavouriteCharactersState() {
+  List<Character> getFavouriteCharacters() {
     String characterListAsString = client.getDataFromStore(favouriteListTag) ?? "";
 
     List<Map<String, dynamic>> characterStringList =
         characterListAsString.isNotEmpty ? (List<Map<String, dynamic>>.from(json.decode(characterListAsString))) : [];
 
-    return characterStringList.map((json) => Character.fromJson(json)).toList();
+    return characterStringList.map((json) => Character.fromJson(json)).where((character) => character.isFavourite == true).toList();
   }
 
 }

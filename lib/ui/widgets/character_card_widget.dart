@@ -33,36 +33,76 @@ class CharacterCardWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: horizontal ? MainAxisAlignment.start : MainAxisAlignment.center,
         children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: horizontal ? CrossAxisAlignment.start : CrossAxisAlignment.center,
-            children: <Widget>[
-              Container(height: 4.0),
-              Text(
-                "Name: ${character.name}",
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                softWrap: false,
-              ),
-              Container(height: 10.0),
-              Text("Gender: ${character.gender}"),
-              Container(height: 10.0),
-              Text("Birth: ${DateFormat.yMd().format(DateTime.parse(character.created))}"),
-              Container(height: 10.0),
-              if (!horizontal)
-                FavoriteWidget(
-                  key: UniqueKey(),
-                  isChosen: character.isFavourite,
-                  characterId: character.id,
-                )
-            ],
-          ),
-          if (horizontal) Spacer(),
+          // Column(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   crossAxisAlignment: horizontal ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+          //   children: <Widget>[
+          //     Container(height: 4.0),
+          //     Row(
+          //       children: [
+          //         Text(
+          //           "Name: ${character.name}",
+          //           overflow: TextOverflow.visible,
+          //           maxLines: 2,
+          //         ),
+          //       ],
+          //     ),
+          //     Container(height: 10.0),
+          //     Text("Gender: ${character.gender}"),
+          //     Container(height: 10.0),
+          //     Text("Birth: ${DateFormat.yMd().format(DateTime.parse(character.created))}"),
+          //     Container(height: 10.0),
+          //     if (!horizontal)
+          //       FavoriteWidget(
+          //         key: UniqueKey(),
+          //         isChosen: character.isFavourite,
+          //         characterId: character.id,
+          //       )
+          //   ],
+          // ),
+
+          Expanded(
+              flex: 10,
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: horizontal ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+                children: [
+                  Container(height: 4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: horizontal ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          "Name: ${character.name}",
+                          textAlign: horizontal ? TextAlign.start : TextAlign.center,
+                          overflow: TextOverflow.visible,
+                          maxLines: 2,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Container(height: 10.0),
+                  Text("Gender: ${character.gender}"),
+                  Container(height: 10.0),
+                  Text("Birth: ${DateFormat.yMd().format(DateTime.parse(character.created))}"),
+                  Container(height: 10.0),
+                  if (!horizontal)
+                    FavoriteWidget(
+                      key: UniqueKey(),
+                      isChosen: character.isFavourite,
+                      characterId: character.id,
+                    )
+                ],
+              )),
+          if (horizontal) const Spacer(),
           if (horizontal)
-            FavoriteWidget(
-              key: UniqueKey(),
-              isChosen: character.isFavourite,
-              characterId: character.id,
+            Expanded(
+              child: FavoriteWidget(
+                key: UniqueKey(),
+                isChosen: character.isFavourite,
+                characterId: character.id,
+              ),
             )
           // Icon(Icons.favorite,color: Colors.amber,)
         ],
@@ -122,8 +162,10 @@ class FavoriteWidget extends StatefulWidget {
 }
 
 class _FavoriteWidgetState extends State<FavoriteWidget> {
+
   void _setFavouriteState() {
     context.read<RickMortyListVM>().setFavouriteCharacterState(widget.characterId, widget.isChosen);
+
     context.read<RickMortyListVM>().updateCharacterList();
   }
 
