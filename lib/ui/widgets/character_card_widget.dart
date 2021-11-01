@@ -165,7 +165,6 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
 
   void _setFavouriteState() {
     context.read<RickMortyListVM>().setFavouriteCharacterState(widget.characterId, widget.isChosen);
-
     context.read<RickMortyListVM>().updateCharacterList();
   }
 

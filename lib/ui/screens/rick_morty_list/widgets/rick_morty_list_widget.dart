@@ -15,24 +15,19 @@ class RickMortyListWidget extends StatelessWidget {
       child: BlocConsumer<RickMortyListVM, CharacterListEvent>(listener: (context, characterListEvent) {
         final rickMortyVM = context.read<RickMortyListVM>();
 
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
         switch (characterListEvent.state) {
           case CharacterListState.idle:
             break;
           case CharacterListState.loading:
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("loading")));
             break;
           case CharacterListState.success:
             context.read<RickMortyListVM>().isFetching = false;
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
             break;
           case CharacterListState.empty:
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("empty")));
             break;
           case CharacterListState.error:
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("error")));
             rickMortyVM.isFetching = false;
             break;
         }
@@ -44,19 +39,23 @@ class RickMortyListWidget extends StatelessWidget {
         } else if (snapshot.state == CharacterListState.empty) {
           return const Center(child: Text("There's no character by your preference :("));
         } else if (snapshot.state == CharacterListState.error) {
-          return const Center(child: Text("Oops we got an error"));
+          return const Center(child: Text("Oops there's an error"));
         }
 
         return ListView.separated(
           controller: _scrollController
             ..addListener(() {
-              if (_scrollController.offset == _scrollController.position.maxScrollExtent &&
+              bool shouldFetch = _scrollController.offset == _scrollController.position.maxScrollExtent &&
                   !rickMortyVM.isFetching &&
-                  (rickMortyVM.repository.searchPhrase?.isEmpty ?? true) &&
-                  rickMortyVM.listFilterMode != ListFilterMode.favourite) {
+                  rickMortyVM.isSearchPhraseEmpty &&
+                  !rickMortyVM.isFavouriteState;
+
+              if (shouldFetch) {
                 context.read<RickMortyListVM>()
                   ..isFetching = true
                   ..fetchCharacterList();
+
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("loading")));
               }
             }),
           itemBuilder: (context, index) => CharacterCardWidget(character: rickMortyVM.characterList[index]),

@@ -29,6 +29,10 @@ class RickMortyListVM extends Cubit<CharacterListEvent> {
 
   List<Character> get characterList => repository.characterListByMode;
 
+  bool get isSearchPhraseEmpty => repository.searchPhrase?.isEmpty ?? true;
+
+  bool get isFavouriteState => listFilterMode == ListFilterMode.favourite;
+
   void _getCharacters([shouldFetch = true]) {
 
     emit(const CharacterListEvent(CharacterListState.loading));
