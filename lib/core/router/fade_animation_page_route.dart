@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class FadeAnimationPageRoute<T> extends MaterialPageRoute<T> {
+
   /// FadeAnimationPageRoute initialization
   FadeAnimationPageRoute({
     required WidgetBuilder builder,

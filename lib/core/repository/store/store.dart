@@ -1,4 +1,6 @@
 
+import 'dart:collection';
+
 import 'package:hive/hive.dart';
 import 'package:meta/meta.dart';
 
@@ -12,11 +14,6 @@ abstract class Store {
   /// Write [value] into this store under the key [dataId]
   void put(String dataId, dynamic value);
 
-  /// [put] all entries from [data] into the store
-  ///
-  /// Functionally equivalent to `data.map(put);`
-  void putAll(Map<String, dynamic> data);
-
   /// Delete the value of the [dataId] from the store, if preset
   void delete(String dataId);
 
@@ -28,6 +25,41 @@ abstract class Store {
   /// NOTE: some [Store]s might return mutable objects
   /// referenced by the store itself.
   Map<String, Map<String, dynamic>> toMap();
+}
+
+@immutable
+class InMemoryStore extends Store {
+  /// Normalized map that backs the store.
+  /// Defaults to an empty [HashMap]
+  @protected
+  @visibleForTesting
+  final Map<String, dynamic> data;
+
+  /// Creates an InMemoryStore inititalized with [data],
+  /// which defaults to an empty [HashMap]
+  InMemoryStore([
+    Map<String, dynamic>? data,
+  ]) : data = data ?? HashMap<String, dynamic>();
+
+  @override
+  Map<String, dynamic>? get(String dataId) => data[dataId];
+
+  @override
+  void put(String dataId, dynamic value) => data[dataId] = value;
+
+  @override
+  void putAll(Map<String, Map<String, dynamic>> entries) =>
+      data.addAll(entries);
+
+  @override
+  void delete(String dataId) => data.remove(dataId);
+
+  /// Return the  underlying [data] as an unmodifiable [Map].
+  @override
+  Map<String, Map<String, dynamic>> toMap() => Map.unmodifiable(data);
+
+  @override
+  void reset() => data.clear();
 }
 
 @immutable
@@ -74,11 +106,6 @@ class HiveStore extends Store {
   @override
   void put(String dataId, dynamic value) {
     box.put(dataId, value);
-  }
-
-  @override
-  void putAll(Map<String, dynamic> data) {
-    box.putAll(data);
   }
 
   @override

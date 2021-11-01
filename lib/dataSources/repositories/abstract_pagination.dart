@@ -7,18 +7,15 @@ import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_m
 abstract class AbstractPagination<T extends DataModel> {
 
   @protected
-  int pageNum;
-
-  @protected
-  List<T> mergedList;
+  List<T> allPagesList;
 
   @protected
   List<T> currentListByMode;
 
   String get favouriteListTag;
 
-  AbstractPagination({this.pageNum = 0})
-      : mergedList = [],
+  AbstractPagination()
+      : allPagesList = [],
         currentListByMode = [];
 
   @protected
@@ -28,5 +25,5 @@ abstract class AbstractPagination<T extends DataModel> {
   bool get hasNextPage;
 
   @protected
-  List<T>? filterListByFilterMode(ListFilterMode listFilterMode, bool shouldFetch);
+  void filterAllPagesListByFilterMode(ListFilterMode listFilterMode, bool shouldFetch);
 }

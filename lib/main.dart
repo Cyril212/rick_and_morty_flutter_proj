@@ -3,33 +3,37 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:prefs/prefs.dart';
 import 'package:provider/provider.dart';
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/rest_manager.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/rest_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/router/router_v1.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/rick_morty_list_screen.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
-import 'core/dataProvider/data_client.dart';
+import 'core/dataProvider/client/data_client.dart';
 import 'core/repository/store/store.dart';
 import 'dataSources/repositories/character_list_repository.dart';
 import 'dataSources/requests/character_list_request.dart';
 import 'dataSources/sources/character_list_source.dart';
 
+/// Endpoint
 void main() async {
   await initHiveForFlutter();
   await Prefs.init();
 
-  runApp(const MyApp());
+  runApp(const RickAndMortyApp());
 }
 
+
+/// Init Hive database to be able to interact with [boxes]
 Future<void> initHiveForFlutter({String? subDir, Iterable<String> boxes = const [HiveStore.defaultBoxName]}) async {
   await Hive.initFlutter();
   await Hive.openBox(HiveStore.defaultBoxName);
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+/// Init Hive database to be able to interact with [boxes]
+class RickAndMortyApp extends StatelessWidget {
+  const RickAndMortyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
+  /// This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiProvider(

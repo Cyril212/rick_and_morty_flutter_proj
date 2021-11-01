@@ -35,7 +35,7 @@ class RickMortyListWidget extends StatelessWidget {
         final rickMortyVM = context.read<RickMortyListVM>();
 
         if (snapshot.state == CharacterListState.idle || snapshot.state == CharacterListState.loading && (rickMortyVM.characterList.isEmpty)) {
-          return const SizedBox(width: 50, height: 50, child: CircularProgressIndicator());
+          return const Center(child: SizedBox(width: 50, height: 50, child: CircularProgressIndicator()));
         } else if (snapshot.state == CharacterListState.empty) {
           return const Center(child: Text("There's no character by your preference :("));
         } else if (snapshot.state == CharacterListState.error) {

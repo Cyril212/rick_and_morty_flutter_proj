@@ -1,6 +1,7 @@
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/data_model.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/response_data_model.dart';
 
-class Info extends DataModel {
+/// Info response model
+class Info extends ResponseDataModel {
   late final int count;
   late final int pages;
   String? next;
@@ -13,6 +14,7 @@ class Info extends DataModel {
     prev = json['prev'];
   }
 
+  @override
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['count'] = count;

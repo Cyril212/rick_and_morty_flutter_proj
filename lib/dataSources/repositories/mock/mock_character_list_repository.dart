@@ -1,50 +1,36 @@
 import 'package:collection/src/iterable_extensions.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/data_client.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/mock/mock_data_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/source_exception.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/abstract_repository.dart';
-import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/responses/character.dart';
-import 'package:rick_and_morty_flutter_proj/dataSources/sources/character_list_source.dart';
+import 'package:rick_and_morty_flutter_proj/dataSources/sources/mock/mock_character_list_source.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 import 'dart:convert';
 
-
-///CharacterListSource to communicate between CharacterListVM and DataSource
-class CharacterListRepository extends AbstractRepository<CharacterListSource> {
-
-  final DataClient client;
-  final CharacterListSource _source;
-
-  /// Search phrase for filtering [characterListByMode]
+class MockCharacterListRepository extends AbstractRepository<MockCharacterListSource> {
+  final MockDataClient client;
+  final MockCharacterListSource _source;
   String? searchPhrase;
 
-  /// Init
-  CharacterListRepository(this.client, this._source);
+  MockCharacterListRepository(this.client, this._source);
 
-  /// Gets current character list
   List<Character> get characterListByMode => currentListByMode;
 
-  /// Gets error to send error state in CharacterListVM
   SourceException? get error => _source.error;
 
-  /// List tag to put/get current favourite list to [HiveStore]
   @override
   String get favouriteListTag => "favouriteList";
 
-  /// Gets true if response contains link to next page otherwise returns null
   @override
   bool get hasNextPage => _source.response?.info.next != null;
 
-  /// Fetch next page
   @override
-  Future<CharacterListSource> fetchPage() => client.executeQuery(_source);
+  Future<MockCharacterListSource> fetchPage() => client.executeQuery(_source);
 
-  /// Init page
   @override
   void incrementPage() => _source.requestDataModel.pageNum++;
 
-  /// Returns merge of current response with favouriteCharacters from [HiveStore]
   List<Character> _mergeFavouritesCharacterFromStore() {
     List<Character> list = _source.response?.results ?? [];
     list.forEach((character) {
@@ -53,7 +39,6 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
     return list;
   }
 
-  /// Gets new page if [shouldFetch] is true, otherwise calls [filterAllPagesListByFilterMode()] to update [characterListByMode]
   Future<void> fetchCharacterList([ListFilterMode listFilterMode = ListFilterMode.none, bool shouldFetch = false]) async {
     if (shouldFetch) {
       return fetchPage().then((value) {
@@ -72,8 +57,6 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
     }
   }
 
-
-  ///Filters list by [listFilterMode], then in case [searchPhrase] != null filters list by searchPhrase
   @override
   void filterAllPagesListByFilterMode(ListFilterMode listFilterMode, bool shouldFetch) {
 
@@ -93,7 +76,7 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
         //set current state from filteredListByMode to mergedList
         _setCurrentFavouriteStateFromCurrentListMode();
 
-        //update current list mode
+        //update
         currentListByMode
           ..clear()
           ..addAll(allPagesList);
@@ -107,19 +90,6 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
     _tryToSearch();
   }
 
-  /// Merges [allPagesList] isFavourite state with [currentList]
-  void _setCurrentFavouriteStateFromCurrentListMode() {
-    allPagesList.forEach((mergedCharacter) {
-      currentListByMode.forEach((character) {
-        if(mergedCharacter.id == character.id) {
-          mergedCharacter.isFavourite = character.isFavourite;
-        }
-      });
-    });
-  }
-
-
-  ///Filters [currentListByMode] by searchPhrase
   void _tryToSearch(){
     if(searchPhrase != null && searchPhrase!.isNotEmpty) {
       final tmp = [...currentListByMode];
@@ -132,26 +102,36 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
     }
   }
 
+  @visibleForTesting
+  void setPhraseAndTryToSearch(String phrase){
+    searchPhrase = phrase;
+    _tryToSearch();
+  }
 
-  /// Puts favourite character to storage
-  void putFavouriteCharacterStateById(int characterId, bool state) {
+  void _setCurrentFavouriteStateFromCurrentListMode() {
+    allPagesList.forEach((mergedCharacter) {
+      currentListByMode.forEach((character) {
+        if(mergedCharacter.id == character.id) {
+          mergedCharacter.isFavourite = character.isFavourite;
+        }
+      });
+    });
+  }
 
-    //Get character
+  void putFavouriteCharacterStateById(int characterId, bool state, VoidCallback? actualizeList) {
     final Character? characterById = allPagesList.firstWhereOrNull((character) => character.id == characterId);
 
-    //Get current list of favorite characters
     List<Character> filteredList = List<Character>.from(_getFavouriteCharacters());
 
-    //Find out if it already contains this char
     final alreadyContainsFavourite = filteredList.firstWhereOrNull((character) => character.id == characterId) != null;
-
-    // if contains character and isFavourite(state) false remove item from list
     if (alreadyContainsFavourite && state == false) {
       filteredList.removeWhere((character) => character.id == characterId);
 
-    } else if (alreadyContainsFavourite) { //if contains character and state is true
+      if (actualizeList != null) {
+        actualizeList();
+      }
+    } else if (alreadyContainsFavourite) {
       filteredList.firstWhere((character) => character.id == characterId).isFavourite = state;
-
     } else {
       characterById?.isFavourite = state;
       filteredList.add(characterById!);
@@ -160,7 +140,6 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
     client.putDataToStore(favouriteListTag, json.encode(filteredList));
   }
 
-  /// Gets favourite state by [characterId]
   bool getFavouriteCharacterStateById(int characterId) {
     Character? character = _getFavouriteCharacters().firstWhereOrNull((character) => character.id == characterId);
 
@@ -171,7 +150,6 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
     }
   }
 
-  ///Gets favourite characters
   List<Character> _getFavouriteCharacters() {
     String characterListAsString = client.getDataFromStore(favouriteListTag) ?? "";
 

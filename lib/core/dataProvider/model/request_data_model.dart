@@ -1,4 +1,3 @@
-
 abstract class RequestDataModel {
   final String method;
   final Map<String, String>? headers;

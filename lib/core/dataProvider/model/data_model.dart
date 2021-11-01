@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+
+/// Abstract class for Response models
 abstract class DataModel {
   @protected
   Map<String, dynamic> json;

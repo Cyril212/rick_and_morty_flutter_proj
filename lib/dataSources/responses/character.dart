@@ -1,8 +1,10 @@
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/data_model.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/response_data_model.dart';
 
 import 'character_list_response.dart';
 
-class Character extends DataModel{
+///Character data model
+class Character extends ResponseDataModel{
   late final int id;
   late final String name;
   late final String status;
