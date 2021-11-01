@@ -12,6 +12,9 @@ abstract class AbstractPagination<T extends DataModel> {
   @protected
   List<T> currentListByMode;
 
+  @protected
+  bool get hasNextPage;
+
   String get favouriteListTag;
 
   AbstractPagination()
@@ -20,9 +23,6 @@ abstract class AbstractPagination<T extends DataModel> {
 
   @protected
   void incrementPage();
-
-  @protected
-  bool get hasNextPage;
 
   @protected
   void filterAllPagesListByFilterMode(ListFilterMode listFilterMode, bool shouldFetch);

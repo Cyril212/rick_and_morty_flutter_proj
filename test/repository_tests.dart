@@ -5,8 +5,6 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'dart:convert';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/mock/mock_data_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/mock/mock_manager.dart';
@@ -32,12 +30,12 @@ void main() {
     final repository = MockCharacterListRepository(client, source);
 
     test('isFetchPage successful', () async {
-      MockCharacterListSource source = await repository.fetchPage();
+      MockCharacterListSource source = await repository.fetchResult();
       expect(source.response != null && source.response!.results.isNotEmpty, true);
     });
 
     test('Does fetchPage has no error', () async {
-      MockCharacterListSource source = await repository.fetchPage();
+      MockCharacterListSource source = await repository.fetchResult();
       expect(source.error == null, true);
     });
 

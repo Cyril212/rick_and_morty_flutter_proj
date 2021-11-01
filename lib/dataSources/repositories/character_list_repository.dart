@@ -38,7 +38,7 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
 
   /// Fetch next page
   @override
-  Future<CharacterListSource> fetchPage() => client.executeQuery(_source);
+  Future<CharacterListSource> fetchResult() => client.executeQuery(_source);
 
   /// Init page
   @override
@@ -56,7 +56,7 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
   /// Gets new page if [shouldFetch] is true, otherwise calls [filterAllPagesListByFilterMode()] to update [characterListByMode]
   Future<void> fetchCharacterList([ListFilterMode listFilterMode = ListFilterMode.none, bool shouldFetch = false]) async {
     if (shouldFetch) {
-      return fetchPage().then((value) {
+      return fetchResult().then((value) {
         if (_source.response != null) {
           filterAllPagesListByFilterMode(listFilterMode, shouldFetch);
 

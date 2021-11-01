@@ -1,0 +1,444 @@
+@startuml
+set namespaceSeparator ::
+
+class "rick_and_morty_flutter_proj::dataSources::responses::info.dart::Info" {
+  +int count
+  +int pages
+  +String? next
+  +String? prev
+  +Map<String, dynamic> toJson()
+}
+
+class "rick_and_morty_flutter_proj::dataSources::responses::character_list_response.dart::CharacterListResponse" {
+  +Info info
+  +List<Character> results
+  +Map<String, dynamic> toJson()
+}
+
+"rick_and_morty_flutter_proj::dataSources::responses::character_list_response.dart::CharacterListResponse" o-- "rick_and_morty_flutter_proj::dataSources::responses::info.dart::Info"
+
+class "rick_and_morty_flutter_proj::dataSources::responses::character_list_response.dart::Origin" {
+  +String name
+  +String url
+  +Map<String, dynamic> toJson()
+}
+
+class "rick_and_morty_flutter_proj::dataSources::responses::character.dart::Character" {
+  +int id
+  +String name
+  +String status
+  +String species
+  +String type
+  +String gender
+  +Origin origin
+  +Origin location
+  +String image
+  +List<String> episode
+  +String url
+  +String created
+  +bool isFavourite
+  +Map<String, dynamic> toJson()
+}
+
+"rick_and_morty_flutter_proj::dataSources::responses::character.dart::Character" o-- "rick_and_morty_flutter_proj::dataSources::responses::character_list_response.dart::Origin"
+
+abstract class "rick_and_morty_flutter_proj::dataSources::repositories::abstract_pagination.dart::AbstractPagination" {
+  #List<T> allPagesList
+  #List<T> currentListByMode
+  +String favouriteListTag
+  +bool hasNextPage
+  #void incrementPage()
+  #void filterAllPagesListByFilterMode()
+}
+
+class "rick_and_morty_flutter_proj::dataSources::repositories::character_list_repository.dart::CharacterListRepository" {
+  +DataClient client
+  -CharacterListSource _source
+  +String? searchPhrase
+  +List<Character> characterListByMode
+  +SourceException? error
+  +String favouriteListTag
+  +bool hasNextPage
+  +Future<CharacterListSource> fetchPage()
+  +void incrementPage()
+  -List<Character> _mergeFavouritesCharacterFromStore()
+  +Future<void> fetchCharacterList()
+  +void filterAllPagesListByFilterMode()
+  -void _setCurrentFavouriteStateFromCurrentListMode()
+  -void _tryToSearch()
+  +void putFavouriteCharacterStateById()
+  +bool getFavouriteCharacterStateById()
+  -List<Character> _getFavouriteCharacters()
+}
+
+"rick_and_morty_flutter_proj::dataSources::repositories::character_list_repository.dart::CharacterListRepository" o-- "rick_and_morty_flutter_proj::core::dataProvider::client::data_client.dart::DataClient"
+"rick_and_morty_flutter_proj::dataSources::repositories::character_list_repository.dart::CharacterListRepository" o-- "rick_and_morty_flutter_proj::dataSources::sources::character_list_source.dart::CharacterListSource"
+"rick_and_morty_flutter_proj::dataSources::repositories::character_list_repository.dart::CharacterListRepository" o-- "rick_and_morty_flutter_proj::core::dataProvider::source_exception.dart::SourceException"
+
+class "rick_and_morty_flutter_proj::dataSources::repositories::mock::mock_character_list_repository.dart::MockCharacterListRepository" {
+  +MockDataClient client
+  -MockCharacterListSource _source
+  +String? searchPhrase
+  +List<Character> characterListByMode
+  +SourceException? error
+  +String favouriteListTag
+  +bool hasNextPage
+  +Future<MockCharacterListSource> fetchPage()
+  +void incrementPage()
+  -List<Character> _mergeFavouritesCharacterFromStore()
+  +Future<void> fetchCharacterList()
+  +void filterAllPagesListByFilterMode()
+  -void _tryToSearch()
+  +void setPhraseAndTryToSearch()
+  -void _setCurrentFavouriteStateFromCurrentListMode()
+  +void putFavouriteCharacterStateById()
+  +bool getFavouriteCharacterStateById()
+  -List<Character> _getFavouriteCharacters()
+}
+
+"rick_and_morty_flutter_proj::dataSources::repositories::mock::mock_character_list_repository.dart::MockCharacterListRepository" o-- "rick_and_morty_flutter_proj::core::dataProvider::mock::mock_data_client.dart::MockDataClient"
+"rick_and_morty_flutter_proj::dataSources::repositories::mock::mock_character_list_repository.dart::MockCharacterListRepository" o-- "rick_and_morty_flutter_proj::dataSources::sources::mock::mock_character_list_source.dart::MockCharacterListSource"
+"rick_and_morty_flutter_proj::dataSources::repositories::mock::mock_character_list_repository.dart::MockCharacterListRepository" o-- "rick_and_morty_flutter_proj::core::dataProvider::source_exception.dart::SourceException"
+
+class "rick_and_morty_flutter_proj::dataSources::requests::character_list_request.dart::CharacterListRequest" {
+  +int pageNum
+  +Map<String, dynamic> toJson()
+}
+
+class "rick_and_morty_flutter_proj::dataSources::sources::mock::mock_character_list_source.dart::MockCharacterListSource" {
+}
+
+class "rick_and_morty_flutter_proj::dataSources::sources::character_list_source.dart::CharacterListSource" {
+}
+
+class "rick_and_morty_flutter_proj::ui::screens::rick_morty_detail::rick_morty_detail_screen.dart::RickMortyDetailScreen" {
+  {static} +String route
+  +Character character
+  +Widget build()
+  -Container _getBackground()
+  -Container _getGradient()
+  -Container _getContent()
+  -Container _getToolbar()
+}
+
+"rick_and_morty_flutter_proj::ui::screens::rick_morty_detail::rick_morty_detail_screen.dart::RickMortyDetailScreen" o-- "rick_and_morty_flutter_proj::dataSources::responses::character.dart::Character"
+
+class "rick_and_morty_flutter_proj::ui::screens::rick_morty_detail::vm::rick_morty_detail_vm.dart::RickMortyDetailVM" {
+  +Character? getCharacterById()
+}
+
+class "rick_and_morty_flutter_proj::ui::screens::rick_morty_list::rick_morty_list_screen.dart::RickMortyListScreen" {
+  {static} +String route
+  +_RickMortyListScreenState createState()
+}
+
+class "rick_and_morty_flutter_proj::ui::screens::rick_morty_list::rick_morty_list_screen.dart::_RickMortyListScreenState" {
+  +AbstractScreenStateOptions options
+  +dynamic firstBuildOnly()
+  +Widget buildContent()
+  +PreferredSizeWidget? createAppBar()
+}
+
+"rick_and_morty_flutter_proj::ui::screens::rick_morty_list::rick_morty_list_screen.dart::_RickMortyListScreenState" o-- "rick_and_morty_flutter_proj::core::ui::screen::abstract_screen.dart::AbstractScreenStateOptions"
+
+class "rick_and_morty_flutter_proj::ui::screens::rick_morty_list::vm::rick_morty_list_vm.dart::CharacterListState" {
+  +int index
+  {static} +List<CharacterListState> values
+  {static} +CharacterListState idle
+  {static} +CharacterListState loading
+  {static} +CharacterListState success
+  {static} +CharacterListState empty
+  {static} +CharacterListState error
+}
+
+"rick_and_morty_flutter_proj::ui::screens::rick_morty_list::vm::rick_morty_list_vm.dart::CharacterListState" o-- "rick_and_morty_flutter_proj::ui::screens::rick_morty_list::vm::rick_morty_list_vm.dart::CharacterListState"
+
+class "rick_and_morty_flutter_proj::ui::screens::rick_morty_list::vm::rick_morty_list_vm.dart::ListFilterMode" {
+  +int index
+  {static} +List<ListFilterMode> values
+  {static} +ListFilterMode none
+  {static} +ListFilterMode favourite
+}
+
+"rick_and_morty_flutter_proj::ui::screens::rick_morty_list::vm::rick_morty_list_vm.dart::ListFilterMode" o-- "rick_and_morty_flutter_proj::ui::screens::rick_morty_list::vm::rick_morty_list_vm.dart::ListFilterMode"
+
+class "rick_and_morty_flutter_proj::ui::screens::rick_morty_list::vm::rick_morty_list_vm.dart::CharacterListEvent" {
+  +CharacterListState state
+  +SourceException? error
+}
+
+"rick_and_morty_flutter_proj::ui::screens::rick_morty_list::vm::rick_morty_list_vm.dart::CharacterListEvent" o-- "rick_and_morty_flutter_proj::ui::screens::rick_morty_list::vm::rick_morty_list_vm.dart::CharacterListState"
+"rick_and_morty_flutter_proj::ui::screens::rick_morty_list::vm::rick_morty_list_vm.dart::CharacterListEvent" o-- "rick_and_morty_flutter_proj::core::dataProvider::source_exception.dart::SourceException"
+
+class "rick_and_morty_flutter_proj::ui::screens::rick_morty_list::vm::rick_morty_list_vm.dart::RickMortyListVM" {
+  -CharacterListRepository _repository
+  +ListFilterMode listFilterMode
+  +int? currentCharacterId
+  +bool isFetching
+  +List<Character> characterList
+  +bool isSearchPhraseEmpty
+  +bool isFavouriteState
+  -void _getCharacters()
+  +void fetchCharacterList()
+  +void updateCharacterList()
+  +void setSearchPhraseIfAvailable()
+  +void updateCharacterListBySearchPhrase()
+  +void setFilterMode()
+  +void setFavouriteCharacterState()
+  +bool getFavouriteCharacterState()
+  +void moveToDetailScreen()
+}
+
+"rick_and_morty_flutter_proj::ui::screens::rick_morty_list::vm::rick_morty_list_vm.dart::RickMortyListVM" o-- "rick_and_morty_flutter_proj::dataSources::repositories::character_list_repository.dart::CharacterListRepository"
+"rick_and_morty_flutter_proj::ui::screens::rick_morty_list::vm::rick_morty_list_vm.dart::RickMortyListVM" o-- "rick_and_morty_flutter_proj::ui::screens::rick_morty_list::vm::rick_morty_list_vm.dart::ListFilterMode"
+
+class "rick_and_morty_flutter_proj::ui::screens::rick_morty_list::widgets::rick_morty_list_widget.dart::RickMortyListWidget" {
+  -ScrollController _scrollController
+  +Widget build()
+}
+
+"rick_and_morty_flutter_proj::ui::screens::rick_morty_list::widgets::rick_morty_list_widget.dart::RickMortyListWidget" o-- "flutter::src::widgets::scroll_controller.dart::ScrollController"
+
+class "rick_and_morty_flutter_proj::ui::screens::rick_morty_list::widgets::favourite_mode_widget.dart::FilterModeWidget" {
+  +bool isChoosen
+  +_FilterModeWidgetState createState()
+}
+
+class "rick_and_morty_flutter_proj::ui::screens::rick_morty_list::widgets::favourite_mode_widget.dart::_FilterModeWidgetState" {
+  +void didUpdateWidget()
+  +void initState()
+  +Widget build()
+}
+
+class "rick_and_morty_flutter_proj::ui::widgets::character_card_widget.dart::CharacterCardWidget" {
+  +Character character
+  +bool horizontal
+  +Widget build()
+}
+
+"rick_and_morty_flutter_proj::ui::widgets::character_card_widget.dart::CharacterCardWidget" o-- "rick_and_morty_flutter_proj::dataSources::responses::character.dart::Character"
+
+class "rick_and_morty_flutter_proj::ui::widgets::character_card_widget.dart::FavoriteWidget" {
+  +int characterId
+  +bool isChosen
+  +bool shouldRefreshList
+  +_FavoriteWidgetState createState()
+}
+
+class "rick_and_morty_flutter_proj::ui::widgets::character_card_widget.dart::_FavoriteWidgetState" {
+  -void _setFavouriteState()
+  -void _updateWidgetState()
+  +Widget build()
+}
+
+class "rick_and_morty_flutter_proj::ui::widgets::primary_app_bar.dart::PrimaryAppbar" {
+  +String title
+  +Size preferredSize
+  +Widget build()
+}
+
+"rick_and_morty_flutter_proj::ui::widgets::primary_app_bar.dart::PrimaryAppbar" o-- "dart::ui::Size"
+"flutter::src::widgets::preferred_size.dart::PreferredSizeWidget" <|-- "rick_and_morty_flutter_proj::ui::widgets::primary_app_bar.dart::PrimaryAppbar"
+
+class "rick_and_morty_flutter_proj::core::ui::screen::abstract_stateful_screen.dart::WidgetState" {
+  +int index
+  {static} +List<WidgetState> values
+  {static} +WidgetState notInitialized
+  {static} +WidgetState initialized
+  {static} +WidgetState disposed
+}
+
+"rick_and_morty_flutter_proj::core::ui::screen::abstract_stateful_screen.dart::WidgetState" o-- "rick_and_morty_flutter_proj::core::ui::screen::abstract_stateful_screen.dart::WidgetState"
+
+abstract class "rick_and_morty_flutter_proj::core::ui::screen::abstract_stateful_screen.dart::AbstractStatefulWidget" {
+}
+
+abstract class "rick_and_morty_flutter_proj::core::ui::screen::abstract_stateful_screen.dart::AbstractStatefulWidgetState" {
+  -WidgetState _widgetState
+  +WidgetState widgetState
+  +void dispose()
+  +Widget build()
+  #dynamic firstBuildOnly()
+  #Widget buildContent()
+  #void setStateNotDisposed()
+  #void invalidate()
+}
+
+"rick_and_morty_flutter_proj::core::ui::screen::abstract_stateful_screen.dart::AbstractStatefulWidgetState" o-- "rick_and_morty_flutter_proj::core::ui::screen::abstract_stateful_screen.dart::WidgetState"
+
+class "rick_and_morty_flutter_proj::core::ui::screen::abstract_screen.dart::AbstractScreenStateOptions" {
+  +String screenName
+  +String title
+  +bool safeArea
+  +void Function(BuildContext)? optionsBuildPreProcessor
+  +List<AppBarOption>? appBarOptions
+}
+
+"rick_and_morty_flutter_proj::core::ui::screen::abstract_screen.dart::AbstractScreenStateOptions" o-- "null::void Function(BuildContext)"
+
+abstract class "rick_and_morty_flutter_proj::core::ui::screen::abstract_screen.dart::AbstractScreen" {
+}
+
+abstract class "rick_and_morty_flutter_proj::core::ui::screen::abstract_screen.dart::AbstractScreenState" {
+  #AbstractScreenStateOptions? options
+  +void dispose()
+  +dynamic firstBuildOnly()
+  +Widget build()
+  #PreferredSizeWidget? createAppBar()
+  #Widget? createFloatingActionButton()
+  #FloatingActionButtonAnimator? setFloatingActionButtonAnimator()
+  #FloatingActionButtonLocation? setFloatingActionButtonLocation()
+  +void didPush()
+  +void didPopNext()
+  #void onStartResume()
+  #void onResume()
+}
+
+"rick_and_morty_flutter_proj::core::ui::screen::abstract_screen.dart::AbstractScreenState" o-- "rick_and_morty_flutter_proj::core::ui::screen::abstract_screen.dart::AbstractScreenStateOptions"
+"flutter::src::widgets::routes.dart::RouteAware" <|-- "rick_and_morty_flutter_proj::core::ui::screen::abstract_screen.dart::AbstractScreenState"
+
+class "rick_and_morty_flutter_proj::core::ui::screen::abstract_screen.dart::AppBarOption" {
+  +dynamic Function(BuildContext) onTap
+  +Widget? icon
+  +Widget? complexIcon
+}
+
+"rick_and_morty_flutter_proj::core::ui::screen::abstract_screen.dart::AppBarOption" o-- "null::dynamic Function(BuildContext)"
+"rick_and_morty_flutter_proj::core::ui::screen::abstract_screen.dart::AppBarOption" o-- "flutter::src::widgets::framework.dart::Widget"
+
+abstract class "rick_and_morty_flutter_proj::core::repository::abstract_repository.dart::AbstractRepository" {
+  +Future<T> fetchPage()
+}
+
+abstract class "rick_and_morty_flutter_proj::core::repository::store::store.dart::Store" {
+  +dynamic get()
+  +void put()
+  +void delete()
+  +void reset()
+  +Map<String, Map<String, dynamic>> toMap()
+}
+
+class "rick_and_morty_flutter_proj::core::repository::store::store.dart::InMemoryStore" {
+  #Map<String, dynamic> data
+  +Map<String, dynamic>? get()
+  +void put()
+  +void putAll()
+  +void delete()
+  +Map<String, Map<String, dynamic>> toMap()
+  +void reset()
+}
+
+class "rick_and_morty_flutter_proj::core::repository::store::store.dart::HiveStore" {
+  {static} +String defaultBoxName
+  {static} +Future<Box<E>> Function<E>(String, {Uint8List? bytes, bool Function(int, int) compactionStrategy, bool crashRecovery, HiveCipher? encryptionCipher, List<int>? encryptionKey, int Function(dynamic, dynamic) keyComparator, String? path}) openBox
+  +Box<dynamic> box
+  {static} +Future<HiveStore> open()
+  +dynamic get()
+  +void put()
+  +void delete()
+  +Map<String, Map<String, dynamic>> toMap()
+  +Future<void> reset()
+}
+
+"rick_and_morty_flutter_proj::core::repository::store::store.dart::HiveStore" o-- "null::Future<Box<E>> Function<E>(String, {Uint8List bytes, bool Function(int, int) compactionStrategy, bool crashRecovery, HiveCipher encryptionCipher, List<int> encryptionKey, int Function(dynamic, dynamic) keyComparator, String path})"
+"rick_and_morty_flutter_proj::core::repository::store::store.dart::HiveStore" o-- "hive::hive.dart::Box<dynamic>"
+
+class "rick_and_morty_flutter_proj::core::dataProvider::mock::mock_client.dart::DataClient" {
+  +Future<T> executeQuery()
+  +void putDataToStore()
+  +dynamic getDataFromStore()
+}
+
+class "rick_and_morty_flutter_proj::core::dataProvider::mock::mock_manager.dart::MockManager" {
+  +Future<T> processData()
+  +Future<Response> query()
+}
+
+class "rick_and_morty_flutter_proj::core::dataProvider::mock::mock_data_client.dart::MockDataClient" {
+  +Future<T> executeQuery()
+  +void putDataToStore()
+  +dynamic getDataFromStore()
+}
+
+class "rick_and_morty_flutter_proj::core::dataProvider::data_source.dart::DataSource" {
+  +String queryId
+  +T requestDataModel
+  +R Function(Map<String, dynamic>) processResponse
+  +R? response
+  +SourceException? error
+}
+
+"rick_and_morty_flutter_proj::core::dataProvider::data_source.dart::DataSource" o-- "null::R Function(Map<String, dynamic>)"
+"rick_and_morty_flutter_proj::core::dataProvider::data_source.dart::DataSource" o-- "rick_and_morty_flutter_proj::core::dataProvider::source_exception.dart::SourceException"
+
+class "rick_and_morty_flutter_proj::core::dataProvider::source_exception.dart::SourceException" {
+  +Object? originalException
+  +int? httpStatusCode
+}
+
+abstract class "rick_and_morty_flutter_proj::core::dataProvider::manager::abstract_manager.dart::AbstractManager" {
+  +String baseUrl
+  +int idCounter
+  #Future<Response> query()
+  +Future<T> processData()
+  +int generateDataSourceId()
+}
+
+class "rick_and_morty_flutter_proj::core::dataProvider::manager::rest_manager.dart::RestManager" {
+  +Future<T> processData()
+  +Future<Response> query()
+}
+
+abstract class "rick_and_morty_flutter_proj::core::dataProvider::model::response_data_model.dart::ResponseDataModel" {
+  +Map<String, dynamic> toJson()
+}
+
+abstract class "rick_and_morty_flutter_proj::core::dataProvider::model::request_data_model.dart::RequestDataModel" {
+  +String method
+  +Map<String, String>? headers
+  +Map<String, dynamic> toJson()
+}
+
+abstract class "rick_and_morty_flutter_proj::core::dataProvider::model::data_model.dart::DataModel" {
+  #Map<String, dynamic> json
+  +Map<String, dynamic> toJson()
+}
+
+abstract class "rick_and_morty_flutter_proj::core::dataProvider::client::abstract_data_client.dart::AbstractDataClient" {
+  +Store? store
+  +T manager
+  +Future<R> executeQuery()
+  +void putDataToStore()
+  +dynamic getDataFromStore()
+}
+
+"rick_and_morty_flutter_proj::core::dataProvider::client::abstract_data_client.dart::AbstractDataClient" o-- "rick_and_morty_flutter_proj::core::repository::store::store.dart::Store"
+
+class "rick_and_morty_flutter_proj::core::dataProvider::client::data_client.dart::DataClient" {
+  +Future<T> executeQuery()
+  +void putDataToStore()
+  +dynamic getDataFromStore()
+}
+
+class "rick_and_morty_flutter_proj::core::router::no_animation_page_route.dart::NoAnimationPageRoute" {
+  +Duration transitionDuration
+  +Widget buildTransitions()
+}
+
+class "rick_and_morty_flutter_proj::core::router::fade_animation_page_route.dart::FadeAnimationPageRoute" {
+  +Widget buildTransitions()
+}
+
+class "rick_and_morty_flutter_proj::core::router::router_v1.dart::RoutingArguments" {
+  +String? route
+  -Map<String, String>? _query
+  {static} +RoutingArguments? of()
+  +String? []()
+}
+
+class "rick_and_morty_flutter_proj::main.dart::RickAndMortyApp" {
+  +Widget build()
+}
+
+
+@enduml

@@ -7,5 +7,5 @@ abstract class AbstractRepository<T extends DataSource> extends AbstractPaginati
 
   AbstractRepository();
 
-  Future<T> fetchPage();
+  Future<T> fetchResult();
 }

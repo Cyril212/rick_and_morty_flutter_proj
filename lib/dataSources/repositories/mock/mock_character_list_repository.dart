@@ -26,7 +26,7 @@ class MockCharacterListRepository extends AbstractRepository<MockCharacterListSo
   bool get hasNextPage => _source.response?.info.next != null;
 
   @override
-  Future<MockCharacterListSource> fetchPage() => client.executeQuery(_source);
+  Future<MockCharacterListSource> fetchResult() => client.executeQuery(_source);
 
   @override
   void incrementPage() => _source.requestDataModel.pageNum++;
@@ -41,7 +41,7 @@ class MockCharacterListRepository extends AbstractRepository<MockCharacterListSo
 
   Future<void> fetchCharacterList([ListFilterMode listFilterMode = ListFilterMode.none, bool shouldFetch = false]) async {
     if (shouldFetch) {
-      return fetchPage().then((value) {
+      return fetchResult().then((value) {
         if (_source.response != null) {
           filterAllPagesListByFilterMode(listFilterMode, shouldFetch);
 
