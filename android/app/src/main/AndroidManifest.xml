@@ -2,6 +2,7 @@
     package="com.example.rick_and_morty_flutter_proj">
    <application
         android:label="rick_and_morty_flutter_proj"
+        android:roundIcon="@mipmap/ic_launcher"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
