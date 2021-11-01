@@ -1,16 +1,28 @@
-# rick_and_morty_flutter_proj
+# Rick And Morty Test Project
 
-A new Flutter project.
+Rick And Morty TP is a Flutter application made in order to demonstrate basic View-ViewModel-Repository architecture by using Provider and Cubit.
 
-## Getting Started
+## Architecture
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
+## Installation
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+Clone the project and you're ready to go :)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Features
+- Pagination
+- List sorting
+- Search
+- Communication through REST with Hive DB caching.
+- Unit tests
+
+## Additional Info
+Visual elements that were reused and slightly modified are from [link](https://github.com/sergiandreplace/flutter_planets_tutorial).
+
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
+
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
