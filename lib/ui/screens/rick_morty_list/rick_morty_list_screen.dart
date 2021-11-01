@@ -19,6 +19,7 @@ class _RickMortyListScreenState extends AbstractScreenState<RickMortyListScreen>
   @override
   firstBuildOnly(BuildContext context) {
     context.read<RickMortyListVM>().fetchCharacterList();
+
     return super.firstBuildOnly(context);
   }
 

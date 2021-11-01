@@ -37,7 +37,7 @@ class RickMortyListVM extends Cubit<CharacterListEvent> {
 
     emit(const CharacterListEvent(CharacterListState.loading));
 
-    repository.fetchCharacterList(listFilterMode, shouldFetch).then((response) {
+    repository.fetchCharacterList(listFilterMode, shouldFetch).then((_) {
       if (repository.error != null) {
         emit(CharacterListEvent(CharacterListState.error, error: repository.error));
       } else {

@@ -83,7 +83,7 @@ class CharacterCardWidget extends StatelessWidget {
 
     final planetCard = Container(
       child: planetCardContent,
-      height: horizontal ? 124.0 : 164.0,
+      height: horizontal ? 134.0 : 170.0,
       margin: horizontal ? const EdgeInsets.only(left: 46.0) : const EdgeInsets.only(top: 72.0),
       decoration: BoxDecoration(
         color: Color(0xFF333366),

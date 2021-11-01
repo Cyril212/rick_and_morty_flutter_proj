@@ -13,13 +13,13 @@ abstract class AbstractPagination<T extends DataModel> {
   List<T> mergedList;
 
   @protected
-  List<T> filteredListByMode;
+  List<T> currentListByMode;
 
   String get favouriteListTag;
 
   AbstractPagination({this.pageNum = 0})
       : mergedList = [],
-        filteredListByMode = [];
+        currentListByMode = [];
 
   @protected
   void incrementPage();

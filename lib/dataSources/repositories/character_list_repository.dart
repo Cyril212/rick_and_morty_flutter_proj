@@ -1,6 +1,4 @@
-import 'package:enum_to_string/enum_to_string.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:prefs/prefs.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/data_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/rest_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/abstract_repository.dart';
@@ -17,7 +15,7 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
 
   CharacterListRepository(this.client, this._source);
 
-  List<Character> get characterListByMode => filteredListByMode;
+  List<Character> get characterListByMode => currentListByMode;
 
   SourceException? get error => _source.error;
 
@@ -61,42 +59,63 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
 
   @override
   List<Character>? filterListByFilterMode(ListFilterMode listFilterMode, bool shouldFetch) {
+
+    //merge new response with characters from store
     List<Character> mergeFavouritesCharacterFromStore = _mergeFavouritesCharacterFromStore();
 
     switch (listFilterMode) {
       case ListFilterMode.none:
-        if (shouldFetch) {
+        if (shouldFetch) {//if it's from getCharacters(true) update mergedList
           if (mergedList.isNotEmpty) {
             mergedList.addAll(mergeFavouritesCharacterFromStore);
           } else {
             mergedList = mergeFavouritesCharacterFromStore;
           }
         }
-        filteredListByMode
+
+        //set current state from filteredListByMode to mergedList
+        _setCurrentFavouriteStateFromCurrentListMode();
+
+        //update
+        currentListByMode
           ..clear()
           ..addAll(mergedList);
         break;
       case ListFilterMode.favourite:
-        filteredListByMode = getFavouriteCharacters();
+        currentListByMode = _getFavouriteCharacters();
         break;
     }
 
+    //search if searchPhrase is present
+    _tryToSearch();
+  }
+
+  void _tryToSearch(){
     if(searchPhrase != null && searchPhrase!.isNotEmpty) {
-      final tmp = [...filteredListByMode];
-      filteredListByMode.clear();
+      final tmp = [...currentListByMode];
+      currentListByMode.clear();
       tmp.forEach((character) {
         if(character.name.contains(searchPhrase!)) {
-          filteredListByMode.add(character);
+          currentListByMode.add(character);
         }
       });
     }
+  }
 
+  void _setCurrentFavouriteStateFromCurrentListMode() {
+    mergedList.forEach((mergedCharacter) {
+      currentListByMode.forEach((character) {
+        if(mergedCharacter.id == character.id) {
+          mergedCharacter.isFavourite = character.isFavourite;
+        }
+      });
+    });
   }
 
   void putFavouriteCharacterStateById(int characterId, bool state, VoidCallback? actualizeList) {
     final Character? characterById = mergedList.firstWhereOrNull((character) => character.id == characterId);
 
-    List<Character> filteredList = List<Character>.from(getFavouriteCharacters());
+    List<Character> filteredList = List<Character>.from(_getFavouriteCharacters());
 
     final alreadyContainsFavourite = filteredList.firstWhereOrNull((character) => character.id == characterId) != null;
     if (alreadyContainsFavourite && state == false) {
@@ -116,7 +135,7 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
   }
 
   bool getFavouriteCharacterStateById(int characterId) {
-    Character? character = getFavouriteCharacters().firstWhereOrNull((character) => character.id == characterId);
+    Character? character = _getFavouriteCharacters().firstWhereOrNull((character) => character.id == characterId);
 
     if (character != null) {
       return character.isFavourite;
@@ -125,7 +144,7 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
     }
   }
 
-  List<Character> getFavouriteCharacters() {
+  List<Character> _getFavouriteCharacters() {
     String characterListAsString = client.getDataFromStore(favouriteListTag) ?? "";
 
     List<Map<String, dynamic>> characterStringList =
