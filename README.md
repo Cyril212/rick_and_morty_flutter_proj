@@ -8,6 +8,13 @@ API used in the project [Rick and Morty API](https://rickandmortyapi.com/).
 
 Clone the project and you're ready to go :)
 
+## Features
+- Pagination
+- List sorting
+- Search
+- Communication through REST with Hive DB caching.
+- Unit tests
+
 ## Project structure
 <img width="483" alt="Screenshot 2021-11-01 at 20 21 02" src="https://user-images.githubusercontent.com/10762970/139729226-ce282bbc-d70e-449e-a4a8-687e4acfd47e.png">
 
@@ -26,13 +33,6 @@ Clone the project and you're ready to go :)
 ## UI - Data Layer dependency
 
 <img width="367" alt="Screenshot 2021-11-01 at 20 43 21" src="https://user-images.githubusercontent.com/10762970/139731732-b17aff5f-6f2e-44de-bd9d-ed25232e2f56.png">
-
-## Features
-- Pagination
-- List sorting
-- Search
-- Communication through REST with Hive DB caching.
-- Unit tests
 
 ## Tests
 
