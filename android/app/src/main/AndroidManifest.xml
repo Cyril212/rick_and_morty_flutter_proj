@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.rick_and_morty_flutter_proj">
-   <application
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <application
         android:label="rick_and_morty_flutter_proj"
         android:roundIcon="@mipmap/ic_launcher"
         android:icon="@mipmap/ic_launcher">
