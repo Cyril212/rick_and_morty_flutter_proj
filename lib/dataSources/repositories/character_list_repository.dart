@@ -146,13 +146,13 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
     final alreadyContainsFavourite = filteredList.firstWhereOrNull((character) => character.id == characterId) != null;
 
     // if contains character and isFavourite(state) false remove item from list
-    if (alreadyContainsFavourite && state == false) {
+    if (state == false) {
       filteredList.removeWhere((character) => character.id == characterId);
 
     } else if (alreadyContainsFavourite) { //if contains character and state is true
       filteredList.firstWhere((character) => character.id == characterId).isFavourite = state;
 
-    } else {
+    } else if(alreadyContainsFavourite == false && state){ // if character hasn't been added
       characterById?.isFavourite = state;
       filteredList.add(characterById!);
     }
@@ -178,6 +178,6 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
     List<Map<String, dynamic>> characterStringList =
         characterListAsString.isNotEmpty ? (List<Map<String, dynamic>>.from(json.decode(characterListAsString))) : [];
 
-    return characterStringList.map((json) => Character.fromJson(json)).where((character) => character.isFavourite == true).toList();
+    return characterStringList.map((json) => Character.fromJson(json)).toList();
   }
 }

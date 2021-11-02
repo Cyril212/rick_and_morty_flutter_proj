@@ -94,7 +94,7 @@ class RickMortyListVM extends Cubit<CharacterListEvent> {
   }
 
   /// Sets favourite character state
-  void setFavouriteCharacterState(int characterId, bool state,{VoidCallback? shouldActualizeList}) => _repository.putFavouriteCharacterStateById(characterId, state);
+  void setFavouriteCharacterState(int characterId, bool state) => _repository.putFavouriteCharacterStateById(characterId, state);
 
   /// Gets favourite character state
   bool getFavouriteCharacterState(int characterId) => _repository.getFavouriteCharacterStateById(characterId);
