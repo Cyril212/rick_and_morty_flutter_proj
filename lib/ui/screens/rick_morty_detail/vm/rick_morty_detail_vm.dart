@@ -1,3 +1,4 @@
+import 'package:collection/src/iterable_extensions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/responses/character.dart';
@@ -9,6 +10,6 @@ class RickMortyDetailVM extends Cubit {
   /// Gets character id from parent [RickMortyListVM] bloc
   Character? getCharacterById(BuildContext context) {
     final rickMortyListVMReference = context.read<RickMortyListVM>();
-    return rickMortyListVMReference.characterList.firstWhere((character) => character.id == rickMortyListVMReference.currentCharacterId);
+    return rickMortyListVMReference.characterList.firstWhereOrNull((character) => character.id == rickMortyListVMReference.currentCharacterId);
   }
 }

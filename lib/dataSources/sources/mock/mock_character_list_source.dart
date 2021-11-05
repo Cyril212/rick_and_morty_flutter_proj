@@ -7,5 +7,5 @@ import 'package:rick_and_morty_flutter_proj/dataSources/responses/character_list
 ///Mock model of [CharacterListSource]
 class MockCharacterListSource extends DataSource<CharacterListRequest, CharacterListResponse> {
   MockCharacterListSource(MockManager restManager, CharacterListRequest requestDataModel, {Map<String, dynamic>? responseDataModel})
-      : super(requestDataModel, (Map<String, dynamic> json) => CharacterListResponse.fromJson(json), restManager);
+      : super(requestDataModel, (Map<String, dynamic> json) => CharacterListResponse.fromJson(json));
 }

@@ -1,21 +1,23 @@
 import 'package:collection/src/iterable_extensions.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/data_source.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/mock/mock_data_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/source_exception.dart';
-import 'package:rick_and_morty_flutter_proj/core/repository/abstract_repository.dart';
+import 'package:rick_and_morty_flutter_proj/core/repository/pagination_repository.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/responses/character.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/sources/mock/mock_character_list_source.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 import 'dart:convert';
 
-class MockCharacterListRepository extends AbstractRepository<MockCharacterListSource> {
+class MockCharacterListRepository extends PaginationRepository<Character> {
   final MockDataClient client;
-  final MockCharacterListSource _source;
   String? searchPhrase;
 
-  MockCharacterListRepository(this.client, this._source);
+  MockCharacterListRepository(this.client, List<DataSource> sources) : super(sources);
 
   List<Character> get characterListByMode => currentListByMode;
+
+  MockCharacterListSource get _source => (sources[0] as MockCharacterListSource);
 
   SourceException? get error => _source.error;
 
@@ -59,13 +61,12 @@ class MockCharacterListRepository extends AbstractRepository<MockCharacterListSo
 
   @override
   void filterAllPagesListByFilterMode(ListFilterMode listFilterMode, bool shouldFetch) {
-
     //merge new response with characters from store
     List<Character> mergeFavouritesCharacterFromStore = _mergeFavouritesCharacterFromStore();
 
     switch (listFilterMode) {
       case ListFilterMode.none:
-        if (shouldFetch) {//if it's from getCharacters(true) update mergedList
+        if (shouldFetch) { //if it's from getCharacters(true) update mergedList
           if (allPagesList.isNotEmpty) {
             allPagesList.addAll(mergeFavouritesCharacterFromStore);
           } else {
@@ -90,12 +91,12 @@ class MockCharacterListRepository extends AbstractRepository<MockCharacterListSo
     _tryToSearch();
   }
 
-  void _tryToSearch(){
-    if(searchPhrase != null && searchPhrase!.isNotEmpty) {
+  void _tryToSearch() {
+    if (searchPhrase != null && searchPhrase!.isNotEmpty) {
       final tmp = [...currentListByMode];
       currentListByMode.clear();
       tmp.forEach((character) {
-        if(character.name.contains(searchPhrase!)) {
+        if (character.name.contains(searchPhrase!)) {
           currentListByMode.add(character);
         }
       });
@@ -103,7 +104,7 @@ class MockCharacterListRepository extends AbstractRepository<MockCharacterListSo
   }
 
   @visibleForTesting
-  void setPhraseAndTryToSearch(String phrase){
+  void setPhraseAndTryToSearch(String phrase) {
     searchPhrase = phrase;
     _tryToSearch();
   }
@@ -111,7 +112,7 @@ class MockCharacterListRepository extends AbstractRepository<MockCharacterListSo
   void _setCurrentFavouriteStateFromCurrentListMode() {
     allPagesList.forEach((mergedCharacter) {
       currentListByMode.forEach((character) {
-        if(mergedCharacter.id == character.id) {
+        if (mergedCharacter.id == character.id) {
           mergedCharacter.isFavourite = character.isFavourite;
         }
       });
@@ -131,7 +132,9 @@ class MockCharacterListRepository extends AbstractRepository<MockCharacterListSo
         actualizeList();
       }
     } else if (alreadyContainsFavourite) {
-      filteredList.firstWhere((character) => character.id == characterId).isFavourite = state;
+      filteredList
+          .firstWhere((character) => character.id == characterId)
+          .isFavourite = state;
     } else {
       characterById?.isFavourite = state;
       filteredList.add(characterById!);
@@ -154,8 +157,17 @@ class MockCharacterListRepository extends AbstractRepository<MockCharacterListSo
     String characterListAsString = client.getDataFromStore(favouriteListTag) ?? "";
 
     List<Map<String, dynamic>> characterStringList =
-        characterListAsString.isNotEmpty ? (List<Map<String, dynamic>>.from(json.decode(characterListAsString))) : [];
+    characterListAsString.isNotEmpty ? (List<Map<String, dynamic>>.from(json.decode(characterListAsString))) : [];
 
     return characterStringList.map((json) => Character.fromJson(json)).where((character) => character.isFavourite == true).toList();
   }
+
+  @override
+  registerSources() {}
+
+  @override
+  unregisterSources() {}
+
+  @override
+  void onResponse(source) {}
 }

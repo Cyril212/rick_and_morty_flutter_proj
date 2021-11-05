@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,7 +25,6 @@ class CharacterListEvent {
 
 /// View model of [RickMortyListScreen]
 class RickMortyListVM extends Cubit<CharacterListEvent> {
-
   /// CharacterList repo
   final CharacterListRepository _repository;
 
@@ -36,9 +37,25 @@ class RickMortyListVM extends Cubit<CharacterListEvent> {
   /// Status to show loading snackbar
   bool isFetching;
 
+  late StreamSubscription listenOnDevice;
+
   /// Init
   RickMortyListVM(this._repository, {this.listFilterMode = ListFilterMode.none, this.isFetching = false})
-      : super(const CharacterListEvent(CharacterListState.idle));
+      : super(const CharacterListEvent(CharacterListState.idle)) {
+    registerSource();
+
+    _repository.result.listen((dataSource) {
+        if (_repository.error != null) {
+          emit(CharacterListEvent(CharacterListState.error, error: _repository.error));
+        } else {
+          if (characterList.isNotEmpty) {
+            emit(const CharacterListEvent(CharacterListState.success));
+          } else {
+            emit(const CharacterListEvent(CharacterListState.empty));
+          }
+        }
+    });
+  }
 
   /// Current List
   List<Character> get characterList => _repository.characterListByMode;
@@ -49,41 +66,30 @@ class RickMortyListVM extends Cubit<CharacterListEvent> {
 
   /// Emits current [state] depending on result of [fetchCharacterList()]
   void _getCharacters([shouldFetch = true]) {
-
     emit(const CharacterListEvent(CharacterListState.loading));
 
-    _repository.fetchCharacterList(listFilterMode, shouldFetch).then((_) {
-      if (_repository.error != null) {
-        emit(CharacterListEvent(CharacterListState.error, error: _repository.error));
-      } else {
-        if (characterList.isNotEmpty) {
-          emit(const CharacterListEvent(CharacterListState.success));
-        } else {
-          emit(const CharacterListEvent(CharacterListState.empty));
-        }
-      }
-    });
+    _repository.fetchCharacterList(listFilterMode, shouldFetch);
   }
+
+
 
   /// Fetches new characters
   void fetchCharacterList() => _getCharacters(true);
 
   /// Locally updates [characterList]
-  void updateCharacterList() =>
-    _getCharacters(false);
+  void updateCharacterList() => _getCharacters(false);
 
   /// Sets searchPhrase value
-  void setSearchPhraseIfAvailable(String searchPhrase) =>
-      _repository.searchPhrase = searchPhrase;
+  void setSearchPhraseIfAvailable(String searchPhrase) => _repository.searchPhrase = searchPhrase;
 
   /// Sets searchPhrase value and locally update list
-  void updateCharacterListBySearchPhrase(String searchPhrase){
+  void updateCharacterListBySearchPhrase(String searchPhrase) {
     setSearchPhraseIfAvailable(searchPhrase);
     updateCharacterList();
   }
 
   /// Sets current list
-  void setFilterMode(bool isFilter){
+  void setFilterMode(bool isFilter) {
     //move to func
     if (isFilter) {
       listFilterMode = ListFilterMode.favourite;
@@ -101,4 +107,14 @@ class RickMortyListVM extends Cubit<CharacterListEvent> {
 
   /// Redirects to detail screen
   void moveToDetailScreen(BuildContext context) => pushNamed(context, RickMortyDetailScreen.route);
+
+  void registerSource() {
+    _repository.registerSources();
+  }
+
+  @override
+  Future<void> close() {
+    _repository.unregisterSources();
+    return super.close();
+  }
 }

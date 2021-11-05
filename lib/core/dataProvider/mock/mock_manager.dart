@@ -29,7 +29,7 @@ class MockManager extends AbstractManager {
         final rawResponse = jsonDecode(response.body);
         dataTask.response = dataTask.processResponse(rawResponse);
 
-        store.put(dataTask.queryId, rawResponse);
+        store.put(dataTask.sourceId, rawResponse);
       }
 
     } catch (e) {

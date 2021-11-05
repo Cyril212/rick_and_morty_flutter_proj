@@ -1,32 +1,33 @@
+import 'dart:async';
+
 import 'package:collection/src/iterable_extensions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/data_client.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/data_source.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/source_exception.dart';
-import 'package:rick_and_morty_flutter_proj/core/repository/abstract_repository.dart';
+import 'package:rick_and_morty_flutter_proj/core/repository/pagination_with_search_repository.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/module/search_module.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/responses/character.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/sources/character_list_source.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 import 'dart:convert';
 
-
 ///CharacterListSource to communicate between CharacterListVM and DataSource
-class CharacterListRepository extends AbstractRepository<CharacterListSource> {
-
+class CharacterListRepository extends PaginationWithSearchRepository<Character> with SearchModule {
   final DataClient client;
-  final CharacterListSource _source;
-
-  /// Search phrase for filtering [characterListByMode]
-  String? searchPhrase;
 
   /// Init
-  CharacterListRepository(this.client, this._source);
+  CharacterListRepository(this.client, List<DataSource> sourceList) : super(sourceList);
+
+  /// Gets [CharacterListSource]
+  CharacterListSource get _characterListSource => (sources[0] as CharacterListSource);
 
   /// Gets current character list
   List<Character> get characterListByMode => currentListByMode;
 
   /// Gets error to send error state in CharacterListVM
-  SourceException? get error => _source.error;
+  SourceException? get error => _characterListSource.error;
 
   /// List tag to put/get current favourite list to [HiveStore]
   @override
@@ -34,55 +35,56 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
 
   /// Gets true if response contains link to next page otherwise returns null
   @override
-  bool get hasNextPage => _source.response?.info.next != null;
+  bool get hasNextPage => _characterListSource.response?.info.next != null;
 
   /// Fetch next page
   @override
-  Future<CharacterListSource> fetchResult() => client.executeQuery(_source);
+  Future<CharacterListSource> fetchResult() => client.executeQuery(_characterListSource).then((value) {
+        if (hasNextPage) {
+          incrementPage();
+        }
+        return value;
+      });
+
+  @override
+  void onResponse(source) {
+    filterAllPagesListByFilterMode(ListFilterMode.none, true);
+    emit(source);
+  }
 
   /// Init page
   @override
-  void incrementPage() => _source.requestDataModel.pageNum++;
+  void incrementPage() => _characterListSource.requestDataModel.pageNum++;
 
   /// Returns merge of current response with favouriteCharacters from [HiveStore]
   List<Character> _mergeFavouritesCharacterFromStore() {
-    List<Character> list = _source.response?.results ?? [];
-    list.forEach((character) {
+    List<Character> list = _characterListSource.response?.results ?? [];
+    for (var character in list) {
       character.isFavourite = getFavouriteCharacterStateById(character.id);
-    });
+    }
     return list;
   }
 
   /// Gets new page if [shouldFetch] is true, otherwise calls [filterAllPagesListByFilterMode()] to update [characterListByMode]
-  Future<void> fetchCharacterList([ListFilterMode listFilterMode = ListFilterMode.none, bool shouldFetch = false]) async {
+  void fetchCharacterList([ListFilterMode listFilterMode = ListFilterMode.none, bool shouldFetch = false]) async {
     if (shouldFetch) {
-      return fetchResult().then((value) {
-        if (_source.response != null) {
-          filterAllPagesListByFilterMode(listFilterMode, shouldFetch);
-
-          if (hasNextPage) {
-            incrementPage();
-          }
-        } else {
-          return null;
-        }
-      });
+      await fetchResult();
     } else {
       filterAllPagesListByFilterMode(listFilterMode, shouldFetch);
+      emit(_characterListSource);
     }
   }
-
 
   ///Filters list by [listFilterMode], then in case [searchPhrase] != null filters list by searchPhrase
   @override
   void filterAllPagesListByFilterMode(ListFilterMode listFilterMode, bool shouldFetch) {
-
     //merge new response with characters from store
     List<Character> mergeFavouritesCharacterFromStore = _mergeFavouritesCharacterFromStore();
 
     switch (listFilterMode) {
       case ListFilterMode.none:
-        if (shouldFetch) {//if it's from getCharacters(true) update mergedList
+        if (shouldFetch) {
+          //if it's from getCharacters(true) update mergedList
           if (allPagesList.isNotEmpty) {
             allPagesList.addAll(mergeFavouritesCharacterFromStore);
           } else {
@@ -104,38 +106,22 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
     }
 
     //search if searchPhrase is present
-    _tryToSearch();
+    tryToSearch(currentListByMode);
   }
 
   /// Merges [allPagesList] isFavourite state with [currentList]
   void _setCurrentFavouriteStateFromCurrentListMode() {
-    allPagesList.forEach((mergedCharacter) {
-      currentListByMode.forEach((character) {
-        if(mergedCharacter.id == character.id) {
+    for (var mergedCharacter in allPagesList) {
+      for (var character in currentListByMode) {
+        if (mergedCharacter.id == character.id) {
           mergedCharacter.isFavourite = character.isFavourite;
         }
-      });
-    });
-  }
-
-
-  ///Filters [currentListByMode] by searchPhrase
-  void _tryToSearch(){
-    if(searchPhrase != null && searchPhrase!.isNotEmpty) {
-      final tmp = [...currentListByMode];
-      currentListByMode.clear();
-      tmp.forEach((character) {
-        if(character.name.contains(searchPhrase!)) {
-          currentListByMode.add(character);
-        }
-      });
+      }
     }
   }
 
-
   /// Puts favourite character to storage
   void putFavouriteCharacterStateById(int characterId, bool state) {
-
     //Get character
     final Character? characterById = allPagesList.firstWhereOrNull((character) => character.id == characterId);
 
@@ -148,11 +134,11 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
     // if contains character and isFavourite(state) false remove item from list
     if (state == false) {
       filteredList.removeWhere((character) => character.id == characterId);
-
-    } else if (alreadyContainsFavourite) { //if contains character and state is true
+    } else if (alreadyContainsFavourite) {
+      //if contains character and state is true
       filteredList.firstWhere((character) => character.id == characterId).isFavourite = state;
-
-    } else if(alreadyContainsFavourite == false && state){ // if character hasn't been added
+    } else if (alreadyContainsFavourite == false && state) {
+      // if character hasn't been added
       characterById?.isFavourite = state;
       filteredList.add(characterById!);
     }
@@ -180,4 +166,19 @@ class CharacterListRepository extends AbstractRepository<CharacterListSource> {
 
     return characterStringList.map((json) => Character.fromJson(json)).toList();
   }
+
+  @override
+  void registerSources() {
+    for (var element in sources) {
+      element.registerSource(client.manager);
+    }
+  }
+
+  @override
+  void unregisterSources() {
+    for (var element in sources) {
+      element.unregisterSource(client.manager, int.parse(element.sourceId));
+    }
+  }
 }
+

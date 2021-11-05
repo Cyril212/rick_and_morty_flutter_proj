@@ -1,7 +1,5 @@
-import 'dart:collection';
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/abstract_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/data_source.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/request_data_model.dart';
@@ -14,30 +12,6 @@ class RestManager extends AbstractManager {
 
   /// Init
   RestManager(baseUrl): super(baseUrl);
-
-  @override
-  Future<T> processData<T extends DataSource>(T dataTask, Store store) async {
-    try {
-      final Response response = await query(dataTask.requestDataModel);
-
-      if (response.statusCode >= 400) {
-        dataTask.error = SourceException(
-          originalException: null,
-          httpStatusCode: response.statusCode,
-        );
-      } else{
-        final rawResponse = jsonDecode(response.body);
-        dataTask.response = dataTask.processResponse(rawResponse);
-
-        store.put(dataTask.queryId, rawResponse);
-      }
-
-    } catch (e) {
-      dataTask.error = SourceException(originalException: e);
-    }
-
-    return dataTask;
-  }
 
   @override
   Future<Response> query(RequestDataModel dataRequest) async {
@@ -55,6 +29,34 @@ class RestManager extends AbstractManager {
     );
 
     return response;
+  }
+
+  @override
+  Future<T> processData<T extends DataSource>(T dataTask, Store store) async {
+    try {
+      final Response response = await query(dataTask.requestDataModel);
+
+      if (response.statusCode >= 400) {
+        dataTask.error = SourceException(
+          originalException: null,
+          httpStatusCode: response.statusCode,
+        );
+      } else{
+        final rawResponse = jsonDecode(response.body);
+        dataTask.response = dataTask.processResponse(rawResponse);
+
+        store.put(dataTask.sourceId, rawResponse);
+      }
+
+    } catch (e) {
+      dataTask.error = SourceException(originalException: e);
+    }
+
+    dataTask.sink.add(dataTask);
+
+    refreshSimilarSourcesByMethod(dataTask);
+
+    return dataTask;
   }
 
 }

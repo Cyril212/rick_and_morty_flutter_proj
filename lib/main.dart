@@ -22,7 +22,6 @@ void main() async {
   runApp(const RickAndMortyApp());
 }
 
-
 /// Init Hive database to be able to interact with [boxes]
 Future<void> initHiveForFlutter({String? subDir, Iterable<String> boxes = const [HiveStore.defaultBoxName]}) async {
   await Hive.initFlutter();
@@ -44,7 +43,7 @@ class RickAndMortyApp extends StatelessWidget {
           ),
           BlocProvider(
               create: (context) => RickMortyListVM(CharacterListRepository(
-                  context.read<DataClient>(), CharacterListSource(context.read<DataClient>().manager, CharacterListRequest("character"))))),
+                  context.read<DataClient>(), [CharacterListSource(context.read<DataClient>().manager, CharacterListRequest("character"))]))),
         ],
         child: MaterialApp(
           title: 'Rick and Morty',

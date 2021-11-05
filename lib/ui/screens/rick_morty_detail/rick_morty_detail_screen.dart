@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:provider/src/provider.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/responses/character.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_detail/vm/rick_morty_detail_vm.dart';
@@ -6,34 +7,44 @@ import 'package:rick_and_morty_flutter_proj/ui/widgets/character_card_widget.dar
 
 class RickMortyDetailScreen extends StatelessWidget {
   static const String route = '/rick_morty_detail';
-  late Character character;
+  late Character? character;
 
   RickMortyDetailScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    character = context.read<RickMortyDetailVM>().getCharacterById(context)!;
+    Widget mainContent;
 
-    return Scaffold(
-      body: Container(
-        constraints: const BoxConstraints.expand(),
-        color: const Color(0xFF736AB7),
-        child: Stack(
-          children: <Widget>[
-            _getBackground(),
-            _getGradient(),
-            _getContent(),
-            _getToolbar(context),
-          ],
+    character = context.read<RickMortyDetailVM>().getCharacterById(context);
+    final isCharacterFound = character != null;
+
+
+    if(isCharacterFound){
+      mainContent = Scaffold(
+        body: Container(
+          constraints: const BoxConstraints.expand(),
+          color: const Color(0xFF736AB7),
+          child: Stack(
+            children: <Widget>[
+              _getBackground(),
+              _getGradient(),
+              _getContent(),
+              _getToolbar(context),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    } else {
+      mainContent = Container();
+    }
+
+    return mainContent;
   }
 
   Container _getBackground() {
     return Container(
       child: Image.network(
-        character.image,
+        character!.image,
         fit: BoxFit.cover,
         height: 300.0,
       ),
@@ -63,7 +74,7 @@ class RickMortyDetailScreen extends StatelessWidget {
         padding: EdgeInsets.fromLTRB(0.0, 72.0, 0.0, 32.0),
         children: <Widget>[
           CharacterCardWidget(
-            character: character,
+            character: character!,
             horizontal: false,
           ),
           Container(

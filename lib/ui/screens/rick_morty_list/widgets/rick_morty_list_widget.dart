@@ -3,10 +3,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 import 'package:rick_and_morty_flutter_proj/ui/widgets/character_card_widget.dart';
 
-class RickMortyListWidget extends StatelessWidget {
-  final ScrollController _scrollController = ScrollController();
+class RickMortyListWidget extends StatefulWidget {
 
   RickMortyListWidget({Key? key}) : super(key: key);
+
+  @override
+  State<RickMortyListWidget> createState() => _RickMortyListWidgetState();
+}
+
+class _RickMortyListWidgetState extends State<RickMortyListWidget> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
