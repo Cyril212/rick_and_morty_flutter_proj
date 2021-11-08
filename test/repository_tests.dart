@@ -11,7 +11,7 @@ import 'package:rick_and_morty_flutter_proj/core/dataProvider/mock/mock_manager.
 import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/repositories/mock/mock_character_list_repository.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/requests/character_list_request.dart';
-import 'package:rick_and_morty_flutter_proj/dataSources/sources/mock/mock_character_list_source.dart';
+import 'package:rick_and_morty_flutter_proj/dataSources/service/mock/mock_character_list_service.dart';
 
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 
@@ -19,23 +19,23 @@ import 'package:mocktail/mocktail.dart';
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(const CharacterListEvent(CharacterListState.idle));
+    registerFallbackValue(const CharacterListEvent(ListState.idle));
   });
 
   group('Test CharacterListRepository', ()  {
 
     //Init dependencies
     final client = MockDataClient(store: InMemoryStore(), manager: MockManager(""));
-    final source = MockCharacterListSource(client.manager, CharacterListRequest(""));
+    final source = MockCharacterListService(client.manager, CharacterListRequest(""));
     final repository = MockCharacterListRepository(client, [source]);
 
     test('isFetchPage successful', () async {
-      MockCharacterListSource source = await repository.fetchResult();
+      MockCharacterListService source = await repository.fetchResult();
       expect(source.response != null && source.response!.results.isNotEmpty, true);
     });
 
     test('Does fetchPage has no error', () async {
-      MockCharacterListSource source = await repository.fetchResult();
+      MockCharacterListService source = await repository.fetchResult();
       expect(source.error == null, true);
     });
 

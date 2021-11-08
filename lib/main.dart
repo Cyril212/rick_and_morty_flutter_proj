@@ -12,7 +12,7 @@ import 'core/dataProvider/client/data_client.dart';
 import 'core/repository/store/store.dart';
 import 'dataSources/repositories/character_list_repository.dart';
 import 'dataSources/requests/character_list_request.dart';
-import 'dataSources/sources/character_list_source.dart';
+import 'dataSources/service/character_list_service.dart';
 
 /// Endpoint
 void main() async {
@@ -43,7 +43,7 @@ class RickAndMortyApp extends StatelessWidget {
           ),
           BlocProvider(
               create: (context) => RickMortyListVM(CharacterListRepository(
-                  context.read<DataClient>(), [CharacterListSource(context.read<DataClient>().manager, CharacterListRequest("character"))]))),
+                  context.read<DataClient>(), [CharacterListService(context.read<DataClient>().manager, CharacterListRequest("character"))]))),
         ],
         child: MaterialApp(
           title: 'Rick and Morty',

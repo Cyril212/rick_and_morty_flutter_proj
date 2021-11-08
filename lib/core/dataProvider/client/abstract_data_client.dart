@@ -18,7 +18,7 @@ abstract class AbstractDataClient<T extends AbstractManager> {
       : store = store ?? HiveStore();
 
   ///Executes query from repository to fetch data from [manager]
-  Future<R> executeQuery<R extends DataSource>(R dataSource) async {
+  Future<R> executeQuery<R extends Serivce>(R dataSource) async {
     return manager.processData<R>(dataSource, store!);
   }
 

@@ -5,5 +5,5 @@ import 'package:rick_and_morty_flutter_proj/dataSources/repositories/abstract_pa
 import 'abstract_repository.dart';
 
 abstract class PaginationRepository<R extends ResponseDataModel> extends AbstractRepository<R> with AbstractPagination<R>  {
-  PaginationRepository(List<DataSource> sourceList) : super(sourceList);
+  PaginationRepository(List<Serivce> sourceList) : super(sourceList);
 }

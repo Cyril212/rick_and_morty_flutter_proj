@@ -18,16 +18,16 @@ abstract class AbstractManager {
   ///Counter for query id for debug purposes
   int sourceCounter = 0;
 
-  Map<int, DataSource> sources = {};
+  Map<int, Serivce> sources = {};
 
   ///Executes request
   @protected
   Future<Response> query(RequestDataModel dataRequest);
 
   ///Process data after [query] was executed
-  Future<T> processData<T extends DataSource<RequestDataModel,ResponseDataModel>>(T dataTask, Store store);
+  Future<T> processData<T extends Serivce<RequestDataModel,ResponseDataModel>>(T dataTask, Store store);
 
-  ///Increment [sourceCounter] per [DataSource] initialization
+  ///Increment [sourceCounter] per [Serivce] initialization
   int generateDataSourceId() {
     final int requestId = sourceCounter;
 
@@ -36,14 +36,14 @@ abstract class AbstractManager {
     return requestId;
   }
 
-  int registerSource(DataSource dataSource) {
+  int registerSource(Serivce dataSource) {
    sources.putIfAbsent(sourceCounter, () => dataSource);
 
    return generateDataSourceId();
   }
 
   @protected
-  void refreshSimilarSourcesByMethod(DataSource task) {
+  void refreshSimilarSourcesByMethod(Serivce task) {
      sources.forEach((id, value) {
        if(value.requestDataModel.method == task.requestDataModel.method){
           if(id != int.parse(task.sourceId)){//make sure we don't update source which was already fetched

@@ -5,7 +5,7 @@ import 'package:rick_and_morty_flutter_proj/ui/widgets/character_card_widget.dar
 
 class RickMortyListWidget extends StatefulWidget {
 
-  RickMortyListWidget({Key? key}) : super(key: key);
+  const RickMortyListWidget({Key? key}) : super(key: key);
 
   @override
   State<RickMortyListWidget> createState() => _RickMortyListWidgetState();
@@ -27,29 +27,27 @@ class _RickMortyListWidgetState extends State<RickMortyListWidget> {
         final rickMortyVM = context.read<RickMortyListVM>();
 
         switch (characterListEvent.state) {
-          case CharacterListState.idle:
+          case ListState.idle:
             break;
-          case CharacterListState.loading:
+          case ListState.loading:
             break;
-          case CharacterListState.success:
+          case ListState.success:
             context.read<RickMortyListVM>().isFetching = false;
             break;
-          case CharacterListState.empty:
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          case ListState.empty:
             break;
-          case CharacterListState.error:
-            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          case ListState.error:
             rickMortyVM.isFetching = false;
             break;
         }
       }, builder: (BuildContext context, snapshot) {
         final rickMortyVM = context.read<RickMortyListVM>();
 
-        if (snapshot.state == CharacterListState.idle || snapshot.state == CharacterListState.loading && (rickMortyVM.characterList.isEmpty)) {
+        if (snapshot.state == ListState.idle || snapshot.state == ListState.loading && (rickMortyVM.characterList.isEmpty)) {
           return const Center(child: SizedBox(width: 50, height: 50, child: CircularProgressIndicator()));
-        } else if (snapshot.state == CharacterListState.empty) {
+        } else if (snapshot.state == ListState.empty) {
           return const Center(child: Text("There's no character by your preference :("));
-        } else if (snapshot.state == CharacterListState.error) {
+        } else if (snapshot.state == ListState.error) {
           return const Center(child: Text("Oops there's an error"));
         }
 
@@ -65,13 +63,17 @@ class _RickMortyListWidgetState extends State<RickMortyListWidget> {
                 context.read<RickMortyListVM>()
                   ..isFetching = true
                   ..fetchCharacterList();
-
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("loading")));
               }
             }),
-          itemBuilder: (context, index) => CharacterCardWidget(character: rickMortyVM.characterList[index]),
+          itemBuilder: (context, index) {
+            if(index < rickMortyVM.characterList.length) {
+              return CharacterCardWidget(character: rickMortyVM.characterList[index]);
+            }else{
+              return const Center(child: CircularProgressIndicator());
+            }
+          },
           separatorBuilder: (context, index) => const SizedBox(height: 2),
-          itemCount: rickMortyVM.characterList.length,
+          itemCount: (rickMortyVM.listFilterMode == ListFilterMode.none && rickMortyVM.isSearchPhraseEmpty) ? rickMortyVM.characterList.length + 1 : rickMortyVM.characterList.length,
         );
       }),
     );

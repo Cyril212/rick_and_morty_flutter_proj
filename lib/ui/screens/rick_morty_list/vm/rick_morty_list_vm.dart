@@ -10,14 +10,14 @@ import 'package:rick_and_morty_flutter_proj/dataSources/responses/character.dart
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_detail/rick_morty_detail_screen.dart';
 
 ///CharacterList states
-enum CharacterListState { idle, loading, success, empty, error }
+enum ListState { idle, loading, success, empty, error }
 
 /// List modes
 enum ListFilterMode { none, favourite }
 
 /// CharacterListEvent witch contains state and error status to process on UI
 class CharacterListEvent {
-  final CharacterListState state;
+  final ListState state;
   final SourceException? error;
 
   const CharacterListEvent(this.state, {this.error});
@@ -41,17 +41,17 @@ class RickMortyListVM extends Cubit<CharacterListEvent> {
 
   /// Init
   RickMortyListVM(this._repository, {this.listFilterMode = ListFilterMode.none, this.isFetching = false})
-      : super(const CharacterListEvent(CharacterListState.idle)) {
+      : super(const CharacterListEvent(ListState.idle)) {
     registerSource();
 
     _repository.result.listen((dataSource) {
         if (_repository.error != null) {
-          emit(CharacterListEvent(CharacterListState.error, error: _repository.error));
+          emit(CharacterListEvent(ListState.error, error: _repository.error));
         } else {
           if (characterList.isNotEmpty) {
-            emit(const CharacterListEvent(CharacterListState.success));
+            emit(const CharacterListEvent(ListState.success));
           } else {
-            emit(const CharacterListEvent(CharacterListState.empty));
+            emit(const CharacterListEvent(ListState.empty));
           }
         }
     });
@@ -66,12 +66,10 @@ class RickMortyListVM extends Cubit<CharacterListEvent> {
 
   /// Emits current [state] depending on result of [fetchCharacterList()]
   void _getCharacters([shouldFetch = true]) {
-    emit(const CharacterListEvent(CharacterListState.loading));
+    emit(const CharacterListEvent(ListState.loading));
 
     _repository.fetchCharacterList(listFilterMode, shouldFetch);
   }
-
-
 
   /// Fetches new characters
   void fetchCharacterList() => _getCharacters(true);
@@ -109,12 +107,12 @@ class RickMortyListVM extends Cubit<CharacterListEvent> {
   void moveToDetailScreen(BuildContext context) => pushNamed(context, RickMortyDetailScreen.route);
 
   void registerSource() {
-    _repository.registerSources();
+    _repository.registerServices();
   }
 
   @override
   Future<void> close() {
-    _repository.unregisterSources();
+    _repository.unregisterServices();
     return super.close();
   }
 }

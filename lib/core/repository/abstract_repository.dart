@@ -6,32 +6,32 @@ import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/response_dat
 
 /// Used to communicate between VM and Manager
 abstract class AbstractRepository<R extends ResponseDataModel> {
-  final StreamController<DataSource> _controller;
+  final StreamController<Serivce> _controller;
 
-  Stream<DataSource> get result => _controller.stream;
+  Stream<Serivce> get result => _controller.stream;
 
   @protected
-  List<DataSource> sources = [];
+  List<Serivce> sources = [];
 
-  AbstractRepository(List<DataSource> sourceList)
+  AbstractRepository(List<Serivce> sourceList)
       : sources = sourceList,
-        _controller = StreamController<DataSource>.broadcast() {
+        _controller = StreamController<Serivce>.broadcast() {
     for (var source in sources) {
       source.stream.listen(onResponse);
     }
   }
 
-  void emit(DataSource event) => _controller.sink.add(event);
+  void emit(Serivce event) => _controller.sink.add(event);
 
   @protected
-  Future<DataSource> fetchResult();
+  Future<Serivce> fetchResult();
 
   @protected
-  void onResponse(DataSource source);
+  void onResponse(Serivce source);
 
   @protected
-  void registerSources();
+  void registerServices();
 
   @protected
-  void unregisterSources();
+  void unregisterServices();
 }

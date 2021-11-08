@@ -18,7 +18,7 @@ void main() {
 
   //Init dependencies
   setUpAll(() {
-    registerFallbackValue(const CharacterListEvent(CharacterListState.idle));
+    registerFallbackValue(const CharacterListEvent(ListState.idle));
   });
 
   group('Can init RickMortyListVM', () {
@@ -33,12 +33,12 @@ void main() {
       final counterCubit = MockRickMortyListVM();
       whenListen(
         counterCubit,
-        Stream.fromIterable([const CharacterListEvent(CharacterListState.idle)]),
+        Stream.fromIterable([const CharacterListEvent(ListState.idle)]),
       );
       await expectLater(
         counterCubit.stream,
         emitsInOrder(
-          <Matcher>[equals(const CharacterListEvent(CharacterListState.idle)), emitsDone],
+          <Matcher>[equals(const CharacterListEvent(ListState.idle)), emitsDone],
         ),
       );
     });
@@ -47,12 +47,12 @@ void main() {
       final counterCubit = MockRickMortyListVM();
       whenListen(
         counterCubit,
-        Stream.fromIterable([const CharacterListEvent(CharacterListState.idle),const CharacterListEvent(CharacterListState.loading)]),
+        Stream.fromIterable([const CharacterListEvent(ListState.idle),const CharacterListEvent(ListState.loading)]),
       );
       await expectLater(
         counterCubit.stream,
         emitsInOrder(
-          <Matcher>[equals(const CharacterListEvent(CharacterListState.idle)),equals(const CharacterListEvent(CharacterListState.loading)), emitsDone],
+          <Matcher>[equals(const CharacterListEvent(ListState.idle)),equals(const CharacterListEvent(ListState.loading)), emitsDone],
         ),
       );
     });
@@ -61,12 +61,12 @@ void main() {
       final counterCubit = MockRickMortyListVM();
       whenListen(
         counterCubit,
-        Stream.fromIterable([const CharacterListEvent(CharacterListState.idle),const CharacterListEvent(CharacterListState.loading), const CharacterListEvent(CharacterListState.success)]),
+        Stream.fromIterable([const CharacterListEvent(ListState.idle),const CharacterListEvent(ListState.loading), const CharacterListEvent(ListState.success)]),
       );
       await expectLater(
         counterCubit.stream,
         emitsInOrder(
-          <Matcher>[equals(const CharacterListEvent(CharacterListState.idle)),equals(const CharacterListEvent(CharacterListState.loading),),equals(const CharacterListEvent(CharacterListState.success)), emitsDone],
+          <Matcher>[equals(const CharacterListEvent(ListState.idle)),equals(const CharacterListEvent(ListState.loading),),equals(const CharacterListEvent(ListState.success)), emitsDone],
         ),
       );
     });

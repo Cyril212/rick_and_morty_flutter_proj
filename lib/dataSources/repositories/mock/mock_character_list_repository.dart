@@ -5,7 +5,7 @@ import 'package:rick_and_morty_flutter_proj/core/dataProvider/mock/mock_data_cli
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/source_exception.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/pagination_repository.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/responses/character.dart';
-import 'package:rick_and_morty_flutter_proj/dataSources/sources/mock/mock_character_list_source.dart';
+import 'package:rick_and_morty_flutter_proj/dataSources/service/mock/mock_character_list_service.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 import 'dart:convert';
 
@@ -13,11 +13,11 @@ class MockCharacterListRepository extends PaginationRepository<Character> {
   final MockDataClient client;
   String? searchPhrase;
 
-  MockCharacterListRepository(this.client, List<DataSource> sources) : super(sources);
+  MockCharacterListRepository(this.client, List<Serivce> sources) : super(sources);
 
   List<Character> get characterListByMode => currentListByMode;
 
-  MockCharacterListSource get _source => (sources[0] as MockCharacterListSource);
+  MockCharacterListService get _source => (sources[0] as MockCharacterListService);
 
   SourceException? get error => _source.error;
 
@@ -28,7 +28,7 @@ class MockCharacterListRepository extends PaginationRepository<Character> {
   bool get hasNextPage => _source.response?.info.next != null;
 
   @override
-  Future<MockCharacterListSource> fetchResult() => client.executeQuery(_source);
+  Future<MockCharacterListService> fetchResult() => client.executeQuery(_source);
 
   @override
   void incrementPage() => _source.requestDataModel.pageNum++;
@@ -163,10 +163,10 @@ class MockCharacterListRepository extends PaginationRepository<Character> {
   }
 
   @override
-  registerSources() {}
+  registerServices() {}
 
   @override
-  unregisterSources() {}
+  unregisterServices() {}
 
   @override
   void onResponse(source) {}

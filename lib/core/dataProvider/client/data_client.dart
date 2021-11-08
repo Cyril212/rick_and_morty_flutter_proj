@@ -10,7 +10,7 @@ class DataClient extends AbstractDataClient<RestManager> {
   DataClient({Store? store, manager}) : super(manager: manager);
 
   @override
-  Future<T> executeQuery<T extends DataSource>(T dataSource) async {
+  Future<T> executeQuery<T extends Serivce>(T dataSource) async {
     return manager.processData<T>(dataSource, store!);
   }
 

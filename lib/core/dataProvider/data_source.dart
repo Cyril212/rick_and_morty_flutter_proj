@@ -7,7 +7,7 @@ import 'model/request_data_model.dart';
 import 'model/response_data_model.dart';
 import 'source_exception.dart';
 
-abstract class DataSource<T extends RequestDataModel, R extends ResponseDataModel> {
+abstract class Serivce<T extends RequestDataModel, R extends ResponseDataModel> {
 
   /// The identity of this query within the [Manager]
   late String sourceId;
@@ -21,18 +21,18 @@ abstract class DataSource<T extends RequestDataModel, R extends ResponseDataMode
   /// Response object
   R? response;
 
-  late StreamController<DataSource> _controller;
+  late StreamController<Serivce> _controller;
 
-  Sink<DataSource> get sink => _controller.sink;
+  Sink<Serivce> get sink => _controller.sink;
 
-  Stream<DataSource> get stream => _controller.stream;
+  Stream<Serivce> get stream => _controller.stream;
 
   /// Error object to describe negative use cases
   SourceException? error;
 
   /// Init
-  DataSource(this.requestDataModel, this.processResponse, {this.error}){
-    _controller = StreamController<DataSource<T,R>>.broadcast();
+  Serivce(this.requestDataModel, this.processResponse, {this.error}){
+    _controller = StreamController<Serivce<T,R>>.broadcast();
   }
 
   void registerSource(AbstractManager manager) {

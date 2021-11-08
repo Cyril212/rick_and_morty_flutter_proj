@@ -32,7 +32,7 @@ class RestManager extends AbstractManager {
   }
 
   @override
-  Future<T> processData<T extends DataSource>(T dataTask, Store store) async {
+  Future<T> processData<T extends Serivce>(T dataTask, Store store) async {
     try {
       final Response response = await query(dataTask.requestDataModel);
 

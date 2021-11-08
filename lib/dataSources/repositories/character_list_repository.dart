@@ -9,7 +9,7 @@ import 'package:rick_and_morty_flutter_proj/core/repository/pagination_with_sear
 import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/module/search_module.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/responses/character.dart';
-import 'package:rick_and_morty_flutter_proj/dataSources/sources/character_list_source.dart';
+import 'package:rick_and_morty_flutter_proj/dataSources/service/character_list_service.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 import 'dart:convert';
 
@@ -18,10 +18,10 @@ class CharacterListRepository extends PaginationWithSearchRepository<Character> 
   final DataClient client;
 
   /// Init
-  CharacterListRepository(this.client, List<DataSource> sourceList) : super(sourceList);
+  CharacterListRepository(this.client, List<Serivce> sourceList) : super(sourceList);
 
   /// Gets [CharacterListSource]
-  CharacterListSource get _characterListSource => (sources[0] as CharacterListSource);
+  CharacterListService get _characterListSource => (sources[0] as CharacterListService);
 
   /// Gets current character list
   List<Character> get characterListByMode => currentListByMode;
@@ -39,7 +39,7 @@ class CharacterListRepository extends PaginationWithSearchRepository<Character> 
 
   /// Fetch next page
   @override
-  Future<CharacterListSource> fetchResult() => client.executeQuery(_characterListSource).then((value) {
+  Future<CharacterListService> fetchResult() => client.executeQuery(_characterListSource).then((value) {
         if (hasNextPage) {
           incrementPage();
         }
@@ -168,14 +168,14 @@ class CharacterListRepository extends PaginationWithSearchRepository<Character> 
   }
 
   @override
-  void registerSources() {
+  void registerServices() {
     for (var element in sources) {
       element.registerSource(client.manager);
     }
   }
 
   @override
-  void unregisterSources() {
+  void unregisterServices() {
     for (var element in sources) {
       element.unregisterSource(client.manager, int.parse(element.sourceId));
     }

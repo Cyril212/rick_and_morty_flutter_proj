@@ -6,6 +6,6 @@ import 'package:rick_and_morty_flutter_proj/dataSources/repositories/abstract_pa
 import 'abstract_repository.dart';
 
 abstract class PaginationWithSearchRepository<R extends ResponseDataModel> extends AbstractRepository<R> with AbstractPagination<R>, SearchModule {
-  PaginationWithSearchRepository(List<DataSource> sourceList) : super(sourceList);
+  PaginationWithSearchRepository(List<Serivce> sourceList) : super(sourceList);
 }
 
