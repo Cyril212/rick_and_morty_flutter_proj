@@ -4,7 +4,7 @@ import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/list_v
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 import 'package:rick_and_morty_flutter_proj/ui/widgets/character_card_widget.dart';
 
-class RickMortyListWidget<T extends ListVM> extends StatefulWidget {
+class ListWidget<T extends ListVM> extends StatefulWidget {
 
   final Widget Function (BuildContext context)? initialLoadingWidget;
   final Widget Function (BuildContext context)? emptyListWidget;
@@ -13,13 +13,13 @@ class RickMortyListWidget<T extends ListVM> extends StatefulWidget {
   final Widget Function (BuildContext context, int index)? itemBuilder;
 
 
-  const RickMortyListWidget({Key? key, this.initialLoadingWidget, this.emptyListWidget, this.errorWidget, this.separatorBuilder, this.itemBuilder}) : super(key: key);
+  const ListWidget({Key? key, this.initialLoadingWidget, this.emptyListWidget, this.errorWidget, this.separatorBuilder, this.itemBuilder}) : super(key: key);
 
   @override
-  State<RickMortyListWidget> createState() => _RickMortyListWidgetState<T>();
+  State<ListWidget> createState() => _ListWidgetState<T>();
 }
 
-class _RickMortyListWidgetState<T extends ListVM> extends State<RickMortyListWidget> {
+class _ListWidgetState<T extends ListVM> extends State<ListWidget> {
   final ScrollController _scrollController = ScrollController();
   bool isFetching = false;
 

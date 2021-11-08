@@ -54,7 +54,7 @@ class _RickMortyListScreenState extends AbstractScreenState<RickMortyListScreen>
             ],
           ),
         ),
-        const RickMortyListWidget<RickMortyListVM>(),
+        const ListWidget<RickMortyListVM>(),
       ],
     );
   }
