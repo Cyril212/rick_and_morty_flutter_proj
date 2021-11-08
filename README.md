@@ -22,7 +22,7 @@ Clone the project and you're ready to go :)
 
 <img width="1653" alt="Screenshot 2021-11-01 at 20 17 50" src="https://user-images.githubusercontent.com/10762970/139729327-ec594f35-fb72-43ba-87dc-eb4f98835987.png">
 
-## Data Source
+## Service
 
 <img width="1567" alt="Screenshot 2021-11-01 at 20 18 58" src="https://user-images.githubusercontent.com/10762970/139730179-2e1e5acc-4cba-413e-bf37-075f2c02db68.png">
 
