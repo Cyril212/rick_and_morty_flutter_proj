@@ -29,9 +29,7 @@ abstract class AbstractRepository<R extends ResponseDataModel> {
   @protected
   void onResponse(Serivce source);
 
-  @protected
   void registerServices();
 
-  @protected
   void unregisterServices();
 }

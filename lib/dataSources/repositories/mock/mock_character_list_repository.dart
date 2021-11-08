@@ -6,7 +6,7 @@ import 'package:rick_and_morty_flutter_proj/core/dataProvider/source_exception.d
 import 'package:rick_and_morty_flutter_proj/core/repository/pagination_repository.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/responses/character.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/service/mock/mock_character_list_service.dart';
-import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
+import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/list_vm.dart';
 import 'dart:convert';
 
 class MockCharacterListRepository extends PaginationRepository<Character> {

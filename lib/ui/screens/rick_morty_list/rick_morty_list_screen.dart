@@ -17,13 +17,6 @@ class RickMortyListScreen extends AbstractScreen {
 class _RickMortyListScreenState extends AbstractScreenState<RickMortyListScreen> {
 
   @override
-  firstBuildOnly(BuildContext context) {
-    context.read<RickMortyListVM>().fetchCharacterList();
-
-    return super.firstBuildOnly(context);
-  }
-
-  @override
   AbstractScreenStateOptions get options =>
       AbstractScreenStateOptions.basic(screenName: RickMortyListScreen.route, title: "Rick and Morty", safeArea: true);
 
@@ -61,7 +54,7 @@ class _RickMortyListScreenState extends AbstractScreenState<RickMortyListScreen>
             ],
           ),
         ),
-        RickMortyListWidget(),
+        const RickMortyListWidget<RickMortyListVM>(),
       ],
     );
   }

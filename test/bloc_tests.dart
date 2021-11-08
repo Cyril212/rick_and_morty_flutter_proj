@@ -7,38 +7,39 @@
 
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/list_vm.dart';
 
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 
 import 'package:mocktail/mocktail.dart';
 
-class MockRickMortyListVM extends MockCubit<CharacterListEvent> implements RickMortyListVM {}
+class MockRickMortyListVM extends MockCubit<ListEvent> implements RickMortyListVM {}
 
 void main() {
 
   //Init dependencies
   setUpAll(() {
-    registerFallbackValue(const CharacterListEvent(ListState.idle));
+    registerFallbackValue(const ListEvent(ListState.idle));
   });
 
   group('Can init RickMortyListVM', () {
 
     test('can mock the stream of a single cubit with an empty Stream', () {
       final counterCubit = MockRickMortyListVM();
-      whenListen(counterCubit, const Stream<CharacterListEvent>.empty());
-      expectLater(counterCubit.stream, emitsInOrder(<CharacterListEvent>[]));
+      whenListen(counterCubit, const Stream<ListEvent>.empty());
+      expectLater(counterCubit.stream, emitsInOrder(<ListEvent>[]));
     });
 
     test('can mock the stream of a single cubit and expect default response', () async {
       final counterCubit = MockRickMortyListVM();
       whenListen(
         counterCubit,
-        Stream.fromIterable([const CharacterListEvent(ListState.idle)]),
+        Stream.fromIterable([const ListEvent(ListState.idle)]),
       );
       await expectLater(
         counterCubit.stream,
         emitsInOrder(
-          <Matcher>[equals(const CharacterListEvent(ListState.idle)), emitsDone],
+          <Matcher>[equals(const ListEvent(ListState.idle)), emitsDone],
         ),
       );
     });
@@ -47,12 +48,12 @@ void main() {
       final counterCubit = MockRickMortyListVM();
       whenListen(
         counterCubit,
-        Stream.fromIterable([const CharacterListEvent(ListState.idle),const CharacterListEvent(ListState.loading)]),
+        Stream.fromIterable([const ListEvent(ListState.idle),const ListEvent(ListState.loading)]),
       );
       await expectLater(
         counterCubit.stream,
         emitsInOrder(
-          <Matcher>[equals(const CharacterListEvent(ListState.idle)),equals(const CharacterListEvent(ListState.loading)), emitsDone],
+          <Matcher>[equals(const ListEvent(ListState.idle)),equals(const ListEvent(ListState.loading)), emitsDone],
         ),
       );
     });
@@ -61,12 +62,12 @@ void main() {
       final counterCubit = MockRickMortyListVM();
       whenListen(
         counterCubit,
-        Stream.fromIterable([const CharacterListEvent(ListState.idle),const CharacterListEvent(ListState.loading), const CharacterListEvent(ListState.success)]),
+        Stream.fromIterable([const ListEvent(ListState.idle),const ListEvent(ListState.loading), const ListEvent(ListState.success)]),
       );
       await expectLater(
         counterCubit.stream,
         emitsInOrder(
-          <Matcher>[equals(const CharacterListEvent(ListState.idle)),equals(const CharacterListEvent(ListState.loading),),equals(const CharacterListEvent(ListState.success)), emitsDone],
+          <Matcher>[equals(const ListEvent(ListState.idle)),equals(const ListEvent(ListState.loading),),equals(const ListEvent(ListState.success)), emitsDone],
         ),
       );
     });

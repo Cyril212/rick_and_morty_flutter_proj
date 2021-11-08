@@ -1,81 +1,47 @@
-import 'dart:async';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/source_exception.dart';
 import 'package:rick_and_morty_flutter_proj/core/router/router_v1.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/repositories/character_list_repository.dart';
-import 'package:rick_and_morty_flutter_proj/dataSources/responses/character.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_detail/rick_morty_detail_screen.dart';
+import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/list_vm.dart';
 
-///CharacterList states
-enum ListState { idle, loading, success, empty, error }
-
-/// List modes
-enum ListFilterMode { none, favourite }
-
-/// CharacterListEvent witch contains state and error status to process on UI
-class CharacterListEvent {
-  final ListState state;
-  final SourceException? error;
-
-  const CharacterListEvent(this.state, {this.error});
-}
 
 /// View model of [RickMortyListScreen]
-class RickMortyListVM extends Cubit<CharacterListEvent> {
+class RickMortyListVM extends ListVM {
+
   /// CharacterList repo
   final CharacterListRepository _repository;
 
-  /// Filter mode
-  ListFilterMode listFilterMode;
-
-  /// Current character id to retrieve from detail screen
-  int? currentCharacterId;
-
-  /// Status to show loading snackbar
-  bool isFetching;
-
-  late StreamSubscription listenOnDevice;
-
   /// Init
-  RickMortyListVM(this._repository, {this.listFilterMode = ListFilterMode.none, this.isFetching = false})
-      : super(const CharacterListEvent(ListState.idle)) {
-    registerSource();
+  RickMortyListVM(this._repository)
+      : super(_repository);
 
-    _repository.result.listen((dataSource) {
-        if (_repository.error != null) {
-          emit(CharacterListEvent(ListState.error, error: _repository.error));
-        } else {
-          if (characterList.isNotEmpty) {
-            emit(const CharacterListEvent(ListState.success));
-          } else {
-            emit(const CharacterListEvent(ListState.empty));
-          }
-        }
-    });
-  }
+  @override
+  List get currentList => _repository.characterListByMode;
 
-  /// Current List
-  List<Character> get characterList => _repository.characterListByMode;
+  bool get isNoneMode => listFilterMode == ListFilterMode.none;
 
   bool get isSearchPhraseEmpty => _repository.searchPhrase?.isEmpty ?? true;
 
-  bool get isFavouriteState => listFilterMode == ListFilterMode.favourite;
+  @override
+  bool get shouldFetch => isNoneMode && isSearchPhraseEmpty;
 
   /// Emits current [state] depending on result of [fetchCharacterList()]
   void _getCharacters([shouldFetch = true]) {
-    emit(const CharacterListEvent(ListState.loading));
+    emit(const ListEvent(ListState.loading));
 
     _repository.fetchCharacterList(listFilterMode, shouldFetch);
   }
 
-  /// Fetches new characters
-  void fetchCharacterList() => _getCharacters(true);
+  @override
+  void fetchList() {
+    _getCharacters(true);
+  }
 
-  /// Locally updates [characterList]
-  void updateCharacterList() => _getCharacters(false);
+  @override
+  void updateList() {
+    _getCharacters(false);
+  }
 
   /// Sets searchPhrase value
   void setSearchPhraseIfAvailable(String searchPhrase) => _repository.searchPhrase = searchPhrase;
@@ -83,7 +49,7 @@ class RickMortyListVM extends Cubit<CharacterListEvent> {
   /// Sets searchPhrase value and locally update list
   void updateCharacterListBySearchPhrase(String searchPhrase) {
     setSearchPhraseIfAvailable(searchPhrase);
-    updateCharacterList();
+    updateList();
   }
 
   /// Sets current list
@@ -94,7 +60,7 @@ class RickMortyListVM extends Cubit<CharacterListEvent> {
     } else {
       listFilterMode = ListFilterMode.none;
     }
-    updateCharacterList();
+    updateList();
   }
 
   /// Sets favourite character state
@@ -105,14 +71,4 @@ class RickMortyListVM extends Cubit<CharacterListEvent> {
 
   /// Redirects to detail screen
   void moveToDetailScreen(BuildContext context) => pushNamed(context, RickMortyDetailScreen.route);
-
-  void registerSource() {
-    _repository.registerServices();
-  }
-
-  @override
-  Future<void> close() {
-    _repository.unregisterServices();
-    return super.close();
-  }
 }
