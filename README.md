@@ -1,4 +1,4 @@
-# Rick And Morty Test Project
+# Rick And Morty Showcase Project
 
 Rick And Morty TP is a Flutter application made in order to demonstrate basic View-ViewModel-Repository architecture by using [Provider](https://pub.dev/packages/provider) and [BLoC](https://pub.dev/packages/bloc) libs. 
 
