@@ -13,6 +13,7 @@ Clone the project and you're ready to go :)
 - List sorting
 - Search
 - Communication through REST with Hive DB caching.
+- Mocks
 - Unit tests
 
 ## Project structure
