@@ -28,7 +28,7 @@ class _ListWidgetState<T extends ListVM> extends State<ListWidget> {
     super.initState();
 
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      context.read<RickMortyListVM>().fetchList();
+      context.read<RickMortyListVM>().getCharacters();
     });
   }
 
@@ -68,7 +68,7 @@ class _ListWidgetState<T extends ListVM> extends State<ListWidget> {
               bool shouldFetch = _scrollController.offset == _scrollController.position.maxScrollExtent && listVM.shouldFetch;
               if (shouldFetch) {
                 isFetching = true;
-                listVM.fetchList();
+                listVM.onEndOfList();
             }
             }),
           itemBuilder: (context, index) {

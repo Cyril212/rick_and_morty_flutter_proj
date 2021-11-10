@@ -16,7 +16,7 @@ import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_m
 enum ListState { idle, loading, success, empty, error }
 
 /// List modes
-enum ListFilterMode { none, favourite }
+enum ListType { basic, favourite }
 
 /// CharacterListEvent witch contains state and error status to process on UI
 class ListEvent {
@@ -31,18 +31,15 @@ abstract class ListVM extends Cubit<ListEvent> {
   final AbstractRepository _repository;
 
   /// Filter mode
-  ListFilterMode listFilterMode;
+  ListType listType;
 
   /// Current character id to retrieve from detail screen
   int? currentCharacterId;
 
-  /// Status to show loading snackbar
-  bool isFetching;
-
   late StreamSubscription listenOnDevice;
 
   /// Init
-  ListVM(this._repository, {this.listFilterMode = ListFilterMode.none, this.isFetching = false})
+  ListVM(this._repository, {this.listType = ListType.basic})
       : super(const ListEvent(ListState.idle)) {
     registerSource();
 
@@ -65,7 +62,7 @@ abstract class ListVM extends Cubit<ListEvent> {
   bool get shouldFetch;
 
   /// Fetches new characters
-  void fetchList();
+  void onEndOfList();
 
   /// Locally updates [characterList]
   void updateList();

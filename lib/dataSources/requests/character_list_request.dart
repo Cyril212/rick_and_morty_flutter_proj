@@ -6,10 +6,21 @@ class CharacterListRequest extends RequestDataModel {
   /// Initial page, by default is 1
   int pageNum;
 
+  /// Initial page, by default is 1
+  String? name;
+
   CharacterListRequest(String method,{Map<String, String>? headers,this.pageNum = 1}) : super(method, headers);
 
   @override
   Map<String, dynamic> toJson() {
-    return {"page" : pageNum};
+    final Map<String, dynamic> data = <String, dynamic>{};
+
+    if(name != null && name!.isNotEmpty){
+      data['name'] = name;
+    }
+
+    data['page'] = pageNum;
+
+    return data;
   }
 }

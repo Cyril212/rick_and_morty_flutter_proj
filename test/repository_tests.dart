@@ -39,31 +39,31 @@ void main() {
     });
 
     test('Can filter list by ListFilterMode.none if source has no successful response', () async {
-      repository.filterAllPagesListByFilterMode(ListFilterMode.none, false);
+      repository.filterAllPagesListByFilterMode(ListType.basic, false);
 
-      expect(repository.currentListByMode.isEmpty, true);
+      expect(repository.currentList.isEmpty, true);
     });
 
     test('Can filter list by ListFilterMode.none if source has successful response', () async {
-      await repository.fetchCharacterList(ListFilterMode.none, true);
-      repository.filterAllPagesListByFilterMode(ListFilterMode.none, false);
+      await repository.fetchCharacterList(ListType.basic, true);
+      repository.filterAllPagesListByFilterMode(ListType.basic, false);
 
-      expect(repository.currentListByMode.isNotEmpty, true);
+      expect(repository.currentList.isNotEmpty, true);
     });
 
     test('Does page number iterates after first fetch', () async {
       source.requestDataModel.pageNum = 1;
-      await repository.fetchCharacterList(ListFilterMode.none, true);
+      await repository.fetchCharacterList(ListType.basic, true);
 
       expect(source.requestDataModel.pageNum, 2);
     });
 
     test('is list filtered by phrase', () async {
-      await repository.fetchCharacterList(ListFilterMode.none, true);
+      await repository.fetchCharacterList(ListType.basic, true);
 
       repository.setPhraseAndTryToSearch("Rick S");
 
-      expect("Rick Sanchez", repository.currentListByMode.firstWhere((character) => character.name == "Rick Sanchez").name);
+      expect("Rick Sanchez", repository.currentList.firstWhere((character) => character.name == "Rick Sanchez").name);
     });
 
   });

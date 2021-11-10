@@ -13,23 +13,23 @@ abstract class AbstractRepository<R extends ResponseDataModel> {
   @protected
   List<Service> sources = [];
 
-  AbstractRepository(List<Service> sourceList)
-      : sources = sourceList,
+  AbstractRepository(List<Service> serviceList)
+      : sources = serviceList,
         _controller = StreamController<Service>.broadcast() {
     for (var source in sources) {
-      source.stream.listen(onResponse);
+      source.stream.listen(broadcast);
     }
   }
 
+  @protected
   void emit(Service event) => _controller.sink.add(event);
 
   @protected
-  Future<Service> fetchResult();
+  void broadcast(Service source);
 
   @protected
-  void onResponse(Service source);
-
   void registerServices();
 
+  @protected
   void unregisterServices();
 }

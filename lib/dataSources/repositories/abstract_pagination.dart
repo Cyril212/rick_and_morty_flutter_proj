@@ -2,22 +2,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/data_model.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/list_vm.dart';
 
-mixin AbstractPagination<T extends DataModel> {
+class PaginationController<T extends DataModel> {
 
-  @protected
   List<T> allPagesList = [];
 
-  @protected
-  List<T> currentListByMode = [];
+  int pageNumber = 1;
 
-  @protected
-  bool get hasNextPage;
+  bool hasNextPage = false;
 
-  String get favouriteListTag;
+  void incrementPage(){
+    pageNumber++;
+  }
 
-  @protected
-  void incrementPage();
-
-  @protected
-  void filterAllPagesListByFilterMode(ListFilterMode listFilterMode, bool shouldFetch);
+  void setDefaultPage(){
+    pageNumber = 1;
+  }
 }
