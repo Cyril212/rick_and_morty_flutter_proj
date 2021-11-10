@@ -1,11 +1,12 @@
 import 'dart:convert';
 
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/abstract_manager.dart';
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/data_source.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/request_data_model.dart';
 import 'package:http/http.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/source_exception.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';
+
+import '../service.dart';
 
 ///Fetches and processes data from Http.get request, for more [AbstractManager]
 class RestManager extends AbstractManager {
@@ -32,7 +33,7 @@ class RestManager extends AbstractManager {
   }
 
   @override
-  Future<T> processData<T extends Serivce>(T dataTask, Store store) async {
+  Future<T> processData<T extends Service>(T dataTask, Store store) async {
     try {
       final Response response = await query(dataTask.requestDataModel);
 

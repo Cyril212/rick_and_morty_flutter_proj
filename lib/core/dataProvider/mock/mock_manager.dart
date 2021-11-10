@@ -8,7 +8,7 @@ import 'package:http/http.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/response_data_model.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';
 
-import '../data_source.dart';
+import '../service.dart';
 import '../source_exception.dart';
 ///Mock manager
 class MockManager extends AbstractManager {
@@ -16,7 +16,7 @@ class MockManager extends AbstractManager {
   MockManager(baseUrl): super(baseUrl);
 
   @override
-  Future<T> processData<T extends Serivce>(T dataTask, Store store) async {
+  Future<T> processData<T extends Service>(T dataTask, Store store) async {
     try {
       final Response response = await query(dataTask.requestDataModel);
 

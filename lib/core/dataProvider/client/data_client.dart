@@ -3,14 +3,15 @@ import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/rest_manag
 import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 
-import '../data_source.dart';
+import '../service.dart';
+
 
 ///DataClient to communicate with [RestManager] for more [AbstractDataClient]
 class DataClient extends AbstractDataClient<RestManager> {
   DataClient({Store? store, manager}) : super(manager: manager);
 
   @override
-  Future<T> executeQuery<T extends Serivce>(T dataSource) async {
+  Future<T> executeQuery<T extends Service>(T dataSource) async {
     return manager.processData<T>(dataSource, store!);
   }
 

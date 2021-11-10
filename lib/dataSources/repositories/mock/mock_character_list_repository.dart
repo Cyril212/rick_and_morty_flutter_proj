@@ -1,7 +1,7 @@
 import 'package:collection/src/iterable_extensions.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/data_source.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/mock/mock_data_client.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/service.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/source_exception.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/pagination_repository.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/responses/character.dart';
@@ -13,7 +13,7 @@ class MockCharacterListRepository extends PaginationRepository<Character> {
   final MockDataClient client;
   String? searchPhrase;
 
-  MockCharacterListRepository(this.client, List<Serivce> sources) : super(sources);
+  MockCharacterListRepository(this.client, List<Service> sources) : super(sources);
 
   List<Character> get characterListByMode => currentListByMode;
 
