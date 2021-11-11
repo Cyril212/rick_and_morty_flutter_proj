@@ -6,6 +6,7 @@ import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/list_v
 
 /// View model of [RickMortyListScreen]
 class RickMortyListVM extends ListVM {
+
   /// CharacterList repo
   final CharacterListRepository _repository;
 
@@ -30,6 +31,7 @@ class RickMortyListVM extends ListVM {
     if (isBasic) {
       if (_repository.hasNextPage()) {
         isFetching = true;
+
         getCharacters(true);
       } else {
         isFetching = false;

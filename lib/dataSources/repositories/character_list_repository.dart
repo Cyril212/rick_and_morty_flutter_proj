@@ -13,14 +13,14 @@ import 'helpers/favourites_storage_helper.dart';
 
 ///CharacterListSource to communicate between CharacterListVM and DataSource
 class CharacterListRepository extends AbstractRepository<Character> {
+  final DataClient client;
+
   late final CharacterPaginationController _basicListPagination;
   late final CharacterPaginationController _searchListPagination; //todo: lazy init
 
   late FavouritesStorageHelper favouritesStorageHelper;
+  late String? searchPhrase;
 
-  final DataClient client;
-
-  String? searchPhrase;
 
   /// Init
   CharacterListRepository(this.client, List<Service> serviceList) : super(serviceList) {
@@ -39,6 +39,8 @@ class CharacterListRepository extends AbstractRepository<Character> {
   /// Gets error to send error state in CharacterListVM
   SourceException? get error => _characterListSource.error;
 
+  bool get isSearchPhraseNotEmpty => searchPhrase != null && searchPhrase!.isEmpty;
+
   @override
   void registerServices() {
     for (var element in sources) {
@@ -55,7 +57,7 @@ class CharacterListRepository extends AbstractRepository<Character> {
 
   /// Gets true if response contains link to next page otherwise returns null
   bool hasNextPage() {
-    if (searchPhrase != null && searchPhrase!.isEmpty) {
+    if (isSearchPhraseNotEmpty) {
       return _basicListPagination.hasNextPage;
     } else {
       return _searchListPagination.hasNextPage;
@@ -69,7 +71,7 @@ class CharacterListRepository extends AbstractRepository<Character> {
 
     switch (listFilterMode) {
       case ListType.basic:
-        if (searchPhrase != null && searchPhrase!.isNotEmpty) {
+        if (isSearchPhraseNotEmpty) {
           characterListByMode = _searchListPagination.updateAllPages(characterListByMode, listFromResponse, favouritesStorageHelper.getFavouriteCharacters(), shouldFetch);
         } else {
           characterListByMode =  _basicListPagination.updateAllPages(characterListByMode,  listFromResponse, favouritesStorageHelper.getFavouriteCharacters(), shouldFetch);
