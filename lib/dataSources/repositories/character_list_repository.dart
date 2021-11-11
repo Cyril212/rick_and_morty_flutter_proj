@@ -1,16 +1,12 @@
 import 'dart:async';
 
-import 'package:collection/src/iterable_extensions.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/data_client.dart';
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/module/search_module.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/service.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/source_exception.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/abstract_repository.dart';
-import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/responses/character.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/service/character_list_service.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/list_vm.dart';
-import 'dart:convert';
 
 import 'character_pagination_controller.dart';
 import 'helpers/favourites_storage_helper.dart';
@@ -66,6 +62,31 @@ class CharacterListRepository extends AbstractRepository<Character> {
     }
   }
 
+  ///Filters list by [listFilterMode], then in case [searchPhrase] != null filters list by searchPhrase
+  void _filterAllPagesListByFilterMode(ListType listFilterMode, bool shouldFetch) {
+    //merge new response with characters from store
+    List<Character> listFromResponse = _characterListSource.response!.results;
+
+    switch (listFilterMode) {
+      case ListType.basic:
+        if (searchPhrase != null && searchPhrase!.isNotEmpty) {
+          characterListByMode = _searchListPagination.updateAllPages(characterListByMode, listFromResponse, favouritesStorageHelper.getFavouriteCharacters(), shouldFetch);
+        } else {
+          characterListByMode =  _basicListPagination.updateAllPages(characterListByMode,  listFromResponse, favouritesStorageHelper.getFavouriteCharacters(), shouldFetch);
+        }
+        break;
+      case ListType.favourite:
+        characterListByMode = favouritesStorageHelper.filterFavouritesListBySearch(searchPhrase);
+        break;
+    }
+  }
+
+  @override
+  void broadcast(service) {
+    _filterAllPagesListByFilterMode(ListType.basic, true);
+    emit(service);
+  }
+
   void _incrementPage() {
     int resultPage;
     if (searchPhrase?.isEmpty ?? true) {
@@ -101,41 +122,5 @@ class CharacterListRepository extends AbstractRepository<Character> {
     getCharacterList(listFilterMode, true);
   }
 
-  @override
-  void broadcast(service) {
-    _filterAllPagesListByFilterMode(ListType.basic, true);
-    emit(service);
-  }
 
-  ///Filters list by [listFilterMode], then in case [searchPhrase] != null filters list by searchPhrase
-  void _filterAllPagesListByFilterMode(ListType listFilterMode, bool shouldFetch) {
-    //merge new response with characters from store
-    List<Character> listFromResponse = _characterListSource.response!.results;
-
-    switch (listFilterMode) {
-      case ListType.basic:
-        if (searchPhrase != null && searchPhrase!.isNotEmpty) {
-          _searchListPagination.updateAllPages(characterListByMode, listFromResponse, favouritesStorageHelper.getFavouriteCharacters(), shouldFetch);
-
-          //update current list mode
-          characterListByMode
-            ..clear()
-            ..addAll(_searchListPagination.allPagesList);
-
-        } else {
-          _basicListPagination.updateAllPages(characterListByMode,  listFromResponse, favouritesStorageHelper.getFavouriteCharacters(), shouldFetch);
-
-          //update current list mode
-          characterListByMode
-            ..clear()
-            ..addAll(_basicListPagination.allPagesList);
-        }
-        break;
-      case ListType.favourite:
-        characterListByMode = favouritesStorageHelper.filterFavouritesListBySearch(searchPhrase);
-        break;
-    }
-
-    //search if searchPhrase is present
-  }
 }

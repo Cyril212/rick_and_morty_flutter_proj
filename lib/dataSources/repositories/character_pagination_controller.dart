@@ -11,11 +11,11 @@ class CharacterPaginationController extends PaginationController<Character> {
   @override
   bool get hasNextPage => service.response?.info.next != null;
 
-  void updateAllPages(
+  List<Character> updateAllPages(
       List<Character> characterListByMode, List<Character> characterListFromResponse, List<Character> favouriteCharacterList, bool shouldFetch) {
     if (shouldFetch) {
       if (allPagesList.isNotEmpty && service.requestDataModel.pageNum > 2) {
-        List<Character> tmp = List.from(allPagesList);// to avoid concurrent modification
+        List<Character> tmp = List.from(allPagesList); // to avoid concurrent modification
         tmp.addAll(characterListFromResponse);
         allPagesList = tmp;
       } else {
@@ -24,6 +24,8 @@ class CharacterPaginationController extends PaginationController<Character> {
     }
 
     mergeWithFavouriteStorage(favouriteCharacterList);
+
+    return allPagesList;
   }
 
   @override
@@ -32,7 +34,7 @@ class CharacterPaginationController extends PaginationController<Character> {
     service.requestDataModel.pageNum = 1;
   }
 
-  /// Merges [allPagesList] isFavourite state with [allPagesList]
+  /// Merges [favouriteCharacterList] isFavourite state with [allPagesList]
   void mergeWithFavouriteStorage(List<Character> favouriteCharacterList) {
     for (var page in allPagesList) {
       page.isFavourite = false;
