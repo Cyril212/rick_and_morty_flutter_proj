@@ -22,7 +22,7 @@ class RestManager extends AbstractManager {
       values.add('$key=$value');
     });
 
-    final String url = '${baseUrl}${dataRequest.method}?${values.join('&')}';
+    final String url = '${baseUrl}${dataRequest.method}/?${values.join('&')}';
 
     final Response response = await get(
       Uri.parse(url),
@@ -42,11 +42,11 @@ class RestManager extends AbstractManager {
           originalException: null,
           httpStatusCode: response.statusCode,
         );
-      } else{
+      } else {
         final rawResponse = jsonDecode(response.body);
         dataTask.response = dataTask.processResponse(rawResponse);
 
-        store.put(dataTask.sourceId, rawResponse);
+        dataTask.error = null;
       }
 
     } catch (e) {

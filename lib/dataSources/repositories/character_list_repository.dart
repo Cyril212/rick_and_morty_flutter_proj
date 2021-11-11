@@ -7,16 +7,19 @@ import 'package:rick_and_morty_flutter_proj/core/dataProvider/service.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/source_exception.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/abstract_repository.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';
-import 'package:rick_and_morty_flutter_proj/dataSources/repositories/abstract_pagination.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/responses/character.dart';
 import 'package:rick_and_morty_flutter_proj/dataSources/service/character_list_service.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/list_vm.dart';
 import 'dart:convert';
 
+import 'character_pagination_controller.dart';
+
 ///CharacterListSource to communicate between CharacterListVM and DataSource
 class CharacterListRepository extends AbstractRepository<Character> with SearchModule {
-  late final PaginationController<Character> _basicListPagination;
-  late final PaginationController<Character> _searchListPagination; //todo: lazy init
+  late final CharacterPaginationController _basicListPagination;
+  late final CharacterPaginationController _searchListPagination; //todo: lazy init
+
+  late FavouritesStorageHelper favouritesStorageHelper;
 
   final DataClient client;
 
@@ -24,8 +27,10 @@ class CharacterListRepository extends AbstractRepository<Character> with SearchM
 
   /// Init
   CharacterListRepository(this.client, List<Service> serviceList) : super(serviceList) {
-    _basicListPagination = PaginationController<Character>();
-    _searchListPagination = PaginationController<Character>();
+    _basicListPagination = CharacterPaginationController(_characterListSource);
+    _searchListPagination = CharacterPaginationController(_characterListSource);
+
+    favouritesStorageHelper = FavouritesStorageHelper(client, _basicListPagination, _searchListPagination);
   }
 
   /// Gets [CharacterListSource]
@@ -37,8 +42,12 @@ class CharacterListRepository extends AbstractRepository<Character> with SearchM
   /// Gets error to send error state in CharacterListVM
   SourceException? get error => _characterListSource.error;
 
-  /// List tag to put/get current favourite list to [HiveStore]
-  String get favouriteListTag => "favouriteList";
+  @override
+  void registerServices() {
+    for (var element in sources) {
+      element.registerSource(client.manager);
+    }
+  }
 
   /// Gets true if response contains link to next page otherwise returns null
   bool hasNextPage() {
@@ -49,129 +58,123 @@ class CharacterListRepository extends AbstractRepository<Character> with SearchM
     }
   }
 
-  /// Gets new page if [shouldFetch] is true, otherwise calls [filterAllPagesListByFilterMode()] to update [characterListByMode]
-  void getCharacterList([ListType listFilterMode = ListType.basic]) async {
-    switch (listFilterMode) {
-      case ListType.basic:
-        _characterListSource.requestDataModel.name = searchPhrase;
-
-        client.executeQuery(_characterListSource).then((value) {
-          _incrementPage();
-          return value;
-        });
-        break;
-      case ListType.favourite:
-        filterAllPagesListByFilterMode(listFilterMode, false);
-
-        emit(_characterListSource);
-        break;
-    }
-  }
-
-  void setDefaultPageAndGetCharacterList([ListType listFilterMode = ListType.basic]) {
-    _setDefaultPage();
-    getCharacterList(listFilterMode);
-  }
-
-  @override
-  void broadcast(source) {
-    filterAllPagesListByFilterMode(ListType.basic, true);
-    emit(source);
-  }
-
-  /// Init page
   void _incrementPage() {
     int resultPage;
     if (searchPhrase?.isEmpty ?? true) {
-      resultPage = _basicListPagination.pageNumber;
+      resultPage = _basicListPagination.incrementPage();
     } else {
-      resultPage = _searchListPagination.pageNumber;
+      resultPage = _searchListPagination.incrementPage();
     }
     _characterListSource.requestDataModel.pageNum = resultPage;
   }
 
-  void _setDefaultPage() {
-    if (searchPhrase?.isEmpty ?? true) {
-      _basicListPagination.setDefaultPage();
+  /// Gets new page if [allowFetch] is true, otherwise calls [filterAllPagesListByFilterMode()] to update [characterListByMode]
+  void getCharacterList([ListType listFilterMode = ListType.basic, bool refreshList = false]) async {
+    _characterListSource.requestDataModel.name = searchPhrase;
+
+    if (refreshList) {
+
+      client.executeQuery(_characterListSource).then((value) {
+        _incrementPage();
+        return value;
+      });
     } else {
-      _searchListPagination.setDefaultPage();
+      _filterAllPagesListByFilterMode(listFilterMode, false);
+
+      emit(_characterListSource);
     }
   }
 
-  void setDefaultPageToCharacterListRequest() => _characterListSource.requestDataModel.pageNum = 1;
+  void _setDefaultSearchPage() {
+    _searchListPagination.setDefaultPage();
+  }
+
+  void setDefaultPageAndGetCharacterList([ListType listFilterMode = ListType.basic]) {
+    _setDefaultSearchPage();
+    getCharacterList(listFilterMode, true);
+  }
+
+  @override
+  void broadcast(service) {
+    _filterAllPagesListByFilterMode(ListType.basic, true);
+    emit(service);
+  }
 
   /// Returns merge of current response with favouriteCharacters from [HiveStore]
   List<Character> _mergeFavouritesCharacterFromStore() {
     List<Character> list = _characterListSource.response?.results ?? [];
     for (var character in list) {
-      character.isFavourite = getFavouriteCharacterStateById(character.id);
+      character.isFavourite = favouritesStorageHelper.getFavouriteCharacterStateById(character.id);
     }
     return list;
   }
 
   ///Filters list by [listFilterMode], then in case [searchPhrase] != null filters list by searchPhrase
-  void filterAllPagesListByFilterMode(ListType listFilterMode, bool shouldFetch) {
+  void _filterAllPagesListByFilterMode(ListType listFilterMode, bool shouldFetch) {
     //merge new response with characters from store
     List<Character> mergeFavouritesCharacterFromStore = _mergeFavouritesCharacterFromStore();
 
     switch (listFilterMode) {
       case ListType.basic:
-        if (shouldFetch) {
-          //if it's from getCharacters(true) update mergedList
-          if (_basicListPagination.allPagesList.isNotEmpty) {
-            _basicListPagination.allPagesList.addAll(mergeFavouritesCharacterFromStore);
-          } else {
-            _basicListPagination.allPagesList = mergeFavouritesCharacterFromStore;
+        if (searchPhrase != null && searchPhrase!.isNotEmpty) {
+          if (shouldFetch) {
+            //if it's from getCharacters(true) update mergedList
+            _searchListPagination.fillAllPagesList(characterListByMode, mergeFavouritesCharacterFromStore);
           }
+
+          _searchListPagination.setCurrentFavouriteStateFromCurrentListMode(characterListByMode);
+          //update current list mode
+          characterListByMode
+            ..clear()
+            ..addAll(_searchListPagination.allPagesList);
+        } else {
+          if (shouldFetch) {
+            //if it's from getCharacters(true) update mergedList
+            _basicListPagination.fillAllPagesList(characterListByMode, mergeFavouritesCharacterFromStore);
+          }
+
+          _basicListPagination.setCurrentFavouriteStateFromCurrentListMode(characterListByMode);
+          //update current list mode
+          characterListByMode
+            ..clear()
+            ..addAll(_basicListPagination.allPagesList);
         }
-
-        //set current state from filteredListByMode to mergedList
-        _setCurrentFavouriteStateFromCurrentListMode();
-
-        //update current list mode
-        characterListByMode
-          ..clear()
-          ..addAll(_basicListPagination.allPagesList);
         break;
       case ListType.favourite:
-        characterListByMode = _getFavouriteCharacters();
-        tryToSearch(characterListByMode);
+        characterListByMode = favouritesStorageHelper.filterFavouritesListBySearch(searchPhrase);
         break;
     }
 
     //search if searchPhrase is present
   }
 
-  void tryToSearch(List currentList) {
-    if (searchPhrase != null && searchPhrase!.isNotEmpty) {
-      final tmp = [...currentList];
-      currentList.clear();
-      for (var item in tmp) {
-        if (item.name.contains(searchPhrase!)) {
-          currentList.add(item);
-        }
-      }
+  @override
+  void unregisterServices() {
+    for (var element in sources) {
+      element.unregisterSource(client.manager, int.parse(element.sourceId));
     }
   }
+}
 
-  /// Merges [allPagesList] isFavourite state with [currentList]
-  void _setCurrentFavouriteStateFromCurrentListMode() {
-    for (var mergedCharacter in _basicListPagination.allPagesList) {
-      for (var character in characterListByMode) {
-        if (mergedCharacter.id == character.id) {
-          mergedCharacter.isFavourite = character.isFavourite;
-        }
-      }
-    }
-  }
+class FavouritesStorageHelper {
+  DataClient client;
+
+  late final CharacterPaginationController _basicListPagination;
+  late final CharacterPaginationController _searchListPagination;
+
+  /// List tag to put/get current favourite list to [HiveStore]
+  String get favouriteListTag => "favouriteList";
+
+  FavouritesStorageHelper(this.client, this._basicListPagination, this._searchListPagination);
 
   /// Puts favourite character to storage
   void putFavouriteCharacterStateById(int characterId, bool state) {
     //Get character
-    final Character? characterById = _basicListPagination.allPagesList.firstWhereOrNull((character) => character.id == characterId);
+    final Character? characterById = _basicListPagination.allPagesList.firstWhereOrNull((character) => character.id == characterId) ??
+        _searchListPagination.allPagesList.firstWhereOrNull((character) => character.id == characterId);
 
     //Get current list of favorite characters
-    List<Character> filteredList = List<Character>.from(_getFavouriteCharacters());
+    List<Character> filteredList = List<Character>.from(getFavouriteCharacters());
 
     //Find out if it already contains this char
     final alreadyContainsFavourite = filteredList.firstWhereOrNull((character) => character.id == characterId) != null;
@@ -193,7 +196,7 @@ class CharacterListRepository extends AbstractRepository<Character> with SearchM
 
   /// Gets favourite state by [characterId]
   bool getFavouriteCharacterStateById(int characterId) {
-    Character? character = _getFavouriteCharacters().firstWhereOrNull((character) => character.id == characterId);
+    Character? character = getFavouriteCharacters().firstWhereOrNull((character) => character.id == characterId);
 
     if (character != null) {
       return character.isFavourite;
@@ -203,7 +206,7 @@ class CharacterListRepository extends AbstractRepository<Character> with SearchM
   }
 
   ///Gets favourite characters
-  List<Character> _getFavouriteCharacters() {
+  List<Character> getFavouriteCharacters() {
     String characterListAsString = client.getDataFromStore(favouriteListTag) ?? "";
 
     List<Map<String, dynamic>> characterStringList =
@@ -212,17 +215,17 @@ class CharacterListRepository extends AbstractRepository<Character> with SearchM
     return characterStringList.map((json) => Character.fromJson(json)).toList();
   }
 
-  @override
-  void registerServices() {
-    for (var element in sources) {
-      element.registerSource(client.manager);
+  List<Character> filterFavouritesListBySearch(String? searchPhrase) {
+    final favouriteList = getFavouriteCharacters();
+    if (searchPhrase != null && searchPhrase.isNotEmpty) {
+      final tmp = [...favouriteList];
+      favouriteList.clear();
+      for (var item in tmp) {
+        if (item.name.contains(searchPhrase)) {
+          favouriteList.add(item);
+        }
+      }
     }
-  }
-
-  @override
-  void unregisterServices() {
-    for (var element in sources) {
-      element.unregisterSource(client.manager, int.parse(element.sourceId));
-    }
+    return favouriteList;
   }
 }

@@ -17,39 +17,39 @@ class RickMortyListVM extends ListVM {
 
   bool get isBasic => listType == ListType.basic;
 
-  bool get isSearchPhraseEmpty => _repository.searchPhrase?.isEmpty ?? true;
-
   @override
-  bool get shouldFetch => isBasic && isSearchPhraseEmpty;
+  bool get allowFetch => isBasic && _repository.hasNextPage();
 
   /// Emits current [state] depending on result of [fetchCharacterList()]
-  void getCharacters() {
-    _repository.getCharacterList(listType);
+  void getCharacters(bool refreshList) {
+    _repository.getCharacterList(listType, refreshList);
   }
 
   @override
   void onEndOfList() {
     if (isBasic) {
       if (_repository.hasNextPage()) {
-        emit(const ListEvent(ListState.loading));
-        getCharacters();
+        isFetching = true;
+        getCharacters(true);
+      } else {
+        isFetching = false;
       }
     }
   }
 
   @override
   void updateList() {
-    getCharacters();
+    getCharacters(false);
   }
 
   /// Sets searchPhrase value
-  void setSearchPhraseIfAvailable(String searchPhrase) => _repository.searchPhrase = searchPhrase;
+  void _setSearchPhraseIfAvailable(String searchPhrase) => _repository.searchPhrase = searchPhrase;
 
   /// Sets searchPhrase value and locally update list
   void updateCharacterListBySearchPhrase(String searchPhrase) {
-    setSearchPhraseIfAvailable(searchPhrase);
+    _setSearchPhraseIfAvailable(searchPhrase);
 
-    if(listType == ListType.basic) {
+    if(listType == ListType.basic && searchPhrase.isNotEmpty) {
       emit(const ListEvent(ListState.loading));
       _repository.setDefaultPageAndGetCharacterList();
     } else {
@@ -70,10 +70,10 @@ class RickMortyListVM extends ListVM {
   }
 
   /// Sets favourite character state
-  void setFavouriteCharacterState(int characterId, bool state) => _repository.putFavouriteCharacterStateById(characterId, state);
+  void setFavouriteCharacterState(int characterId, bool state) => _repository.favouritesStorageHelper.putFavouriteCharacterStateById(characterId, state);
 
   /// Gets favourite character state
-  bool getFavouriteCharacterState(int characterId) => _repository.getFavouriteCharacterStateById(characterId);
+  bool getFavouriteCharacterState(int characterId) => _repository.favouritesStorageHelper.getFavouriteCharacterStateById(characterId);
 
   /// Redirects to detail screen
   void moveToDetailScreen(BuildContext context) => pushNamed(context, RickMortyDetailScreen.route);

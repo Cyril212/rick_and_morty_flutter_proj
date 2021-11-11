@@ -5,11 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/source_exception.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/abstract_repository.dart';
-import 'package:rick_and_morty_flutter_proj/core/router/router_v1.dart';
-import 'package:rick_and_morty_flutter_proj/dataSources/repositories/character_list_repository.dart';
-import 'package:rick_and_morty_flutter_proj/dataSources/responses/character.dart';
-import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_detail/rick_morty_detail_screen.dart';
-import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 
 
 ///CharacterList states
@@ -24,6 +19,14 @@ class ListEvent {
   final SourceException? error;
 
   const ListEvent(this.state, {this.error});
+
+  @override
+  int get hashCode => UniqueKey().hashCode;
+
+  @override
+  bool operator ==(Object other) {
+    return hashCode == other.hashCode;
+  }
 }
 /// View model of [RickMortyListScreen]
 abstract class ListVM extends Cubit<ListEvent> {
@@ -38,12 +41,16 @@ abstract class ListVM extends Cubit<ListEvent> {
 
   late StreamSubscription listenOnDevice;
 
+  bool isFetching = false;
+
   /// Init
   ListVM(this._repository, {this.listType = ListType.basic})
       : super(const ListEvent(ListState.idle)) {
     registerSource();
 
     _repository.result.listen((dataSource) {
+
+      //to make bloc builder receive the same state
         if (dataSource.error != null) {
           emit(ListEvent(ListState.error, error: dataSource.error));
         } else {
@@ -59,14 +66,13 @@ abstract class ListVM extends Cubit<ListEvent> {
   /// Current List
   List get currentList;
 
-  bool get shouldFetch;
+  bool get allowFetch;
 
   /// Fetches new characters
   void onEndOfList();
 
-  /// Locally updates [characterList]
+  /// Locally updates [currentList]
   void updateList();
-
 
   void registerSource() {
     _repository.registerServices();

@@ -39,14 +39,14 @@ void main() {
     });
 
     test('Can filter list by ListFilterMode.none if source has no successful response', () async {
-      repository.filterAllPagesListByFilterMode(ListType.basic, false);
+      repository._filterAllPagesListByFilterMode(ListType.basic, false);
 
       expect(repository.currentList.isEmpty, true);
     });
 
     test('Can filter list by ListFilterMode.none if source has successful response', () async {
       await repository.fetchCharacterList(ListType.basic, true);
-      repository.filterAllPagesListByFilterMode(ListType.basic, false);
+      repository._filterAllPagesListByFilterMode(ListType.basic, false);
 
       expect(repository.currentList.isNotEmpty, true);
     });

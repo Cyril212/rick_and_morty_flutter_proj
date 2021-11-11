@@ -21,14 +21,13 @@ class ListWidget<T extends ListVM> extends StatefulWidget {
 
 class _ListWidgetState<T extends ListVM> extends State<ListWidget> {
   final ScrollController _scrollController = ScrollController();
-  bool isFetching = false;
 
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      context.read<RickMortyListVM>().getCharacters();
+      context.read<RickMortyListVM>().getCharacters(true);
     });
   }
 
@@ -37,21 +36,25 @@ class _ListWidgetState<T extends ListVM> extends State<ListWidget> {
     return Expanded(
       key: const Key("RickMortyListWidgetKey"),
       child: BlocConsumer<T, ListEvent>(listener: (context, characterListEvent) {
+        final listVM = context.read<T>();
+
         switch (characterListEvent.state) {
           case ListState.idle:
           case ListState.loading:
             break;
           case ListState.success:
-           isFetching = true;
+            listVM.isFetching = false;
             break;
           case ListState.empty:
             break;
           case ListState.error:
-            isFetching = false;
+            listVM.isFetching = false;
             break;
         }
       }, builder: (BuildContext context, snapshot) {
         final listVM = context.read<T>();
+
+        print("Length: ${listVM.currentList.length}");
 
         bool isInitialLoading = snapshot.state == ListState.idle || snapshot.state == ListState.loading && (listVM.currentList.isEmpty);
         if (isInitialLoading) {
@@ -65,9 +68,10 @@ class _ListWidgetState<T extends ListVM> extends State<ListWidget> {
         return ListView.separated(
           controller: _scrollController
             ..addListener(() {
-              bool shouldFetch = _scrollController.offset == _scrollController.position.maxScrollExtent && listVM.shouldFetch;
-              if (shouldFetch) {
-                isFetching = true;
+              bool isEndOfList = _scrollController.offset == _scrollController.position.maxScrollExtent;
+              bool shouldFetch = isEndOfList && listVM.allowFetch;
+
+              if (shouldFetch && listVM.isFetching == false) {
                 listVM.onEndOfList();
             }
             }),
@@ -79,7 +83,7 @@ class _ListWidgetState<T extends ListVM> extends State<ListWidget> {
             }
           },
           separatorBuilder: (context, index) => widget.separatorBuilder != null ? widget.separatorBuilder!(context) : const SizedBox(height: 2),
-          itemCount: listVM.shouldFetch ? listVM.currentList.length + 1 : listVM.currentList.length,
+          itemCount: listVM.allowFetch ? listVM.currentList.length + 1 : listVM.currentList.length,
         );
       }),
     );

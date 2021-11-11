@@ -25,11 +25,9 @@ abstract class AbstractRepository<R extends ResponseDataModel> {
   void emit(Service event) => _controller.sink.add(event);
 
   @protected
-  void broadcast(Service source);
+  void broadcast(Service service);
 
-  @protected
   void registerServices();
 
-  @protected
   void unregisterServices();
 }
