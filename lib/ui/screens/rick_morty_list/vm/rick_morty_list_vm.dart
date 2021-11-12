@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rick_and_morty_flutter_proj/core/router/router_v1.dart';
-import 'package:rick_and_morty_flutter_proj/dataSources/repositories/character_list_repository.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/repositories/character_list_repository.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_detail/rick_morty_detail_screen.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/list_vm.dart';
 
@@ -26,6 +26,7 @@ class RickMortyListVM extends ListVM {
     _repository.getCharacterList(listType, refreshList);
   }
 
+  /// Called when list reached the [maxExtend] and allowed to fetch
   @override
   void onEndOfList() {
     if (isBasic) {
@@ -39,6 +40,7 @@ class RickMortyListVM extends ListVM {
     }
   }
 
+  /// Locally updates list, in case user changed [ListType] or [isFavourite] value of [Character]
   @override
   void updateList() {
     getCharacters(false);
@@ -47,12 +49,12 @@ class RickMortyListVM extends ListVM {
   /// Sets searchPhrase value
   void _setSearchPhraseIfAvailable(String searchPhrase) => _repository.searchPhrase = searchPhrase;
 
-  /// Sets searchPhrase value and locally update list
+  /// Sets searchPhrase value and fetches new result
   void updateCharacterListBySearchPhrase(String searchPhrase) {
     _setSearchPhraseIfAvailable(searchPhrase);
 
     if(listType == ListType.basic && searchPhrase.isNotEmpty) {
-      emit(const ListEvent(ListState.loading));
+      emit(ListEvent(ListState.loading));
       _repository.setDefaultPageAndGetCharacterList();
     } else {
       updateList();

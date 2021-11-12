@@ -25,7 +25,7 @@ abstract class AbstractDataClient<T extends AbstractManager> {
   }
 
   ///Fetches data from store ([Hive] or [inMemory])
-  void putDataToStore(String dataId, Map<String, dynamic> data) => store!.put(dataId, data);
+  void putDataToStore(String dataId, dynamic data) => store!.put(dataId, data);
 
   ///Gets data from store ([Hive] or [inMemory])
   dynamic getDataFromStore(String dataId) => store!.get(dataId);

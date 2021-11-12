@@ -19,7 +19,7 @@ void main() {
 
   //Init dependencies
   setUpAll(() {
-    registerFallbackValue(const ListEvent(ListState.idle));
+    registerFallbackValue(ListEvent(ListState.idle));
   });
 
   group('Can init RickMortyListVM', () {
@@ -34,12 +34,12 @@ void main() {
       final counterCubit = MockRickMortyListVM();
       whenListen(
         counterCubit,
-        Stream.fromIterable([const ListEvent(ListState.idle)]),
+        Stream.fromIterable([ListEvent(ListState.idle)]),
       );
       await expectLater(
         counterCubit.stream,
         emitsInOrder(
-          <Matcher>[equals(const ListEvent(ListState.idle)), emitsDone],
+          <Matcher>[equals(ListEvent(ListState.idle)), emitsDone],
         ),
       );
     });
@@ -48,12 +48,12 @@ void main() {
       final counterCubit = MockRickMortyListVM();
       whenListen(
         counterCubit,
-        Stream.fromIterable([const ListEvent(ListState.idle),const ListEvent(ListState.loading)]),
+        Stream.fromIterable([ListEvent(ListState.idle), ListEvent(ListState.loading)]),
       );
       await expectLater(
         counterCubit.stream,
         emitsInOrder(
-          <Matcher>[equals(const ListEvent(ListState.idle)),equals(const ListEvent(ListState.loading)), emitsDone],
+          <Matcher>[equals(ListEvent(ListState.idle)),equals(ListEvent(ListState.loading)), emitsDone],
         ),
       );
     });
@@ -62,12 +62,12 @@ void main() {
       final counterCubit = MockRickMortyListVM();
       whenListen(
         counterCubit,
-        Stream.fromIterable([const ListEvent(ListState.idle),const ListEvent(ListState.loading), const ListEvent(ListState.success)]),
+        Stream.fromIterable([ListEvent(ListState.idle),ListEvent(ListState.loading), ListEvent(ListState.success)]),
       );
       await expectLater(
         counterCubit.stream,
         emitsInOrder(
-          <Matcher>[equals(const ListEvent(ListState.idle)),equals(const ListEvent(ListState.loading),),equals(const ListEvent(ListState.success)), emitsDone],
+          <Matcher>[equals(ListEvent(ListState.idle)),equals(ListEvent(ListState.loading),),equals(ListEvent(ListState.success)), emitsDone],
         ),
       );
     });

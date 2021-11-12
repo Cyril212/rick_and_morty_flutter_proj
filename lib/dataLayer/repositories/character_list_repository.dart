@@ -4,8 +4,8 @@ import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/data_client
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/service.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/source_exception.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/abstract_repository.dart';
-import 'package:rick_and_morty_flutter_proj/dataSources/responses/character.dart';
-import 'package:rick_and_morty_flutter_proj/dataSources/service/character_list_service.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/responses/character.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/service/character_list_service.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/list_vm.dart';
 
 import 'character_pagination_controller.dart';
@@ -27,7 +27,7 @@ class CharacterListRepository extends AbstractRepository<Character> {
     _basicListPagination = CharacterPaginationController(_characterListSource);
     _searchListPagination = CharacterPaginationController(_characterListSource);
 
-    favouritesStorageHelper = FavouritesStorageHelper(client, _basicListPagination, _searchListPagination);
+    favouritesStorageHelper = FavouritesStorageHelper<DataClient>(client, _basicListPagination, _searchListPagination);
   }
 
   /// Gets [CharacterListSource]
@@ -99,7 +99,7 @@ class CharacterListRepository extends AbstractRepository<Character> {
     _characterListSource.requestDataModel.pageNum = resultPage;
   }
 
-  /// Gets new page if [allowFetch] is true, otherwise calls [filterAllPagesListByFilterMode()] to update [characterListByMode]
+  /// Gets new page if [refreshList] is true, otherwise calls [filterAllPagesListByFilterMode()] to update [characterListByMode]
   void getCharacterList([ListType listFilterMode = ListType.basic, bool refreshList = false]) async {
     _characterListSource.requestDataModel.name = searchPhrase;
 
@@ -115,14 +115,15 @@ class CharacterListRepository extends AbstractRepository<Character> {
     }
   }
 
+  /// Resets page number, only called during search bar input
   void _setDefaultSearchPage() {
     _searchListPagination.setDefaultPage();
   }
 
+  /// Resets page number and fetches new response
   void setDefaultPageAndGetCharacterList([ListType listFilterMode = ListType.basic]) {
     _setDefaultSearchPage();
     getCharacterList(listFilterMode, true);
   }
-
 
 }

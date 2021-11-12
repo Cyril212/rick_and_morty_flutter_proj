@@ -10,9 +10,9 @@ import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/rick_mort
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 import 'core/dataProvider/client/data_client.dart';
 import 'core/repository/store/store.dart';
-import 'dataSources/repositories/character_list_repository.dart';
-import 'dataSources/requests/character_list_request.dart';
-import 'dataSources/service/character_list_service.dart';
+import 'dataLayer/repositories/character_list_repository.dart';
+import 'dataLayer/requests/character_list_request.dart';
+import 'dataLayer/service/character_list_service.dart';
 
 /// Endpoint
 void main() async {

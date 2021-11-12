@@ -1,7 +1,7 @@
 import 'package:collection/src/iterable_extensions.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/pagination_controller.dart';
-import 'package:rick_and_morty_flutter_proj/dataSources/responses/character.dart';
-import 'package:rick_and_morty_flutter_proj/dataSources/service/character_list_service.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/responses/character.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/service/character_list_service.dart';
 
 class CharacterPaginationController extends PaginationController<Character> {
   CharacterListService service;

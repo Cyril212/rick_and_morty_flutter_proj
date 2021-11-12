@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
-import 'package:rick_and_morty_flutter_proj/dataSources/responses/character.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/responses/character.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_detail/vm/rick_morty_detail_vm.dart';
 import 'package:rick_and_morty_flutter_proj/ui/widgets/character_card_widget.dart';
 

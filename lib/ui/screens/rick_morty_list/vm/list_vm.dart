@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/source_exception.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/unique_event.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/abstract_repository.dart';
 
 
@@ -14,20 +15,13 @@ enum ListState { idle, loading, success, empty, error }
 enum ListType { basic, favourite }
 
 /// CharacterListEvent witch contains state and error status to process on UI
-class ListEvent {
+class ListEvent extends UniqueEvent {
   final ListState state;
   final SourceException? error;
 
-  const ListEvent(this.state, {this.error});
-
-  @override
-  int get hashCode => UniqueKey().hashCode;
-
-  @override
-  bool operator ==(Object other) {
-    return hashCode == other.hashCode;
-  }
+  ListEvent(this.state, {this.error});
 }
+
 /// View model of [RickMortyListScreen]
 abstract class ListVM extends Cubit<ListEvent> {
   /// CharacterList repo
@@ -45,7 +39,7 @@ abstract class ListVM extends Cubit<ListEvent> {
 
   /// Init
   ListVM(this._repository, {this.listType = ListType.basic})
-      : super(const ListEvent(ListState.idle)) {
+      : super(ListEvent(ListState.idle)) {
     registerSource();
 
     _repository.result.listen((dataSource) {
@@ -55,9 +49,9 @@ abstract class ListVM extends Cubit<ListEvent> {
           emit(ListEvent(ListState.error, error: dataSource.error));
         } else {
           if (currentList.isNotEmpty) {
-            emit(const ListEvent(ListState.success));
+            emit(ListEvent(ListState.success));
           } else {
-            emit(const ListEvent(ListState.empty));
+            emit(ListEvent(ListState.empty));
           }
         }
     });
@@ -68,7 +62,7 @@ abstract class ListVM extends Cubit<ListEvent> {
 
   bool get allowFetch;
 
-  /// Fetches new characters
+  /// Called when list reached the [maxExtend] and allowed to fetch
   void onEndOfList();
 
   /// Locally updates [currentList]

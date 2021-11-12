@@ -1,14 +1,15 @@
 import 'dart:convert';
 
 import 'package:collection/src/iterable_extensions.dart';
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/data_client.dart';
-import 'package:rick_and_morty_flutter_proj/dataSources/responses/character.dart';
-import 'package:rick_and_morty_flutter_proj/dataSources/responses/character_list_response.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/abstract_data_client.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/abstract_manager.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/responses/character.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/responses/character_list_response.dart';
 
 import '../character_pagination_controller.dart';
 
-class FavouritesStorageHelper {
-  DataClient client;
+class FavouritesStorageHelper<T extends AbstractDataClient<AbstractManager>>{
+  T client;
 
   late final CharacterPaginationController _basicListPagination;
   late final CharacterPaginationController _searchListPagination;
