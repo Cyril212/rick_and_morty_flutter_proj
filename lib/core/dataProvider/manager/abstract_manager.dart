@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/data_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';
 
 import '../model/request_data_model.dart';
 import '../model/response_data_model.dart';
-import 'package:http/http.dart';
+import 'package:dio/dio.dart';
 
 import '../service.dart';
 

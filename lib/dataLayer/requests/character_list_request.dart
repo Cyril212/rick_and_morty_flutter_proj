@@ -9,7 +9,7 @@ class CharacterListRequest extends RequestDataModel {
   /// Initial page, by default is 1
   String? name;
 
-  CharacterListRequest(String method,{Map<String, String>? headers,this.pageNum = 1}) : super(method, headers);
+  CharacterListRequest({Map<String, String>? headers,this.pageNum = 1}) : super("/character", headers);
 
   @override
   Map<String, dynamic> toJson() {

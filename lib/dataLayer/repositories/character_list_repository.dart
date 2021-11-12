@@ -67,7 +67,7 @@ class CharacterListRepository extends AbstractRepository<Character> {
   ///Filters list by [listFilterMode], then in case [searchPhrase] != null filters list by searchPhrase
   void _filterAllPagesListByFilterMode(ListType listFilterMode, bool shouldFetch) {
     //merge new response with characters from store
-    List<Character> listFromResponse = _characterListSource.response!.results;
+    List<Character> listFromResponse = _characterListSource.response?.results ?? [];
 
     switch (listFilterMode) {
       case ListType.basic:
@@ -104,7 +104,7 @@ class CharacterListRepository extends AbstractRepository<Character> {
     _characterListSource.requestDataModel.name = searchPhrase;
 
     if (refreshList) {
-      client.executeQuery(_characterListSource).then((value) {
+      client.executeService(_characterListSource).then((value) {
         _incrementPage();
         return value;
       });

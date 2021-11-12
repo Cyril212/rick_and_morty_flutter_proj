@@ -25,7 +25,7 @@ void main() {
 
     //Init dependencies
     final client = MockDataClient(store: InMemoryStore(), manager: MockManager(""));
-    final source = MockCharacterListService(client.manager, CharacterListRequest(""));
+    final source = MockCharacterListService(client.manager, CharacterListRequest());
     final repository = MockCharacterListRepository(client, [source]);
 
     test('isFetchPage successful', () async {

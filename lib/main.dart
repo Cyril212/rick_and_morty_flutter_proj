@@ -39,11 +39,11 @@ class RickAndMortyApp extends StatelessWidget {
         providers: [
           Provider<DataClient>(
             lazy: false,
-            create: (context) => DataClient(manager: RestManager("https://rickandmortyapi.com/api/")),
+            create: (context) => DataClient(),
           ),
           BlocProvider(
               create: (context) => RickMortyListVM(CharacterListRepository(
-                  context.read<DataClient>(), [CharacterListService(context.read<DataClient>().manager, CharacterListRequest("character"))]))),
+                  context.read<DataClient>(), [CharacterListService(context.read<DataClient>().manager, CharacterListRequest())]))),
         ],
         child: MaterialApp(
           title: 'Rick and Morty',

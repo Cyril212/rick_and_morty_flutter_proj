@@ -1,5 +1,11 @@
 PODS:
+  - Alamofire (4.9.1)
+  - CryptoSwift (1.4.2)
   - Flutter (1.0.0)
+  - http_certificate_pinning (1.0.3):
+    - Alamofire (~> 4.7)
+    - CryptoSwift
+    - Flutter
   - path_provider (0.0.1):
     - Flutter
   - shared_preferences (0.0.1):
@@ -7,19 +13,30 @@ PODS:
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
+  - http_certificate_pinning (from `.symlinks/plugins/http_certificate_pinning/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
+
+SPEC REPOS:
+  trunk:
+    - Alamofire
+    - CryptoSwift
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
+  http_certificate_pinning:
+    :path: ".symlinks/plugins/http_certificate_pinning/ios"
   path_provider:
     :path: ".symlinks/plugins/path_provider/ios"
   shared_preferences:
     :path: ".symlinks/plugins/shared_preferences/ios"
 
 SPEC CHECKSUMS:
+  Alamofire: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
+  CryptoSwift: a532e74ed010f8c95f611d00b8bbae42e9fe7c17
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
+  http_certificate_pinning: 23157eae20c5887e49372b3cbe7a1d5863eb9bad
   path_provider: d1e9807085df1f9cc9318206cd649dc0b76be3de
   shared_preferences: 5033afbb22d372e15aff8ff766df9021b845f273
 

@@ -7,10 +7,10 @@ import '../service.dart';
 
 ///DataClient to communicate with [RestManager] for more [AbstractDataClient]
 class DataClient extends AbstractDataClient<RestManager> {
-  DataClient({Store? store, manager}) : super(manager: manager);
+  DataClient({Store? store}) : super(manager: RestManager("https://rickandmortyapi.com/api"));
 
   @override
-  Future<T> executeQuery<T extends Service>(T dataSource) async {
+  Future<T> executeService<T extends Service>(T dataSource) async {
     return manager.processData<T>(dataSource, store!);
   }
 

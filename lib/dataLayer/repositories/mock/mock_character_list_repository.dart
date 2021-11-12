@@ -101,7 +101,7 @@ class MockCharacterListRepository extends AbstractRepository<Character> {
     _characterListSource.requestDataModel.name = searchPhrase;
 
     if (refreshList) {
-     return client.executeQuery(_characterListSource).then((value) {
+     return client.executeService(_characterListSource).then((value) {
         _incrementPage();
         return value;
       });
