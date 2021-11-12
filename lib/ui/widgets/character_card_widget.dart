@@ -60,16 +60,20 @@ class CharacterCardWidget extends StatelessWidget {
                   Text("Birth: ${DateFormat.yMd().format(DateTime.parse(character.created))}"),
                   Container(height: 10.0),
                   if (!horizontal)
-                    FavoriteWidget(
-                      key: UniqueKey(),
-                      isChosen: character.isFavourite,
-                      characterId: character.id,
+                    Expanded(
+                      flex: 2,
+                      child: FavoriteWidget(
+                        key: UniqueKey(),
+                        isChosen: character.isFavourite,
+                        characterId: character.id,
+                      ),
                     )
                 ],
               )),
           if (horizontal) const Spacer(),
           if (horizontal)
             Expanded(
+              flex: 2,
               child: FavoriteWidget(
                 key: UniqueKey(),
                 isChosen: character.isFavourite,
@@ -134,7 +138,6 @@ class FavoriteWidget extends StatefulWidget {
 }
 
 class _FavoriteWidgetState extends State<FavoriteWidget> {
-
   void _setFavouriteState() {
     final rickMortyListVM = context.read<RickMortyListVM>();
 
@@ -150,13 +153,12 @@ class _FavoriteWidgetState extends State<FavoriteWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-        onTap: () {
-          setState(_updateWidgetState);
-        },
-        child: Icon(
-          widget.isChosen ? Icons.favorite : Icons.favorite_border,
-          color: Colors.amber,
-        ));
+    return IconButton(
+      color: Colors.amber,
+      icon: widget.isChosen ? const Icon(Icons.favorite) : const Icon(Icons.favorite_border),
+      onPressed: () {
+        setState(_updateWidgetState);
+      },
+    );
   }
 }

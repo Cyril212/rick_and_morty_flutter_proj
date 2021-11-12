@@ -47,7 +47,7 @@ class RickMortyDetailScreen extends StatelessWidget {
         fit: BoxFit.cover,
         height: 300.0,
       ),
-      constraints: const BoxConstraints.expand(height: 295.0),
+      constraints: const BoxConstraints.expand(height: 300.0),
     );
   }
 
@@ -66,11 +66,10 @@ class RickMortyDetailScreen extends StatelessWidget {
     );
   }
 
-  Container _getContent() {
+  Widget _getContent() {
     final _overviewTitle = "Overview".toUpperCase();
-    return Container(
-      child: ListView(
-        padding: EdgeInsets.fromLTRB(0.0, 72.0, 0.0, 32.0),
+    return ListView(
+        padding: const EdgeInsets.fromLTRB(0.0, 72.0, 0.0, 32.0),
         children: <Widget>[
           CharacterCardWidget(
             character: character!,
@@ -89,8 +88,7 @@ class RickMortyDetailScreen extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
+      );
   }
 
   Container _getToolbar(BuildContext context) {
