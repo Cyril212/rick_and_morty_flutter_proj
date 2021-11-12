@@ -38,7 +38,7 @@ class _FilterModeWidgetState extends State<FilterModeWidget> {
           });
         },
         icon: Icon(
-          widget.isChoosen ? Icons.filter_alt : Icons.filter_alt_outlined,
+          widget.isChoosen ? Icons.favorite : Icons.favorite_border,
           color: Colors.amber,
         ));
   }

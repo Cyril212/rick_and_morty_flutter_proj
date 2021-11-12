@@ -27,6 +27,7 @@ abstract class ListVM extends Cubit<ListEvent> {
   /// CharacterList repo
   final AbstractRepository _repository;
 
+  static const int emptyListErrorStatus = 404;
   /// Filter mode
   ListType listType;
 
@@ -46,7 +47,11 @@ abstract class ListVM extends Cubit<ListEvent> {
 
       //to make bloc builder receive the same state
         if (dataSource.error != null) {
-          emit(ListEvent(ListState.error, error: dataSource.error));
+          if(dataSource.error?.httpStatusCode == emptyListErrorStatus) {
+            emit(ListEvent(ListState.empty, error: dataSource.error));
+          }else{
+            emit(ListEvent(ListState.error, error: dataSource.error));
+          }
         } else {
           if (currentList.isNotEmpty) {
             emit(ListEvent(ListState.success));
