@@ -66,6 +66,7 @@ class _ListWidgetState<T extends ListVM> extends State<ListWidget> {
         }
 
         return ListView.separated(
+          padding: const EdgeInsets.only(top: 60),
           controller: _scrollController
             ..addListener(() {
               bool isEndOfList = _scrollController.offset == _scrollController.position.maxScrollExtent;

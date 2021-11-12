@@ -90,7 +90,7 @@ class CharacterCardWidget extends StatelessWidget {
       height: horizontal ? 134.0 : 170.0,
       margin: horizontal ? const EdgeInsets.only(left: 46.0) : const EdgeInsets.only(top: 72.0),
       decoration: BoxDecoration(
-        color: Color(0xFF333366),
+        color: const Color(0xFF333366),
         shape: BoxShape.rectangle,
         borderRadius: BorderRadius.circular(8.0),
         boxShadow: const <BoxShadow>[
