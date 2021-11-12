@@ -53,7 +53,7 @@ class RickMortyListVM extends ListVM {
   void updateCharacterListBySearchPhrase(String searchPhrase) {
     _setSearchPhraseIfAvailable(searchPhrase);
 
-    if(listType == ListType.basic && searchPhrase.isNotEmpty) {
+    if(listType == ListType.basic) {
       emit(ListEvent(ListState.loading));
       _repository.setDefaultPageAndGetCharacterList();
     } else {

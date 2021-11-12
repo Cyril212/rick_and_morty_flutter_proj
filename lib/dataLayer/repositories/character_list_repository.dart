@@ -19,7 +19,7 @@ class CharacterListRepository extends AbstractRepository<Character> {
   late final CharacterPaginationController _searchListPagination; //todo: lazy init
 
   late FavouritesStorageHelper favouritesStorageHelper;
-  late String? searchPhrase;
+  String? searchPhrase;
 
 
   /// Init
