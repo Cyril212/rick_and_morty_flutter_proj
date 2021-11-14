@@ -38,22 +38,22 @@ abstract class AbstractManager {
     return requestId;
   }
 
-  int registerSource(Service dataSource) {
+  int registerService(Service dataSource) {
    sources.putIfAbsent(sourceCounter, () => dataSource);
 
    return generateDataSourceId();
   }
 
   @protected
-  void refreshSimilarSourcesByMethod(Service task) {
+  void broadcastServicesByMethod(Service task) {
      sources.forEach((id, value) {
        if(value.requestDataModel.method == task.requestDataModel.method){
-          if(id != int.parse(task.sourceId)){//make sure we don't update source which was already fetched
+          if(id != int.parse(task.serviceId)){//make sure we don't update source which was already fetched
             value.sink.add(task);
           }
        }
      });
   }
 
- void unregisterSource(int sourceId) => sources.removeWhere((key, value) => sourceId == key);
+ void unregisterService(int serviceId) => sources.removeWhere((key, value) => serviceId == key);
 }

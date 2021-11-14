@@ -52,7 +52,7 @@ class RestManager extends AbstractManager {
 
     dataTask.sink.add(dataTask);
 
-    refreshSimilarSourcesByMethod(dataTask);
+    broadcastServicesByMethod(dataTask);
 
     return dataTask;
   }

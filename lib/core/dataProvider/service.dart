@@ -10,7 +10,7 @@ import 'source_exception.dart';
 abstract class Service<T extends RequestDataModel, R extends ResponseDataModel> {
 
   /// The identity of this query within the [Manager]
-  late String sourceId;
+  late String serviceId;
 
   /// Request of given source
   final T requestDataModel;
@@ -35,12 +35,12 @@ abstract class Service<T extends RequestDataModel, R extends ResponseDataModel> 
     _controller = StreamController<Service<T,R>>.broadcast();
   }
 
-  void registerSource(AbstractManager manager) {
-    sourceId = manager.registerSource(this).toString();
+  void registerService(AbstractManager manager) {
+    serviceId = manager.registerService(this).toString();
   }
 
-  void unregisterSource(AbstractManager manager, int sourceId){
-    manager.unregisterSource(sourceId);
+  void unregisterSource(AbstractManager manager, int serviceId){
+    manager.unregisterService(serviceId);
   }
 
 }

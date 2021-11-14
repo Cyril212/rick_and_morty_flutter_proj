@@ -9,8 +9,8 @@ class MockDataClient extends AbstractDataClient<MockManager> {
   MockDataClient({Store? store, manager}) : super(store:store, manager: manager);
 
   @override
-  Future<T> executeService<T extends Service>(T dataSource) async {
-    return manager.processData<T>(dataSource, store!);
+  Future<T> executeService<T extends Service>(T service) async {
+    return manager.processData<T>(service, store!);
   }
 
   @override

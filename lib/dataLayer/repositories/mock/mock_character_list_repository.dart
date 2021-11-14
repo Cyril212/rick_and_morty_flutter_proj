@@ -1,10 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/mock/mock_data_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/service.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/source_exception.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/abstract_repository.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/repositories/helpers/favourites_storage_helper.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/requests/character_list_request.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/responses/character.dart';
-import 'package:rick_and_morty_flutter_proj/dataLayer/service/character_list_service.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/services/character_list_service.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/services/mock/mock_character_list_service.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/list_vm.dart';
 
 import '../character_pagination_controller.dart';
@@ -18,37 +21,40 @@ class MockCharacterListRepository extends AbstractRepository<Character> {
   late FavouritesStorageHelper favouritesStorageHelper;
   late String? searchPhrase;
 
-
   /// Init
-  MockCharacterListRepository(this.client, List<Service> serviceList) : super(serviceList) {
-    _basicListPagination = CharacterPaginationController(_characterListSource);
-    _searchListPagination = CharacterPaginationController(_characterListSource);
+  MockCharacterListRepository(this.client) : super(serviceList: [MockCharacterListService(client.manager, CharacterListRequest())]) {
+    _basicListPagination = CharacterPaginationController(characterListService);
+    _searchListPagination = CharacterPaginationController(characterListService);
 
     favouritesStorageHelper = FavouritesStorageHelper(client, _basicListPagination, _searchListPagination);
   }
 
+  @override
+  List<Service> get services => [MockCharacterListService(client.manager, CharacterListRequest())];
+
   /// Gets [CharacterListSource]
-  CharacterListService get _characterListSource => (sources[0] as CharacterListService);
+  @visibleForTesting
+  CharacterListService get characterListService => (services[0] as CharacterListService);
 
   /// Gets current character list
   List<Character> characterListByMode = [];
 
   /// Gets error to send error state in CharacterListVM
-  SourceException? get error => _characterListSource.error;
+  SourceException? get error => characterListService.error;
 
   bool get isSearchPhraseNotEmpty => searchPhrase != null && searchPhrase!.isEmpty;
 
   @override
   void registerServices() {
-    for (var element in sources) {
-      element.registerSource(client.manager);
+    for (var element in services) {
+      element.registerService(client.manager);
     }
   }
 
   @override
   void unregisterServices() {
-    for (var element in sources) {
-      element.unregisterSource(client.manager, int.parse(element.sourceId));
+    for (var element in services) {
+      element.unregisterSource(client.manager, int.parse(element.serviceId));
     }
   }
 
@@ -64,14 +70,16 @@ class MockCharacterListRepository extends AbstractRepository<Character> {
   ///Filters list by [listFilterMode], then in case [searchPhrase] != null filters list by searchPhrase
   void filterAllPagesListByFilterMode(ListType listFilterMode, bool shouldFetch) {
     //merge new response with characters from store
-    List<Character> listFromResponse = _characterListSource.response!.results;
+    List<Character> listFromResponse = characterListService.response!.results;
 
     switch (listFilterMode) {
       case ListType.basic:
         if (isSearchPhraseNotEmpty) {
-          characterListByMode = _searchListPagination.updateAllPages(characterListByMode, listFromResponse, favouritesStorageHelper.getFavouriteCharacters(), shouldFetch);
+          characterListByMode = _searchListPagination.updateAllPages(
+              characterListByMode, listFromResponse, favouritesStorageHelper.getFavouriteCharacters(), shouldFetch);
         } else {
-          characterListByMode =  _basicListPagination.updateAllPages(characterListByMode,  listFromResponse, favouritesStorageHelper.getFavouriteCharacters(), shouldFetch);
+          characterListByMode = _basicListPagination.updateAllPages(
+              characterListByMode, listFromResponse, favouritesStorageHelper.getFavouriteCharacters(), shouldFetch);
         }
         break;
       case ListType.favourite:
@@ -93,22 +101,22 @@ class MockCharacterListRepository extends AbstractRepository<Character> {
     } else {
       resultPage = _searchListPagination.incrementPage();
     }
-    _characterListSource.requestDataModel.pageNum = resultPage;
+    characterListService.requestDataModel.pageNum = resultPage;
   }
 
   /// Gets new page if [allowFetch] is true, otherwise calls [filterAllPagesListByFilterMode()] to update [characterListByMode]
   Future getCharacterList([ListType listFilterMode = ListType.basic, bool refreshList = false]) async {
-    _characterListSource.requestDataModel.name = searchPhrase;
+    characterListService.requestDataModel.name = searchPhrase;
 
     if (refreshList) {
-     return client.executeService(_characterListSource).then((value) {
+      return client.executeService(characterListService).then((value) {
         _incrementPage();
         return value;
       });
     } else {
       filterAllPagesListByFilterMode(listFilterMode, false);
 
-      emit(_characterListSource);
+      emit(characterListService);
 
       return Future.value();
     }

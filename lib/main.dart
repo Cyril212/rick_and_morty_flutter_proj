@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:prefs/prefs.dart';
 import 'package:provider/provider.dart';
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/rest_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/router/router_v1.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/rick_morty_list_screen.dart';
@@ -13,8 +12,6 @@ import 'constants/theme_constants.dart';
 import 'core/dataProvider/client/data_client.dart';
 import 'core/repository/store/store.dart';
 import 'dataLayer/repositories/character_list_repository.dart';
-import 'dataLayer/requests/character_list_request.dart';
-import 'dataLayer/service/character_list_service.dart';
 
 /// Endpoint
 void main() async {
@@ -43,9 +40,7 @@ class RickAndMortyApp extends StatelessWidget {
             lazy: false,
             create: (context) => DataClient(),
           ),
-          BlocProvider(
-              create: (context) => RickMortyListVM(CharacterListRepository(
-                  context.read<DataClient>(), [CharacterListService(context.read<DataClient>().manager, CharacterListRequest())]))),
+          BlocProvider(create: (context) => RickMortyListVM(CharacterListRepository(context.read<DataClient>()))),
         ],
         child: MaterialApp(
           title: appTitle,

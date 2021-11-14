@@ -6,7 +6,6 @@ import 'package:rick_and_morty_flutter_proj/core/dataProvider/service.dart';
 
 /// Used to communicate between VM and Manager
 abstract class AbstractRepository<R extends ResponseDataModel> {
-
   ///Controller to allow broadcasting services
   final StreamController<Service> _controller;
 
@@ -14,13 +13,13 @@ abstract class AbstractRepository<R extends ResponseDataModel> {
   Stream<Service> get result => _controller.stream;
 
   @protected
-  List<Service> sources = [];
+  List<Service> services = [];
 
-  AbstractRepository(List<Service> serviceList)
-      : sources = serviceList,
+  AbstractRepository({required List<Service> serviceList})
+      : services = serviceList,
         _controller = StreamController<Service>.broadcast() {
-    for (var source in sources) {
-      source.stream.listen(broadcast);
+    for (var service in services) {
+      service.stream.listen(broadcast);
     }
   }
 
