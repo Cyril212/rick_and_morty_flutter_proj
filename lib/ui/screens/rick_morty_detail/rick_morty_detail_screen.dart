@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
+import 'package:rick_and_morty_flutter_proj/constants/theme_constants.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/responses/character.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_detail/vm/rick_morty_detail_vm.dart';
 import 'package:rick_and_morty_flutter_proj/ui/widgets/character_card_widget.dart';
@@ -22,7 +23,7 @@ class RickMortyDetailScreen extends StatelessWidget {
       mainContent = Scaffold(
         body: Container(
           constraints: const BoxConstraints.expand(),
-          color: const Color(0xFF736AB7),
+          color: kColorPurple,
           child: Stack(
             children: <Widget>[
               _getBackground(),
@@ -57,7 +58,7 @@ class RickMortyDetailScreen extends StatelessWidget {
       height: 110.0,
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: <Color>[Color(0x00736AB7), Color(0xFF736AB7)],
+          colors: <Color>[kColorPurple, kColorPurple],
           stops: [0.0, 0.9],
           begin: FractionalOffset(0.0, 0.0),
           end: FractionalOffset(0.0, 1.0),

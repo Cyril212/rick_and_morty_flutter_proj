@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:rick_and_morty_flutter_proj/constants/theme_constants.dart';
 
+import '../../utils.dart';
 import '../screens/rick_morty_list/widgets/favourite_mode_widget.dart';
 
 class PrimaryAppbar extends StatelessWidget implements PreferredSizeWidget {
@@ -10,11 +12,10 @@ class PrimaryAppbar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double statusBarHeight = MediaQuery.of(context).padding.top;
 
     return Container(
-      padding: EdgeInsets.only(top: statusBarHeight - statusBarHeight / 10),
-      height: preferredSize.height + statusBarHeight,
+      padding: EdgeInsets.only(top: statusBarHeight(context) - statusBarHeight(context) / 10),
+      height: preferredSize.height + statusBarHeight(context),
       child: Stack(
         children: [
            Align(
@@ -22,12 +23,12 @@ class PrimaryAppbar extends StatelessWidget implements PreferredSizeWidget {
              child: FilterModeWidget(),
            ),
           Center(
-              child: Text(title, style: const TextStyle(color: Colors.white, fontFamily: 'Schwifty', fontWeight: FontWeight.w600, fontSize: 24.0))),
+              child: Text(title, style: kAppBarTextStyle)),
         ],
       ),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-            colors: [Color(0xFF3366FF), Color(0xFF00CCFF)],
+            colors: [kColorBlue, kColorAqua],
             begin: FractionalOffset(0.0, 0.0),
             end: FractionalOffset(0.5, 0.0),
             stops: [0.0, 0.5],

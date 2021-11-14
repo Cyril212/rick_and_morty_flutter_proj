@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rick_and_morty_flutter_proj/constants/text_constants.dart';
 import 'package:rick_and_morty_flutter_proj/core/ui/screen/abstract_screen.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/widgets/rick_morty_list_widget.dart';
@@ -19,7 +19,7 @@ class _RickMortyListScreenState extends AbstractScreenState<RickMortyListScreen>
 
   @override
   AbstractScreenStateOptions get options =>
-      AbstractScreenStateOptions.basic(screenName: RickMortyListScreen.route, title: "Rick and Morty", safeArea: true);
+      AbstractScreenStateOptions.basic(screenName: RickMortyListScreen.route, title: appTitle, safeArea: true);
 
   @override
   PreferredSizeWidget? createAppBar(BuildContext context) => PrimaryAppbar(title: options.title);

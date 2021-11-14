@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:rick_and_morty_flutter_proj/constants/theme_constants.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/responses/character.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
+import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/widgets/favorite_widget.dart';
 
 class CharacterCardWidget extends StatelessWidget {
   final Character character;
@@ -80,7 +82,6 @@ class CharacterCardWidget extends StatelessWidget {
                 characterId: character.id,
               ),
             )
-          // Icon(Icons.favorite,color: Colors.amber,)
         ],
       ),
     );
@@ -90,7 +91,7 @@ class CharacterCardWidget extends StatelessWidget {
       height: horizontal ? 134.0 : 170.0,
       margin: horizontal ? const EdgeInsets.only(left: 46.0) : const EdgeInsets.only(top: 72.0),
       decoration: BoxDecoration(
-        color: const Color(0xFF333366),
+        color: kColorSecondary,
         shape: BoxShape.rectangle,
         borderRadius: BorderRadius.circular(8.0),
         boxShadow: const <BoxShadow>[
@@ -123,42 +124,5 @@ class CharacterCardWidget extends StatelessWidget {
             ],
           ),
         ));
-  }
-}
-
-class FavoriteWidget extends StatefulWidget {
-  final int characterId;
-  bool isChosen;
-  bool shouldRefreshList;
-
-  FavoriteWidget({Key? key, this.isChosen = false, required this.characterId, this.shouldRefreshList = false}) : super(key: key);
-
-  @override
-  _FavoriteWidgetState createState() => _FavoriteWidgetState();
-}
-
-class _FavoriteWidgetState extends State<FavoriteWidget> {
-  void _setFavouriteState() {
-    final rickMortyListVM = context.read<RickMortyListVM>();
-
-    rickMortyListVM.setFavouriteCharacterState(widget.characterId, widget.isChosen);
-    rickMortyListVM.updateList();
-  }
-
-  void _updateWidgetState() {
-    widget.isChosen = !widget.isChosen;
-
-    _setFavouriteState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      color: Colors.amber,
-      icon: widget.isChosen ? const Icon(Icons.favorite) : const Icon(Icons.favorite_border),
-      onPressed: () {
-        setState(_updateWidgetState);
-      },
-    );
   }
 }

@@ -8,6 +8,8 @@ import 'package:rick_and_morty_flutter_proj/core/router/router_v1.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/rick_morty_list_screen.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
+import 'constants/text_constants.dart';
+import 'constants/theme_constants.dart';
 import 'core/dataProvider/client/data_client.dart';
 import 'core/repository/store/store.dart';
 import 'dataLayer/repositories/character_list_repository.dart';
@@ -46,17 +48,13 @@ class RickAndMortyApp extends StatelessWidget {
                   context.read<DataClient>(), [CharacterListService(context.read<DataClient>().manager, CharacterListRequest())]))),
         ],
         child: MaterialApp(
-          title: 'Rick and Morty',
+          title: appTitle,
           onGenerateRoute: onGenerateRoute,
           initialRoute: RickMortyListScreen.route,
           theme: ThemeData(
-            primarySwatch: Colors.blue,
-            backgroundColor: const Color(0xFF736AB7),
-            textTheme: const TextTheme(
-                bodyText1: TextStyle(color: Colors.white),
-                bodyText2: TextStyle(color: Colors.white),
-                caption: TextStyle(color: Colors.white),
-                overline: TextStyle(color: Colors.white)),
+            primarySwatch: kMaterialColorBlue,
+            backgroundColor: kColorPrimary,
+            textTheme: textTheme,
           ),
         ));
   }

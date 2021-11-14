@@ -28,6 +28,7 @@ abstract class ListVM extends Cubit<ListEvent> {
   final AbstractRepository _repository;
 
   static const int emptyListErrorStatus = 404;
+
   /// Filter mode
   ListType listType;
 
@@ -44,7 +45,6 @@ abstract class ListVM extends Cubit<ListEvent> {
     registerSource();
 
     _repository.result.listen((dataSource) {
-
       //to make bloc builder receive the same state
         if (dataSource.error != null) {
           if(dataSource.error?.httpStatusCode == emptyListErrorStatus) {

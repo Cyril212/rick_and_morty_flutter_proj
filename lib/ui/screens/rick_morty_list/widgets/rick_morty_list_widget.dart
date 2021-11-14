@@ -12,7 +12,6 @@ class ListWidget<T extends ListVM> extends StatefulWidget {
   final Widget Function (BuildContext context)? separatorBuilder;
   final Widget Function (BuildContext context, int index)? itemBuilder;
 
-
   const ListWidget({Key? key, this.initialLoadingWidget, this.emptyListWidget, this.errorWidget, this.separatorBuilder, this.itemBuilder}) : super(key: key);
 
   @override

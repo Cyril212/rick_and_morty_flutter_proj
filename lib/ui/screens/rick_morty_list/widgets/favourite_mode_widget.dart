@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
+import 'package:rick_and_morty_flutter_proj/constants/theme_constants.dart';
 import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 
 class FilterModeWidget extends StatefulWidget {
@@ -39,7 +40,7 @@ class _FilterModeWidgetState extends State<FilterModeWidget> {
         },
         icon: Icon(
           widget.isChoosen ? Icons.favorite : Icons.favorite_border,
-          color: Colors.amber,
+          color: kColorAmber,
         ));
   }
 }
