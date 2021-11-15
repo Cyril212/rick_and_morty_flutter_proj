@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>416226827115-p8j1vjhsspr2868gse4c3ditma178046.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.416226827115-p8j1vjhsspr2868gse4c3ditma178046</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>416226827115-3l6d4qtplpjt7ik413uhtn3r1e5rlglp.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBJvFgSDE3AG9AjLINihsZMHFRGV4Ge06U</string>
+	<key>GCM_SENDER_ID</key>
+	<string>416226827115</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.kch.rickAndMortyFlutterProj.stage</string>
+	<key>PROJECT_ID</key>
+	<string>ricknmorty-b745c</string>
+	<key>STORAGE_BUCKET</key>
+	<string>ricknmorty-b745c.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:416226827115:ios:59c0562bcc78f5fc22ca2e</string>
+</dict>
+</plist>
