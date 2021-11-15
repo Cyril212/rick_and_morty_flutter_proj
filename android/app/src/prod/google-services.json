@@ -1,0 +1,142 @@
+{
+  "project_info": {
+    "project_number": "416226827115",
+    "project_id": "ricknmorty-b745c",
+    "storage_bucket": "ricknmorty-b745c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:416226827115:android:85a94b9b852cc2e422ca2e",
+        "android_client_info": {
+          "package_name": "com.kch.rick_and_morty_flutter_proj.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "416226827115-7juhenqm5v61cnl59d9d95c8ceki0k3a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kch.rick_and_morty_flutter_proj.dev",
+            "certificate_hash": "70a14f9aa29c195692851930383dc2b6c6c8cee6"
+          }
+        },
+        {
+          "client_id": "416226827115-6j9fmkme0if9nrtncfpqmjvna378vm76.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgsyBR9XeTD6NpUU3PoT0BERzo5f44Mg8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "416226827115-6j9fmkme0if9nrtncfpqmjvna378vm76.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "416226827115-bla5ff0v06sd1ie2phirnl46hkidl2e7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.kch.rickAndMortyFlutterProj"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:416226827115:android:629c6daec0172b6922ca2e",
+        "android_client_info": {
+          "package_name": "com.kch.rick_and_morty_flutter_proj.prod"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "416226827115-3l6d4qtplpjt7ik413uhtn3r1e5rlglp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kch.rick_and_morty_flutter_proj.prod",
+            "certificate_hash": "ce788411b0e4bb3ca4b2698ee290d89789f475a6"
+          }
+        },
+        {
+          "client_id": "416226827115-6j9fmkme0if9nrtncfpqmjvna378vm76.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgsyBR9XeTD6NpUU3PoT0BERzo5f44Mg8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "416226827115-6j9fmkme0if9nrtncfpqmjvna378vm76.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "416226827115-bla5ff0v06sd1ie2phirnl46hkidl2e7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.kch.rickAndMortyFlutterProj"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:416226827115:android:4eebc02c675dff2622ca2e",
+        "android_client_info": {
+          "package_name": "com.kch.rick_and_morty_flutter_proj.stage"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "416226827115-uc6agslqg3pmu8b74nhmc9b6tfp7ngkp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kch.rick_and_morty_flutter_proj.stage",
+            "certificate_hash": "70a14f9aa29c195692851930383dc2b6c6c8cee6"
+          }
+        },
+        {
+          "client_id": "416226827115-6j9fmkme0if9nrtncfpqmjvna378vm76.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgsyBR9XeTD6NpUU3PoT0BERzo5f44Mg8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "416226827115-6j9fmkme0if9nrtncfpqmjvna378vm76.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "416226827115-bla5ff0v06sd1ie2phirnl46hkidl2e7.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.kch.rickAndMortyFlutterProj"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

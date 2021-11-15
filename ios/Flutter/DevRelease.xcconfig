@@ -1,0 +1,6 @@
+#include "Generated.xcconfig"
+
+FLUTTER_TARGET=lib/main-Dev.dart
+
+ASSET_PREFIX=Dev
+BUNDLE_NAME=RicknMorty Dev

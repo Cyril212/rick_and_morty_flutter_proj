@@ -66,6 +66,7 @@ dev_dependencies:
   firebase_core: ^1.0.1
   firebase_auth: ^1.0.1 #new
   google_sign_in: 5.0.2 #new
+  flutter_flavorizr: ^2.1.0
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -99,3 +100,56 @@ flutter:
         - asset: assets/fonts/Schwifty.ttf
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+flavorizr:
+    app:
+      android:
+        flavorDimensions: "flavor-type"
+      ios:
+
+    flavors:
+      Dev:
+        app:
+          name: "RicknMorty Dev"
+
+        android:
+          applicationId: "com.kch.rick_and_morty_flutter_proj.dev"
+          firebase:
+            config: "android/app/google-services.json"
+
+        ios:
+          bundleId: "com.kch.rickAndMortyFlutterProj.dev"
+          firebase:
+            config: "ios/dev/GoogleService-Info.plist"
+          buildSettings:
+            ENABLE_BITCODE: "NO"
+
+      Stage:
+        app:
+          name: "RicknMorty Stage"
+
+        android:
+          applicationId: "com.kch.rick_and_morty_flutter_proj.stage"
+          firebase:
+            config: "android/app/google-services.json"
+
+        ios:
+          bundleId: "com.kch.rickAndMortyFlutterProj.stage"
+          firebase:
+            config: "ios/stage/GoogleService-Info.plist"
+          buildSettings:
+            ENABLE_BITCODE: "NO"
+
+      Prod:
+        app:
+          name: "RicknMorty"
+        android:
+          applicationId: "com.kch.rick_and_morty_flutter_proj.prod"
+          firebase:
+            config: "android/app/google-services.json"
+        ios:
+          bundleId: "com.kch.rickAndMortyFlutterProj.prod"
+          firebase:
+            config: "ios/prod/GoogleService-Info.plist"
+          buildSettings:
+            ENABLE_BITCODE: "NO"
