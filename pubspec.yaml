@@ -63,9 +63,9 @@ dev_dependencies:
   shared_preferences: ^2.0.8
   hive_generator: ^1.1.1
   build_runner: ^2.1.4
-  firebase_core: ^1.0.1
-  firebase_auth: ^1.0.1 #new
-  google_sign_in: 5.0.2 #new
+  firebase_core: ^1.10.0
+  firebase_auth: ^3.2.0
+  google_sign_in: ^5.2.1
   flutter_flavorizr: ^2.1.0
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
