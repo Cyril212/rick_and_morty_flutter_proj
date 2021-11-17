@@ -6,11 +6,12 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/modules/google_sign_in_auth_module.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/mock/mock_data_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/mock/mock_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/repositories/mock/mock_character_list_repository.dart';
-import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/list_vm.dart';
+import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list/vm/list_vm.dart';
 
 import 'package:mocktail/mocktail.dart';
 
@@ -19,14 +20,15 @@ void main() {
     registerFallbackValue(ListEvent(ListState.idle));
   });
 
-  group('Test CharacterListRepository', ()  {
-
+  group('Test CharacterListRepository', () {
     //Init dependencies
-    final client = MockDataClient(store: InMemoryStore(), manager: MockManager(""));
+
+    final store = InMemoryStore();
+    final client = MockDataClient(store: store, authModule: GoogleSignInAuthModule(store));
     final repository = MockCharacterListRepository(client);
 
     test('isFetchPage successful', () async {
-     await repository.getCharacterList(ListType.basic, false);
+      await repository.getCharacterList(ListType.basic, false);
       expect(repository.characterListService.response != null && repository.characterListService.response!.results.isNotEmpty, true);
     });
 
@@ -54,6 +56,5 @@ void main() {
 
       expect(repository.characterListService.requestDataModel.pageNum, 2);
     });
-
   });
 }

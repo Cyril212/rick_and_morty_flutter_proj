@@ -1,11 +1,9 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/source_exception.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/unique_event.dart';
-import 'package:rick_and_morty_flutter_proj/core/repository/abstract_repository.dart';
+import 'package:rick_and_morty_flutter_proj/core/repository/base_repository.dart';
 
 
 ///CharacterList states
@@ -25,7 +23,7 @@ class ListEvent extends UniqueEvent {
 /// View model of [RickMortyListScreen]
 abstract class ListVM extends Cubit<ListEvent> {
   /// CharacterList repo
-  final AbstractRepository _repository;
+  final BaseRepository _repository;
 
   static const int emptyListErrorStatus = 404;
 

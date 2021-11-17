@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/abstract_manager.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/data_client.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/base_data_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/request_data_model.dart';
 import 'package:dio/dio.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';
@@ -8,9 +9,38 @@ import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';
 import '../service.dart';
 import '../source_exception.dart';
 ///Mock manager
-class MockManager extends AbstractManager {
+class MockManager extends BaseDataManager {
 
-  MockManager(baseUrl): super(baseUrl);
+  late Dio _dio;
+
+  /// Init
+  MockManager({required String baseUrl, required UnauthorizedRequestHandler onUnauthenticatedRequest}) : super(baseUrl){
+    _dio = Dio(BaseOptions(baseUrl: baseUrl))..interceptors.add(InterceptorsWrapper(
+        onRequest:(options, handler){
+          // Do something before request is sent
+          return handler.next(options); //continue
+          // If you want to resolve the request with some custom data，
+          // you can resolve a `Response` object eg: `handler.resolve(response)`.
+          // If you want to reject the request with a error message,
+          // you can reject a `DioError` object eg: `handler.reject(dioError)`
+        },
+
+        onResponse:(response,handler) {
+          // Do something with response data
+          return handler.next(response); // continue
+          // If you want to reject the request with a error message,
+          // you can reject a `DioError` object eg: `handler.reject(dioError)`
+        },
+
+        onError: (DioError e, handler) {
+          // Do something with response error
+
+          return  handler.next(e);//continue
+          // If you want to resolve the request with some custom data，
+          // you can resolve a `Response` object eg: `handler.resolve(response)`.
+        }
+    ));
+  }
 
   @override
   Future<T> processData<T extends Service>(T dataTask, Store store) async {
@@ -22,23 +52,23 @@ class MockManager extends AbstractManager {
           originalException: null,
           httpStatusCode: response.statusCode,
         );
-      } else{
+      } else {
         final rawResponse = response.data;
         dataTask.response = dataTask.processResponse(rawResponse);
 
-        store.put(dataTask.serviceId, rawResponse);
-
-        broadcastServicesByMethod(dataTask);
+        dataTask.error = null;
       }
 
     } catch (e) {
       dataTask.error = SourceException(originalException: e);
     }
 
+    dataTask.sink.add(dataTask);
+
+    broadcastServicesByMethod(dataTask);
+
     return dataTask;
   }
-
-
 
   @override
   Future<Response> query(RequestDataModel dataRequest) async {

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:rick_and_morty_flutter_proj/core/router/router_v1.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/repositories/character_list_repository.dart';
-import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_detail/rick_morty_detail_screen.dart';
-import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/list_vm.dart';
+import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_detail/rick_morty_detail_screen.dart';
+
+import 'list_vm.dart';
 
 /// View model of [RickMortyListScreen]
 class RickMortyListVM extends ListVM {

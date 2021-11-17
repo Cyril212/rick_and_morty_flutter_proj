@@ -40,10 +40,17 @@ dependencies:
   hive: ^2.0.4
   hive_flutter: ^1.1.0
   path_provider: ^2.0.6
+
   path: ^1.8.0
   prefs: ^3.3.0
   enum_to_string: ^2.0.1
   bloc_test: ^8.4.0
+
+  firebase_core: ^1.10.0
+  firebase_auth: ^3.2.0
+  google_sign_in: ^5.2.1
+  cloud_firestore: ^3.1.0
+  dio: ^4.0.1
 
 dev_dependencies:
   flutter_test:
@@ -56,16 +63,11 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^1.0.0
   intl: ^0.17.0
-  http: ^0.13.4
-  dio: ^4.0.1
   http_certificate_pinning: ^2.0.3
   html_unescape: ^2.0.0
   shared_preferences: ^2.0.8
   hive_generator: ^1.1.1
   build_runner: ^2.1.4
-  firebase_core: ^1.10.0
-  firebase_auth: ^3.2.0
-  google_sign_in: ^5.2.1
   flutter_flavorizr: ^2.1.0
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

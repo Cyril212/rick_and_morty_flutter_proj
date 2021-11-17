@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_detail/rick_morty_detail_screen.dart';
-import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_detail/vm/rick_morty_detail_vm.dart';
-import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/rick_morty_list_screen.dart';
+import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_detail/rick_morty_detail_screen.dart';
+import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_detail/vm/rick_morty_detail_vm.dart';
+import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list/rick_morty_list_screen.dart';
 
 import 'fade_animation_page_route.dart';
 import 'no_animation_page_route.dart';

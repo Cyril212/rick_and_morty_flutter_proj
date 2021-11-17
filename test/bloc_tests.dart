@@ -7,9 +7,8 @@
 
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/list_vm.dart';
-
-import 'package:rick_and_morty_flutter_proj/ui/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
+import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list/vm/list_vm.dart';
+import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 
 import 'package:mocktail/mocktail.dart';
 

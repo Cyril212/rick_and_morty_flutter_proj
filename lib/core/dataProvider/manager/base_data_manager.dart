@@ -9,13 +9,13 @@ import 'package:dio/dio.dart';
 import '../service.dart';
 
 ///Used for fetching data from defined client
-abstract class AbstractManager {
+abstract class BaseDataManager {
 
   ///Default Endpoint
   String baseUrl;
 
   ///Init
-  AbstractManager(this.baseUrl);
+  BaseDataManager(this.baseUrl);
 
   ///Counter for query id for debug purposes
   int sourceCounter = 0;

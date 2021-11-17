@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/abstract_manager.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/base_data_manager.dart';
 
 import 'model/request_data_model.dart';
 import 'model/response_data_model.dart';
@@ -35,11 +35,11 @@ abstract class Service<T extends RequestDataModel, R extends ResponseDataModel> 
     _controller = StreamController<Service<T,R>>.broadcast();
   }
 
-  void registerService(AbstractManager manager) {
+  void registerService(BaseDataManager manager) {
     serviceId = manager.registerService(this).toString();
   }
 
-  void unregisterSource(AbstractManager manager, int serviceId){
+  void unregisterSource(BaseDataManager manager, int serviceId){
     manager.unregisterService(serviceId);
   }
 

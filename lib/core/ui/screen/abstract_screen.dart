@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/auth_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/router/router_v1.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/modules/google_sign_in_auth_module.dart';
 
 import 'abstract_stateful_screen.dart';
 
@@ -26,10 +29,8 @@ abstract class AbstractScreen extends AbstractStatefulWidget {
 }
 
 abstract class AbstractScreenState<T extends AbstractScreen> extends AbstractStatefulWidgetState<T> with RouteAware {
-
   @protected
   AbstractScreenStateOptions? options;
-
 
   /// Manually dispose of resources
   @override
@@ -133,7 +134,6 @@ abstract class AbstractScreenState<T extends AbstractScreen> extends AbstractSta
   /// This screen is now the top Route
   @protected
   void onResume() {}
-
 }
 
 class AppBarOption {
