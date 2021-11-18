@@ -1,3 +1,4 @@
-
-const appTitle = "Rick and Morty";
-const hintText = 'Type a character name';
+class TextConstants {
+  static const kAppTitle = "Rick and Morty";
+  static const kHintText = 'Type a character name';
+}

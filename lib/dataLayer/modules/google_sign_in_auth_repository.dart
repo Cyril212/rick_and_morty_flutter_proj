@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:rick_and_morty_flutter_proj/constants/app_constants.dart';
 import 'package:rick_and_morty_flutter_proj/constants/firestore_constants.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/modules/google_sign_in_auth_module.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/user_chat.dart';
@@ -17,7 +18,6 @@ class FirebaseAuthStatusHandler {
   FirebaseAuthStatusHandler({this.status = AuthStatus.uninitialized, this.documents, this.firebaseUser});
 }
 
-
 class GoogleSignInRepository extends BaseAuthenticationRepository {
   final GoogleSignIn googleSignIn;
   final FirebaseAuth firebaseAuth;
@@ -31,14 +31,20 @@ class GoogleSignInRepository extends BaseAuthenticationRepository {
         firebaseFirestore = FirebaseFirestore.instance;
 
   @override
-  String? getUserId() {
-    return store.get(FirestoreConstants.id);
+  CommonUser? getUser() {
+    if (store.get(AppConstants.kUserDB) == null) {
+      return null;
+    }
+
+    Map<String, dynamic> decodedUser = Map<String, dynamic>.from(store.get(AppConstants.kUserDB));
+    return CommonUser.fromJson(decodedUser);
   }
 
+  bool get isAnonymous => getUser() == null;
+
   @override
-  Future<bool> isLoggedIn() async {
-    bool isLoggedIn = await googleSignIn.isSignedIn();
-    if (isLoggedIn && getUserId()?.isNotEmpty == true) {
+  bool isLoggedIn() {
+    if (getUser() != null) {
       return true;
     } else {
       return false;
@@ -58,8 +64,10 @@ class GoogleSignInRepository extends BaseAuthenticationRepository {
       User? firebaseUser = (await firebaseAuth.signInWithCredential(credential)).user;
 
       if (firebaseUser != null) {
-        final QuerySnapshot result =
-        await firebaseFirestore.collection(FirestoreConstants.pathUserCollection).where(FirestoreConstants.id, isEqualTo: firebaseUser.uid).get();
+        final QuerySnapshot result = await firebaseFirestore
+            .collection(FirestoreConstants.kPathUserCollection)
+            .where(FirestoreConstants.kId, isEqualTo: firebaseUser.uid)
+            .get();
         final List<DocumentSnapshot> documents = result.docs;
 
         return Future.value(FirebaseAuthStatusHandler(documents: documents, firebaseUser: firebaseUser));
@@ -81,20 +89,24 @@ class GoogleSignInRepository extends BaseAuthenticationRepository {
       if (authStatusHandler.documents!.isEmpty) {
         // Writing data to server because here is a new user
         User firebaseUser = authStatusHandler.firebaseUser!;
-        firebaseFirestore.collection(FirestoreConstants.pathUserCollection).doc(firebaseUser.uid).set({
-          FirestoreConstants.nickname: firebaseUser.displayName,
-          FirestoreConstants.photoUrl: firebaseUser.photoURL,
-          FirestoreConstants.id: firebaseUser.uid,
-          'createdAt': DateTime.now().millisecondsSinceEpoch.toString(),
-          FirestoreConstants.chattingWith: null
+        firebaseFirestore.collection(FirestoreConstants.kPathUserCollection).doc(firebaseUser.uid).set({
+          FirestoreConstants.kNickname: firebaseUser.displayName,
+          FirestoreConstants.kPhotoUrl: firebaseUser.photoURL,
+          FirestoreConstants.kId: firebaseUser.uid,
+          FirestoreConstants.kCreatedAt: DateTime.now().millisecondsSinceEpoch.toString(),
+          FirestoreConstants.kChattingWith: null
         });
 
         // Write data to local storage
         User? currentUser = firebaseUser;
-        store.put("user", json.encode(currentUser.toString()));
+
+        CommonUser commonUser =
+            CommonUser(id: currentUser.uid, nickname: currentUser.displayName ?? "", aboutMe: "", photoUrl: currentUser.photoURL ?? "");
+
+        store.put(AppConstants.kUserDB, commonUser.toJson());
         return Future.value(AuthStatus.authenticated);
       } else {
-        return Future.value(AuthStatus.authenticateErrorUserAlreadyExists);
+        return _resolveLogIn(authStatusHandler.documents![0]);
       }
     });
   }
@@ -107,24 +119,29 @@ class GoogleSignInRepository extends BaseAuthenticationRepository {
       }
 
       if (authStatusHandler.documents!.isNotEmpty) {
-        // Already sign up, just get data from firestore
-        DocumentSnapshot documentSnapshot = authStatusHandler.documents![0];
-        UserChat userChat = UserChat.fromDocument(documentSnapshot);
-
-        // Write data to local
-        store.put("userChat", json.encode(userChat));
-
-        return Future.value(AuthStatus.authenticated);
+        return _resolveLogIn(authStatusHandler.documents![0]);
       } else {
         return Future.value(AuthStatus.authenticateErrorUserNotExist);
       }
     });
   }
 
+  Future<AuthStatus> _resolveLogIn(DocumentSnapshot documentSnapshot) {
+    CommonUser userChat = CommonUser.fromDocument(documentSnapshot);
+
+    // Write data to local
+    store.put(AppConstants.kUserDB, userChat.toJson());
+
+    return Future.value(AuthStatus.authenticated);
+  }
+
   @override
   Future<void> logOut() async {
-    await firebaseAuth.signOut();
-    await googleSignIn.disconnect();
-    await googleSignIn.signOut();
+    if (isAnonymous == false) {
+      await firebaseAuth.signOut();
+      await googleSignIn.disconnect();
+      await googleSignIn.signOut();
+      store.delete(AppConstants.kUserDB);
+    }
   }
 }

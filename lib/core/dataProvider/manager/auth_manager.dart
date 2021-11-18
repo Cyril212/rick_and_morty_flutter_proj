@@ -1,25 +1,22 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/module/base_authentication_module.dart';
-import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/modules/google_sign_in_auth_module.dart';
 
-class AuthenticationManager extends Cubit<AuthStatus>{
-  final Store store;
+import 'base_authentication_manager.dart';
 
-  final GoogleSignInAuthModule _googleSignInAuthModule;
+class AuthenticationManager extends BaseAuthenticationManager {
+  AuthenticationManager(store) : super(store, [GoogleSignInAuthModule(store)]);
 
-  late List<AbstractAuthenticationModule> auths;
+  GoogleSignInAuthModule get _googleSignInAuthModule => auths[0] as GoogleSignInAuthModule;
 
-  AuthenticationManager(this.store, this._googleSignInAuthModule) : super(AuthStatus.uninitialized){
-    auths = [GoogleSignInAuthModule(store)];
+  bool get isAuthorized => _googleSignInAuthModule.isLoggedIn();
+
+  void authorizeWithGoogle() {
+    emit(AuthStatus.loading);
+    _googleSignInAuthModule.signIn().then((state) => emit(state));
   }
 
-  void authorizeWithGoogleSignIn(){
-    _googleSignInAuthModule.logIn().then((state) => emit(state));
-  }
-
-  void logOut(){
+  void logOut() {
     for (var auth in auths) {
       auth.logOut();
-    }}
+    }
+  }
 }

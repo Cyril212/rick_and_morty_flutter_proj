@@ -7,7 +7,6 @@ const kColorShadow = Color(0x1F000000);
 const kColorTextPrimary = Colors.white;
 const kColorTextSecondary = Colors.white;
 
-
 const kColorPurple = Color(0xFF736AB7);
 const kColorDarkPurple = Color(0xFF333366);
 const kColorAmber = Colors.amber;
@@ -21,6 +20,7 @@ const kColorAqua = Color(0xFF00CCFF);
 const kFontFamilyRegular = 'Schwifty';
 
 const kPrimaryTextStyle = TextStyle(color: kColorTextPrimary);
+const kPrimaryTextStyleSize16 = TextStyle(color: kColorTextPrimary, fontSize: 16);
 
 const kAppBarTextStyle = TextStyle(color: kColorWhite, fontFamily: kFontFamilyRegular, fontWeight: FontWeight.w600, fontSize: 24.0);
 
@@ -29,4 +29,16 @@ const kHintTextStyle = TextStyle(
   fontStyle: FontStyle.italic,
 );
 
-const textTheme = TextTheme(bodyText1: kPrimaryTextStyle, bodyText2: kPrimaryTextStyle);
+const kTextTheme = TextTheme(bodyText1: kPrimaryTextStyle, bodyText2: kPrimaryTextStyle);
+
+ButtonStyle get kPrimaryBtnStyle => ButtonStyle(
+      backgroundColor: MaterialStateProperty.resolveWith<Color>(
+        (Set<MaterialState> states) {
+          if (states.contains(MaterialState.pressed)) return kColorDarkPurple.withOpacity(0.8);
+          return kColorDarkPurple;
+        },
+      ),
+      padding: MaterialStateProperty.all<EdgeInsets>(
+        const EdgeInsets.fromLTRB(28, 14, 28, 14),
+      ),
+    );

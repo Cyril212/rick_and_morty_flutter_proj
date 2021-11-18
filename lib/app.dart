@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/auth_manager.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/modules/google_sign_in_auth_module.dart';
+import 'package:rick_and_morty_flutter_proj/presentation/screens/authorization/authorization_screen.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list/rick_morty_list_screen.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 
@@ -28,7 +29,7 @@ class RickAndMortyApp extends StatelessWidget {
           ),
           Provider<AuthenticationManager>(
             lazy: false,
-            create: (context) => AuthenticationManager(context.read<HiveStore>(), GoogleSignInAuthModule(context.read<HiveStore>())),
+            create: (context) => AuthenticationManager(context.read<HiveStore>()),
           ),
           Provider<DataClient>(
             lazy: false,
@@ -37,13 +38,13 @@ class RickAndMortyApp extends StatelessWidget {
           BlocProvider(create: (context) => RickMortyListVM(CharacterListRepository(context.read<DataClient>()))),
         ],
         child: MaterialApp(
-          title: appTitle,
+          title: TextConstants.kAppTitle,
           onGenerateRoute: onGenerateRoute,
-          initialRoute: RickMortyListScreen.route,
+          initialRoute: AuthorizationScreen.route,
           theme: ThemeData(
             primarySwatch: kMaterialColorBlue,
             backgroundColor: kColorPrimary,
-            textTheme: textTheme,
+            textTheme: kTextTheme,
           ),
         ));
   }

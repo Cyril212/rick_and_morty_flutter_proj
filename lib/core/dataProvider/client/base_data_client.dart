@@ -16,12 +16,12 @@ abstract class BaseDataClient<T extends BaseDataManager> {
 
   ///Executes query from repository to fetch data from [manager]
   Future<R> executeService<R extends Service>(R service) async {
-    return manager.processData<R>(service, store!);
+    return manager.processData<R>(service, store);
   }
 
   ///Fetches data from store ([Hive] or [inMemory])
-  void putDataToStore(String dataId, dynamic data) => store!.put(dataId, data);
+  void putDataToStore(String dataId, dynamic data) => store.put(dataId, data);
 
   ///Gets data from store ([Hive] or [inMemory])
-  dynamic getDataFromStore(String dataId) => store!.get(dataId);
+  dynamic getDataFromStore(String dataId) => store.get(dataId);
 }

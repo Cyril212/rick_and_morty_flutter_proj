@@ -8,7 +8,7 @@ import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list
 import 'package:rick_and_morty_flutter_proj/presentation/widgets/primary_app_bar.dart';
 
 class RickMortyListScreen extends AbstractScreen {
-  static const String route = '/';
+  static const String route = '/rick_morty_list';
 
   const RickMortyListScreen({Key? key}) : super(key: key);
 
@@ -20,7 +20,7 @@ class _RickMortyListScreenState extends RickMortyScreenState<RickMortyListScreen
 
   @override
   AbstractScreenStateOptions get options =>
-      AbstractScreenStateOptions.basic(screenName: RickMortyListScreen.route, title: appTitle, safeArea: true);
+      AbstractScreenStateOptions.basic(screenName: RickMortyListScreen.route, title: TextConstants.kAppTitle, safeArea: true);
 
   @override
   PreferredSizeWidget? createAppBar(BuildContext context) => PrimaryAppbar(title: options.title);

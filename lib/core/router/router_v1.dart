@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rick_and_morty_flutter_proj/presentation/screens/authorization/authorization_screen.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_detail/rick_morty_detail_screen.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_detail/vm/rick_morty_detail_vm.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list/rick_morty_list_screen.dart';
@@ -16,6 +17,8 @@ Route<Object> onGenerateRoute(RouteSettings settings) {
 
   if (arguments != null) {
     switch (arguments.route) {
+      case AuthorizationScreen.route:
+        return createRoute((BuildContext context) => const AuthorizationScreen(), settings);
       case RickMortyListScreen.route:
         return createRoute((BuildContext context) => const RickMortyListScreen(), settings);
       case RickMortyDetailScreen.route:

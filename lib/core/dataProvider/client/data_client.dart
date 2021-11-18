@@ -6,7 +6,6 @@ import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/rest_manag
 
 typedef UnauthorizedRequestHandler = Function();
 
-class User{}
 ///DataClient to communicate with [RestManager] for more [BaseDataClient]
 class DataClient extends BaseDataClient<RestManager> {
   final AuthenticationManager authenticationManager;

@@ -11,9 +11,6 @@ enum AuthStatus {
   authenticateCanceled,
 }
 
-class GoogleSignInAuthModule extends AbstractAuthenticationModule {
+class GoogleSignInAuthModule extends BaseAuthenticationModule {
   GoogleSignInAuthModule(store) : super(store, GoogleSignInRepository(store: store));
 }
-
-
-

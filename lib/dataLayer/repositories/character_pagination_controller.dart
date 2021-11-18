@@ -14,6 +14,7 @@ class CharacterPaginationController extends PaginationController<Character> {
   List<Character> updateAllPages(
       List<Character> characterListByMode, List<Character> characterListFromResponse, List<Character> favouriteCharacterList, bool shouldFetch) {
     if (shouldFetch) {
+      //if it's second page of current response add it to list since some data already exist within the list
       if (allPagesList.isNotEmpty && service.requestDataModel.pageNum > 2) {
         List<Character> tmp = List.from(allPagesList); // to avoid concurrent modification
         tmp.addAll(characterListFromResponse);
@@ -23,7 +24,7 @@ class CharacterPaginationController extends PaginationController<Character> {
       }
     }
 
-    mergeWithFavouriteStorage(favouriteCharacterList);
+    _mergeWithFavouriteStorage(favouriteCharacterList);
 
     return allPagesList;
   }
@@ -35,16 +36,11 @@ class CharacterPaginationController extends PaginationController<Character> {
   }
 
   /// Merges [favouriteCharacterList] isFavourite state with [allPagesList]
-  void mergeWithFavouriteStorage(List<Character> favouriteCharacterList) {
-    for (var page in allPagesList) {
-      page.isFavourite = false;
-    }
-
+  void _mergeWithFavouriteStorage(List<Character> favouriteCharacterList) {
     for (var characterFromAllPageList in allPagesList) {
-      final characterById = favouriteCharacterList.firstWhereOrNull((element) => element.id == characterFromAllPageList.id);
-      if (characterById != null) {
-        characterFromAllPageList.isFavourite = characterById.isFavourite;
-      }
+      final characterFromFavouriteListByAllPagesList = favouriteCharacterList.firstWhereOrNull((element) => element.id == characterFromAllPageList.id);
+
+      characterFromAllPageList.isFavourite = characterFromFavouriteListByAllPagesList != null;
     }
   }
 }

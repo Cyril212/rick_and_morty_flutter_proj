@@ -3,37 +3,43 @@ import 'package:rick_and_morty_flutter_proj/constants/firestore_constants.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/data_model.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/response_data_model.dart';
 
-class UserChat extends ResponseDataModel{
-  String id;
-  String photoUrl;
-  String nickname;
-  String aboutMe;
+class CommonUser extends DataModel{
+  late String id;
+  late String photoUrl;
+  late String nickname;
+  late String aboutMe;
 
-  UserChat({required this.id, required this.photoUrl, required this.nickname, required this.aboutMe}) : super.fromJson({});
+  CommonUser({required this.id, required this.photoUrl, required this.nickname, required this.aboutMe, Map<String, dynamic>? json}) : super.fromJson(json ?? {});
 
   @override
   Map<String, String> toJson() {
     return {
-      FirestoreConstants.nickname: nickname,
-      FirestoreConstants.aboutMe: aboutMe,
-      FirestoreConstants.photoUrl: photoUrl,
+      FirestoreConstants.kNickname: nickname,
+      FirestoreConstants.kAboutMe: aboutMe,
+      FirestoreConstants.kPhotoUrl: photoUrl,
     };
   }
 
-  factory UserChat.fromDocument(DocumentSnapshot doc) {
+  CommonUser.fromJson(Map<String, dynamic> json) : super.fromJson(json){
+    nickname = json[FirestoreConstants.kNickname];
+    aboutMe = json[FirestoreConstants.kAboutMe];
+    photoUrl = json[FirestoreConstants.kPhotoUrl];
+  }
+
+  factory CommonUser.fromDocument(DocumentSnapshot doc) {
     String aboutMe = "";
     String photoUrl = "";
     String nickname = "";
     try {
-      aboutMe = doc.get(FirestoreConstants.aboutMe);
+      aboutMe = doc.get(FirestoreConstants.kAboutMe);
     } catch (e) {}
     try {
-      photoUrl = doc.get(FirestoreConstants.photoUrl);
+      photoUrl = doc.get(FirestoreConstants.kPhotoUrl);
     } catch (e) {}
     try {
-      nickname = doc.get(FirestoreConstants.nickname);
+      nickname = doc.get(FirestoreConstants.kNickname);
     } catch (e) {}
-    return UserChat(
+    return CommonUser(
       id: doc.id,
       photoUrl: photoUrl,
       nickname: nickname,
