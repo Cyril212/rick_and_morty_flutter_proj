@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/data_client.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/rest_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/source_exception.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/base_repository.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/requests/character_list_request.dart';
@@ -22,7 +23,7 @@ class CharacterListRepository extends BaseRepository<Character> {
   String? searchPhrase;
 
   /// Init
-  CharacterListRepository(this.client) : super(serviceList: [ CharacterListService(client.manager, CharacterListRequest())]) {
+  CharacterListRepository(this.client) : super(serviceList: [CharacterListService(client.manager, CharacterListRequest())]) {
     _basicListPagination = CharacterPaginationController(_characterListService);
     _searchListPagination = CharacterPaginationController(_characterListService);
 
@@ -105,7 +106,7 @@ class CharacterListRepository extends BaseRepository<Character> {
     _characterListService.requestDataModel.name = searchPhrase;
 
     if (refreshList) {
-      client.executeService(_characterListService).then((value) {
+      client.executeService(_characterListService, HttpOperation.get).then((value) {
         _incrementPage();
         return value;
       });

@@ -1,4 +1,5 @@
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/base_data_manager.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/rest_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/mock/mock_data_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';
 import '../service.dart';
@@ -15,8 +16,8 @@ abstract class BaseDataClient<T extends BaseDataManager> {
   BaseDataClient({required this.store, required this.manager});
 
   ///Executes query from repository to fetch data from [manager]
-  Future<R> executeService<R extends Service>(R service) async {
-    return manager.processData<R>(service, store);
+  Future<R> executeService<R extends Service>(R service, HttpOperation operation) async {
+    return manager.execute<R>(service, store, operation);
   }
 
   ///Fetches data from store ([Hive] or [inMemory])

@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/rest_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/mock/mock_data_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/service.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/source_exception.dart';
@@ -109,7 +110,7 @@ class MockCharacterListRepository extends BaseRepository<Character> {
     characterListService.requestDataModel.name = searchPhrase;
 
     if (refreshList) {
-      return client.executeService(characterListService).then((value) {
+      return client.executeService(characterListService, HttpOperation.get).then((value) {
         _incrementPage();
         return value;
       });
