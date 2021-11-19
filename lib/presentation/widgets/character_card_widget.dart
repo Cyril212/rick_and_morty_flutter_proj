@@ -10,7 +10,11 @@ class CharacterCardWidget extends StatelessWidget {
   final Character character;
   final bool horizontal;
 
-  const CharacterCardWidget({Key? key, required this.character, this.horizontal = true}) : super(key: key);
+  final VoidCallback? onClick;
+  final Function(bool) onFavoriteClick;
+
+  const CharacterCardWidget({Key? key, required this.character, this.horizontal = true, this.onClick, required this.onFavoriteClick})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -68,6 +72,7 @@ class CharacterCardWidget extends StatelessWidget {
                         key: UniqueKey(),
                         isChosen: character.isFavourite,
                         characterId: character.id,
+                        onFavouriteClick: onFavoriteClick,
                       ),
                     )
                 ],
@@ -80,6 +85,7 @@ class CharacterCardWidget extends StatelessWidget {
                 key: UniqueKey(),
                 isChosen: character.isFavourite,
                 characterId: character.id,
+                onFavouriteClick: onFavoriteClick,
               ),
             )
         ],
@@ -106,11 +112,13 @@ class CharacterCardWidget extends StatelessWidget {
 
     return GestureDetector(
         onTap: horizontal
-            ? () {
-                context.read<RickMortyListVM>()
-                  ..currentCharacterId = character.id
-                  ..moveToDetailScreen(context);
-              }
+            ? onClick
+            // () {
+            //       ;
+            //     // context.read<RickMortyListVM>()
+            //     //   ..currentCharacterId = character.id
+            //     //   ..moveToDetailScreen(context);
+            //   }
             : null,
         child: Container(
           margin: const EdgeInsets.symmetric(

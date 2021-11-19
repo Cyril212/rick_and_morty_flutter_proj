@@ -118,7 +118,7 @@ class RestManager extends BaseDataManager {
 
     dataTask.sink.add(dataTask);
 
-    broadcastServicesByMethod(dataTask);
+    broadcastServices(dataTask);
 
     return dataTask;
   }

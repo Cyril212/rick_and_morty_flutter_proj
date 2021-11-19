@@ -4,10 +4,11 @@ import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list
 
 class FavoriteWidget extends StatefulWidget {
   final int characterId;
-  bool isChosen;
-  bool shouldRefreshList;
+  final Function(bool) onFavouriteClick;
 
-  FavoriteWidget({Key? key, this.isChosen = false, required this.characterId, this.shouldRefreshList = false}) : super(key: key);
+  bool isChosen;
+
+  FavoriteWidget({Key? key, required this.characterId, required this.onFavouriteClick, this.isChosen = false}) : super(key: key);
 
   @override
   _FavoriteWidgetState createState() => _FavoriteWidgetState();
@@ -15,17 +16,10 @@ class FavoriteWidget extends StatefulWidget {
 
 class _FavoriteWidgetState extends State<FavoriteWidget> {
 
-  void _setFavouriteState() {
-    final rickMortyListVM = context.read<RickMortyListVM>();
-
-    rickMortyListVM.setFavouriteCharacterState(widget.characterId, widget.isChosen);
-    rickMortyListVM.updateList();
-  }
-
   void _updateWidgetState() {
     widget.isChosen = !widget.isChosen;
 
-    _setFavouriteState();
+    widget.onFavouriteClick(widget.isChosen);
   }
 
   @override

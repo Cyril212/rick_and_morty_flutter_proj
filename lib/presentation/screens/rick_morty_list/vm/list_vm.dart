@@ -1,10 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rick_and_morty_flutter_proj/constants/app_constants.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/source_exception.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/unique_event.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/base_repository.dart';
-
 
 ///CharacterList states
 enum ListState { idle, loading, success, empty, error }
@@ -25,38 +25,32 @@ abstract class ListVM extends Cubit<ListEvent> {
   /// CharacterList repo
   final BaseRepository _repository;
 
-  static const int emptyListErrorStatus = 404;
-
   /// Filter mode
   ListType listType;
-
-  /// Current character id to retrieve from detail screen
-  int? currentCharacterId;
 
   late StreamSubscription listenOnDevice;
 
   bool isFetching = false;
 
   /// Init
-  ListVM(this._repository, {this.listType = ListType.basic})
-      : super(ListEvent(ListState.idle)) {
+  ListVM(this._repository, {this.listType = ListType.basic}) : super(ListEvent(ListState.idle)) {
     registerSource();
 
     _repository.result.listen((dataSource) {
       //to make bloc builder receive the same state
-        if (dataSource.error != null) {
-          if(dataSource.error?.httpStatusCode == emptyListErrorStatus) {
-            emit(ListEvent(ListState.empty, error: dataSource.error));
-          }else{
-            emit(ListEvent(ListState.error, error: dataSource.error));
-          }
+      if (_repository.mainService.error != null) {
+        if (dataSource.error?.httpStatusCode == AppConstants.kEmptyListErrorStatus) {
+          emit(ListEvent(ListState.empty, error: dataSource.error));
         } else {
-          if (currentList.isNotEmpty) {
-            emit(ListEvent(ListState.success));
-          } else {
-            emit(ListEvent(ListState.empty));
-          }
+          emit(ListEvent(ListState.error, error: dataSource.error));
         }
+      } else {
+        if (currentList.isNotEmpty) {
+          emit(ListEvent(ListState.success));
+        } else {
+          emit(ListEvent(ListState.empty));
+        }
+      }
     });
   }
 
@@ -72,12 +66,12 @@ abstract class ListVM extends Cubit<ListEvent> {
   void updateList();
 
   void registerSource() {
-    _repository.registerServices();
+    _repository.registerSources();
   }
 
   @override
   Future<void> close() {
-    _repository.unregisterServices();
+    _repository.unregisterSources();
     return super.close();
   }
 }

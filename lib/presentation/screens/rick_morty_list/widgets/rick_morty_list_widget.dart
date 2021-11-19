@@ -6,13 +6,13 @@ import 'package:rick_and_morty_flutter_proj/presentation/widgets/character_card_
 
 class ListWidget<T extends ListVM> extends StatefulWidget {
 
+  final Widget Function (BuildContext context, int index) itemBuilder;
   final Widget Function (BuildContext context)? initialLoadingWidget;
   final Widget Function (BuildContext context)? emptyListWidget;
   final Widget Function (BuildContext context)? errorWidget;
   final Widget Function (BuildContext context)? separatorBuilder;
-  final Widget Function (BuildContext context, int index)? itemBuilder;
 
-  const ListWidget({Key? key, this.initialLoadingWidget, this.emptyListWidget, this.errorWidget, this.separatorBuilder, this.itemBuilder}) : super(key: key);
+  const ListWidget({Key? key, required this.itemBuilder, this.initialLoadingWidget, this.emptyListWidget, this.errorWidget, this.separatorBuilder}) : super(key: key);
 
   @override
   State<ListWidget> createState() => _ListWidgetState<T>();
@@ -77,7 +77,7 @@ class _ListWidgetState<T extends ListVM> extends State<ListWidget> {
             }),
           itemBuilder: (context, index) {
             if(index < listVM.currentList.length) {
-              return widget.itemBuilder != null ? widget.itemBuilder!(context, index) : CharacterCardWidget(character: listVM.currentList[index]);
+              return widget.itemBuilder!(context, index);
             }else{
               return widget.initialLoadingWidget != null ? widget.initialLoadingWidget!(context) : const Center(child: CircularProgressIndicator());
             }

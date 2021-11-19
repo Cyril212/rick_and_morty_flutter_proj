@@ -1,39 +1,88 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/base_data_client.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/data_client.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/base_data_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/response_data_model.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/service.dart';
 
 /// Used to communicate between VM and Manager
 abstract class BaseRepository<R extends ResponseDataModel> {
-  ///Controller to allow broadcasting services
-  final StreamController<Service> _controller;
+  final BaseDataClient client;
 
-  ///Result of current [emit]
-  Stream<Service> get result => _controller.stream;
+  ///Controller to update VM
+  final StreamController<void> _resultController;
+
+  ///Controller to allow broadcasting services
+  StreamController<Service>? _serviceController;
+
+  ///Controller to allow broadcasting store operations(put,delete,reset) by [dataId]
+  StreamController<String>? _storeController;
+
+  ///Result of serviceBroadcast
+  Stream get result => _resultController.stream;
+
+  ///Result of serviceBroadcast
+  Stream<Service>? get serviceBroadcastResult => _serviceController?.stream;
+
+  ///Result of storeBroadcast
+  Stream<String>? get storeBroadcastResult => _storeController?.stream;
 
   @protected
   List<Service> services = [];
 
-  BaseRepository({required List<Service> serviceList})
-      : services = serviceList,
-        _controller = StreamController<Service>.broadcast() {
-    for (var service in services) {
-      service.stream.listen(broadcast);
+  Service get mainService => services[0];
+
+  BaseRepository({required this.client, List<Service>? serviceList, List<String>? dataIdList}) : _resultController = StreamController() {
+    if (serviceList != null) {
+      services = serviceList;
+
+      _serviceController = StreamController<Service>();
+
+      for (var service in services) {
+        service.stream.listen(onBroadcastDataFromService);
+      }
+    }
+
+    if (dataIdList != null) {
+      _storeController = StreamController<String>();
+
+      for (var dataId in dataIdList) {
+        client.broadcastDataFromStore(dataId).listen(onBroadcastDataFromStore);
+      }
     }
   }
 
   ///Emits service to process in vm
   @protected
-  void emit(Service service) => _controller.sink.add(service);
+  void notify() => _resultController.sink.add(null);
 
   /// Broadcasts actual services
   @protected
-  void broadcast(Service service);
+  void onBroadcastDataFromService(Service service);
 
-  /// Registers services
-  void registerServices();
+  @protected
+  void onBroadcastDataFromStore(String dataId);
 
-  /// Unregisters services
-  void unregisterServices();
+  void registerSources() {
+    if (_serviceController != null) {
+      for (var element in services) {
+        element.registerService(client.manager);
+      }
+    }
+  }
+
+  void _unregisterControllers() {
+    _resultController.close();
+    _serviceController?.close();
+    _storeController?.close();
+  }
+
+  void unregisterSources() {
+    for (var element in services) {
+      element.unregisterSource(client.manager, int.parse(element.serviceId));
+    }
+    _unregisterControllers();
+  }
 }

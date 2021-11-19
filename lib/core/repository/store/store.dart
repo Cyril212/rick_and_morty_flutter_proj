@@ -1,6 +1,7 @@
-
+import 'dart:async';
 import 'dart:collection';
 
+import 'package:flutter/cupertino.dart';
 import 'package:hive/hive.dart';
 import 'package:meta/meta.dart';
 
@@ -9,16 +10,34 @@ import 'package:meta/meta.dart';
 /// Raw key-value datastore API leveraged by the [Cache]
 @immutable
 abstract class Store {
+  final StreamController<String> _storeController = StreamController<String>.broadcast();
+
+  final List<String> dataIdList = [];
+
+  Sink<String> get sink => _storeController.sink;
+
+  Stream<String> get stream => _storeController.stream;
+
   dynamic get(String dataId);
 
   /// Write [value] into this store under the key [dataId]
-  void put(String dataId, dynamic value);
+  void put(String dataId, dynamic value) {
+    dataIdList.add(dataId);
+    sink.add(dataId);
+  }
 
   /// Delete the value of the [dataId] from the store, if preset
-  void delete(String dataId);
+  void delete(String dataId) {
+    dataIdList.add(dataId);
+    sink.add(dataId);
+  }
 
   /// Empty the store
-  void reset();
+  void reset() {
+    for (var dataId in dataIdList) {
+      sink.add(dataId);
+    }
+  }
 
   /// Return the entire contents of the cache as [Map].
   ///
@@ -45,11 +64,10 @@ class InMemoryStore extends Store {
   Map<String, dynamic>? get(String dataId) => data[dataId];
 
   @override
-  void put(String dataId, dynamic value) => data[dataId] = value;
-
-  @override
-  void putAll(Map<String, Map<String, dynamic>> entries) =>
-      data.addAll(entries);
+  void put(String dataId, dynamic value) {
+    data[dataId] = value;
+    super.put(dataId, value);
+  }
 
   @override
   void delete(String dataId) => data.remove(dataId);
@@ -59,7 +77,10 @@ class InMemoryStore extends Store {
   Map<String, Map<String, dynamic>> toMap() => Map.unmodifiable(data);
 
   @override
-  void reset() => data.clear();
+  void reset() {
+    data.clear();
+    super.reset();
+  }
 }
 
 @immutable
@@ -100,22 +121,21 @@ class HiveStore extends Store {
   dynamic get(String dataId) {
     final result = box.get(dataId);
     if (result == null) return null;
-   return result;
+    return result;
   }
 
   @override
   void put(String dataId, dynamic value) {
     box.put(dataId, value);
+    super.put(dataId, value);
   }
 
   @override
   void delete(String dataId) {
     box.delete(dataId);
+    super.delete(dataId);
   }
 
   @override
   Map<String, Map<String, dynamic>> toMap() => Map.unmodifiable(box.toMap());
-
-  Future<void> reset() => box.clear();
 }
-

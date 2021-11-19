@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/data_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/rest_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';
 
@@ -55,9 +54,9 @@ abstract class BaseDataManager {
   }
 
   @protected
-  void broadcastServicesByMethod(Service task) {
+  void broadcastServices(Service task) {
      sources.forEach((id, value) {
-       if(value.requestDataModel.method == task.requestDataModel.method){
+       if(value.requestDataModel.toJson() == task.requestDataModel.toJson()){
           if(id != int.parse(task.serviceId)){//make sure we don't update source which was already fetched
             value.sink.add(task);
           }

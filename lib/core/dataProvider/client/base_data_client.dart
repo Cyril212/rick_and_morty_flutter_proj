@@ -25,4 +25,6 @@ abstract class BaseDataClient<T extends BaseDataManager> {
 
   ///Gets data from store ([Hive] or [inMemory])
   dynamic getDataFromStore(String dataId) => store.get(dataId);
+
+  Stream<String> broadcastDataFromStore(String dataId) => store.stream.where((id) => dataId == id);
 }

@@ -79,7 +79,4 @@ class RickMortyListVM extends ListVM {
 
   /// Gets favourite character state
   bool getFavouriteCharacterState(int characterId) => _repository.favouritesStorageHelper.getFavouriteCharacterStateById(characterId);
-
-  /// Redirects to detail screen
-  void moveToDetailScreen(BuildContext context) => pushNamed(context, RickMortyDetailScreen.route);
 }

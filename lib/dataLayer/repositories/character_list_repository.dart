@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:rick_and_morty_flutter_proj/constants/app_constants.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/data_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/rest_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/source_exception.dart';
@@ -14,16 +15,24 @@ import 'helpers/favourites_storage_helper.dart';
 
 ///CharacterListSource to communicate between CharacterListVM and DataSource
 class CharacterListRepository extends BaseRepository<Character> {
-  final DataClient client;
-
   late final CharacterPaginationController _basicListPagination;
-  late final CharacterPaginationController _searchListPagination; //todo: lazy init
+  late final CharacterPaginationController _searchListPagination;
 
   late FavouritesStorageHelper favouritesStorageHelper;
+
   String? searchPhrase;
 
+  ListType lastListType = ListType.basic;
+
+  /// Gets current character list
+  List<Character> characterListByMode = [];
+
   /// Init
-  CharacterListRepository(this.client) : super(serviceList: [CharacterListService(client.manager, CharacterListRequest())]) {
+  CharacterListRepository(client)
+      : super(
+            client: client,
+            dataIdList: [AppConstants.kFavouriteListDataId],
+            serviceList: [CharacterListService(client.manager, CharacterListRequest())]) {
     _basicListPagination = CharacterPaginationController(_characterListService);
     _searchListPagination = CharacterPaginationController(_characterListService);
 
@@ -33,26 +42,21 @@ class CharacterListRepository extends BaseRepository<Character> {
   /// Gets [CharacterListSource]
   CharacterListService get _characterListService => (services[0] as CharacterListService);
 
-  /// Gets current character list
-  List<Character> characterListByMode = [];
-
   /// Gets error to send error state in CharacterListVM
   SourceException? get error => _characterListService.error;
 
   bool get isSearchPhraseNotEmpty => searchPhrase != null && searchPhrase!.isEmpty;
 
   @override
-  void registerServices() {
-    for (var element in services) {
-      element.registerService(client.manager);
-    }
+  void onBroadcastDataFromService(service) {
+    _filterAllPagesListByFilterMode(true, type: lastListType);
+    notify();
   }
 
   @override
-  void unregisterServices() {
-    for (var element in services) {
-      element.unregisterSource(client.manager, int.parse(element.serviceId));
-    }
+  void onBroadcastDataFromStore(String dataId) {
+    _filterAllPagesListByFilterMode(false, type: lastListType);
+    notify();
   }
 
   /// Gets true if response contains link to next page otherwise returns null
@@ -65,11 +69,11 @@ class CharacterListRepository extends BaseRepository<Character> {
   }
 
   ///Filters list by [listFilterMode], then in case [searchPhrase] != null filters list by searchPhrase
-  void _filterAllPagesListByFilterMode(ListType listFilterMode, bool shouldFetch) {
+  void _filterAllPagesListByFilterMode(bool shouldFetch, {ListType type = ListType.basic}) {
     //merge new response with characters from store
     List<Character> listFromResponse = _characterListService.response?.results ?? [];
 
-    switch (listFilterMode) {
+    switch (type) {
       case ListType.basic:
         if (isSearchPhraseNotEmpty) {
           characterListByMode = _searchListPagination.updateAllPages(
@@ -83,12 +87,8 @@ class CharacterListRepository extends BaseRepository<Character> {
         characterListByMode = favouritesStorageHelper.filterFavouritesListBySearch(searchPhrase);
         break;
     }
-  }
 
-  @override
-  void broadcast(service) {
-    _filterAllPagesListByFilterMode(ListType.basic, true);
-    emit(service);
+    lastListType = type;
   }
 
   void _incrementPage() {
@@ -102,7 +102,7 @@ class CharacterListRepository extends BaseRepository<Character> {
   }
 
   /// Gets new page if [refreshList] is true, otherwise calls [filterAllPagesListByFilterMode()] to update [characterListByMode]
-  void getCharacterList([ListType listFilterMode = ListType.basic, bool refreshList = false]) async {
+  void getCharacterList([ListType listType = ListType.basic, bool refreshList = false]) async {
     _characterListService.requestDataModel.name = searchPhrase;
 
     if (refreshList) {
@@ -111,9 +111,9 @@ class CharacterListRepository extends BaseRepository<Character> {
         return value;
       });
     } else {
-      _filterAllPagesListByFilterMode(listFilterMode, false);
+      _filterAllPagesListByFilterMode(false, type: listType);
 
-      emit(_characterListService);
+      notify();
     }
   }
 

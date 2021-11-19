@@ -14,8 +14,6 @@ import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list
 import '../character_pagination_controller.dart';
 
 class MockCharacterListRepository extends BaseRepository<Character> {
-  final MockDataClient client;
-
   late final CharacterPaginationController _basicListPagination;
   late final CharacterPaginationController _searchListPagination; //todo: lazy init
 
@@ -23,15 +21,12 @@ class MockCharacterListRepository extends BaseRepository<Character> {
   late String? searchPhrase;
 
   /// Init
-  MockCharacterListRepository(this.client) : super(serviceList: [MockCharacterListService(client.manager, CharacterListRequest())]) {
+  MockCharacterListRepository(MockDataClient client) : super(client: client, serviceList: [MockCharacterListService(client.manager, CharacterListRequest())]) {
     _basicListPagination = CharacterPaginationController(characterListService);
     _searchListPagination = CharacterPaginationController(characterListService);
 
     favouritesStorageHelper = FavouritesStorageHelper(client, _basicListPagination, _searchListPagination);
   }
-
-  @override
-  List<Service> get services => [MockCharacterListService(client.manager, CharacterListRequest())];
 
   /// Gets [CharacterListSource]
   @visibleForTesting
@@ -46,14 +41,14 @@ class MockCharacterListRepository extends BaseRepository<Character> {
   bool get isSearchPhraseNotEmpty => searchPhrase != null && searchPhrase!.isEmpty;
 
   @override
-  void registerServices() {
+  void registerSources() {
     for (var element in services) {
       element.registerService(client.manager);
     }
   }
 
   @override
-  void unregisterServices() {
+  void unregisterSources() {
     for (var element in services) {
       element.unregisterSource(client.manager, int.parse(element.serviceId));
     }
@@ -90,9 +85,9 @@ class MockCharacterListRepository extends BaseRepository<Character> {
   }
 
   @override
-  void broadcast(service) {
+  void onBroadcastDataFromService(service) {
     filterAllPagesListByFilterMode(ListType.basic, true);
-    emit(service);
+    notify();
   }
 
   void _incrementPage() {
@@ -117,7 +112,7 @@ class MockCharacterListRepository extends BaseRepository<Character> {
     } else {
       filterAllPagesListByFilterMode(listFilterMode, false);
 
-      emit(characterListService);
+      notify();
 
       return Future.value();
     }
@@ -130,5 +125,10 @@ class MockCharacterListRepository extends BaseRepository<Character> {
   void setDefaultPageAndGetCharacterList([ListType listFilterMode = ListType.basic]) {
     _setDefaultSearchPage();
     getCharacterList(listFilterMode, true);
+  }
+
+  @override
+  void onBroadcastDataFromStore(String dataId) {
+    // TODO: implement onBroadcastDataFromStore
   }
 }

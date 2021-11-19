@@ -3,7 +3,17 @@ import 'package:provider/src/provider.dart';
 import 'package:rick_and_morty_flutter_proj/constants/theme_constants.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/responses/character.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_detail/vm/rick_morty_detail_vm.dart';
+import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/widgets/character_card_widget.dart';
+import 'package:rick_and_morty_flutter_proj/core/router/router_v1.dart';
+
+class RickMortyDetailArgs {
+  int characterId;
+
+  RickMortyDetailArgs(this.characterId);
+
+  Map<String, String> toJson() => <String, String>{'characterId': characterId.toString()};
+}
 
 class RickMortyDetailScreen extends StatelessWidget {
   static const String route = '/rick_morty_detail';
@@ -13,13 +23,15 @@ class RickMortyDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     Widget mainContent;
 
-    character = context.read<RickMortyDetailVM>().getCharacterById(context);
+    final arguments = ModalRoute.of(context)?.settings.name?.routingArguments as RickMortyDetailArgs;
+
+    character = context.read<RickMortyDetailVM>().getCharacterById(context,arguments.characterId);
+
     final isCharacterFound = character != null;
-
-
-    if(isCharacterFound){
+    if (isCharacterFound) {
       mainContent = Scaffold(
         body: Container(
           constraints: const BoxConstraints.expand(),
@@ -28,7 +40,7 @@ class RickMortyDetailScreen extends StatelessWidget {
             children: <Widget>[
               _getBackground(),
               _getGradient(),
-              _getContent(),
+              _getContent(context),
               _getToolbar(context),
             ],
           ),
@@ -67,29 +79,33 @@ class RickMortyDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _getContent() {
+  Widget _getContent(BuildContext context) {
     final _overviewTitle = "Overview".toUpperCase();
     return ListView(
-        padding: const EdgeInsets.fromLTRB(0.0, 72.0, 0.0, 32.0),
-        children: <Widget>[
-          CharacterCardWidget(
-            character: character!,
-            horizontal: false,
+      padding: const EdgeInsets.fromLTRB(0.0, 72.0, 0.0, 32.0),
+      children: <Widget>[
+        CharacterCardWidget(
+          character: character!,
+          horizontal: false,
+          onFavoriteClick: (bool isChosen) {
+            context.read<RickMortyListVM>().setFavouriteCharacterState(0, isChosen);
+          },
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 32.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                _overviewTitle,
+              ),
+              Text(
+                  "An animated series on adult-swim about the infinite adventures of Rick, a genius alcoholic and careless scientist, with his grandson Morty, a 14 year-old anxious boy who is not so smart. Together, they explore the infinite universes; causing mayhem and running into trouble."),
+            ],
           ),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 32.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  _overviewTitle,
-                ),
-                Text("An animated series on adult-swim about the infinite adventures of Rick, a genius alcoholic and careless scientist, with his grandson Morty, a 14 year-old anxious boy who is not so smart. Together, they explore the infinite universes; causing mayhem and running into trouble."),
-              ],
-            ),
-          ),
-        ],
-      );
+        ),
+      ],
+    );
   }
 
   Container _getToolbar(BuildContext context) {
