@@ -71,11 +71,9 @@ class MockCharacterListRepository extends BaseRepository<Character> {
     switch (listFilterMode) {
       case ListType.basic:
         if (isSearchPhraseNotEmpty) {
-          characterListByMode = _searchListPagination.updateAllPages(
-              characterListByMode, listFromResponse, favouritesStorageHelper.getFavouriteCharacters(), shouldFetch);
+          characterListByMode = _searchListPagination.updateAllPages(listFromResponse, favouritesStorageHelper.getFavouriteCharacters(), shouldFetch);
         } else {
-          characterListByMode = _basicListPagination.updateAllPages(
-              characterListByMode, listFromResponse, favouritesStorageHelper.getFavouriteCharacters(), shouldFetch);
+          characterListByMode = _basicListPagination.updateAllPages( listFromResponse, favouritesStorageHelper.getFavouriteCharacters(), shouldFetch);
         }
         break;
       case ListType.favourite:

@@ -21,7 +21,6 @@ class CharacterListRepository extends BaseRepository<Character> {
   late FavouritesStorageHelper favouritesStorageHelper;
 
   String? searchPhrase;
-
   ListType lastListType = ListType.basic;
 
   /// Gets current character list
@@ -49,6 +48,8 @@ class CharacterListRepository extends BaseRepository<Character> {
 
   @override
   void onBroadcastDataFromService(service) {
+    super.onBroadcastDataFromService(service);
+
     _filterAllPagesListByFilterMode(true, type: lastListType);
     notify();
   }
@@ -76,11 +77,9 @@ class CharacterListRepository extends BaseRepository<Character> {
     switch (type) {
       case ListType.basic:
         if (isSearchPhraseNotEmpty) {
-          characterListByMode = _searchListPagination.updateAllPages(
-              characterListByMode, listFromResponse, favouritesStorageHelper.getFavouriteCharacters(), shouldFetch);
+          characterListByMode = _searchListPagination.updateAllPages(listFromResponse, favouritesStorageHelper.getFavouriteCharacters(), shouldFetch);
         } else {
-          characterListByMode = _basicListPagination.updateAllPages(
-              characterListByMode, listFromResponse, favouritesStorageHelper.getFavouriteCharacters(), shouldFetch);
+          characterListByMode = _basicListPagination.updateAllPages(listFromResponse, favouritesStorageHelper.getFavouriteCharacters(), shouldFetch);
         }
         break;
       case ListType.favourite:

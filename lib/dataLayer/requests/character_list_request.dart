@@ -17,6 +17,7 @@ class CharacterListRequest extends RequestDataModel {
 
     if(name != null && name!.isNotEmpty){
       data['name'] = name;
+      method += "/${name!}";
     }
 
     data['page'] = pageNum;

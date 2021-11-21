@@ -18,7 +18,7 @@ abstract class BaseDataManager {
   BaseDataManager(this.baseUrl);
 
   ///Counter for query id for debug purposes
-  int sourceCounter = 0;
+  int serviceCounter = 0;
 
   Map<int, Service> sources = {};
 
@@ -36,19 +36,19 @@ abstract class BaseDataManager {
   Future<Response> delete(RequestDataModel dataRequest);
 
   ///Process data after [query] was executed
-  Future<T> execute<T extends Service<RequestDataModel,ResponseDataModel>>(T dataTask, Store store, HttpOperation operation);
+  Future<T> execute<T extends Service>(T dataTask, Store store, HttpOperation operation);
 
-  ///Increment [sourceCounter] per [Service] initialization
+  ///Increment [serviceCounter] per [Service] initialization
   int generateDataSourceId() {
-    final int requestId = sourceCounter;
+    final int requestId = serviceCounter;
 
-    sourceCounter++;
+    serviceCounter++;
 
     return requestId;
   }
 
   int registerService(Service dataSource) {
-   sources.putIfAbsent(sourceCounter, () => dataSource);
+   sources.putIfAbsent(serviceCounter, () => dataSource);
 
    return generateDataSourceId();
   }

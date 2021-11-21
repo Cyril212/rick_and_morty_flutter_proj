@@ -31,8 +31,8 @@ class FavouritesStorageHelper<T extends BaseDataClient<BaseDataManager>>{
   /// Puts favourite character to storage
   void putFavouriteCharacterStateById(int characterId, bool state) {
     //Get character
-    final Character? characterById = _basicListPagination.allPagesList.firstWhereOrNull((character) => character.id == characterId) ??
-        _searchListPagination.allPagesList.firstWhereOrNull((character) => character.id == characterId);
+    final Character? characterById = _basicListPagination.service.response!.results.firstWhereOrNull((character) => character.id == characterId) ??
+        _searchListPagination.service.response!.results.firstWhereOrNull((character) => character.id == characterId);
 
     //Get current list of favorite characters
     List<Character> filteredList = List<Character>.from(getFavouriteCharacters());

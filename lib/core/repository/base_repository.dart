@@ -6,6 +6,7 @@ import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/data_client
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/base_data_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/response_data_model.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/service.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/responses/character_list_response.dart';
 
 /// Used to communicate between VM and Manager
 abstract class BaseRepository<R extends ResponseDataModel> {
@@ -60,7 +61,13 @@ abstract class BaseRepository<R extends ResponseDataModel> {
 
   /// Broadcasts actual services
   @protected
-  void onBroadcastDataFromService(Service service);
+  void onBroadcastDataFromService(Service service){
+    for (var currentService in services) {
+      if(service.runtimeType == currentService.runtimeType){
+        currentService = service;
+      }
+    }
+  }
 
   @protected
   void onBroadcastDataFromStore(String dataId);

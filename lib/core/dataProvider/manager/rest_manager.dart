@@ -14,9 +14,11 @@ enum HttpOperation { post, get, put, delete }
 ///Fetches and processes data from Http.get request, for more [BaseDataManager]
 class RestManager extends BaseDataManager {
   late Dio _dio;
+  late InMemoryStore inMemoryStore = InMemoryStore();
 
   /// Init
-  RestManager({required String baseUrl, required UnauthorizedRequestHandler onUnauthenticatedRequest}) : super(baseUrl) {
+  RestManager({required String baseUrl, required UnauthorizedRequestHandler onUnauthenticatedRequest})
+      : super(baseUrl) {
     _dio = Dio(BaseOptions(baseUrl: baseUrl))
       ..interceptors.add(InterceptorsWrapper(onRequest: (options, handler) {
         // Do something before request is sent
@@ -108,7 +110,8 @@ class RestManager extends BaseDataManager {
         );
       } else {
         final rawResponse = response.data;
-        dataTask.response = dataTask.processResponse(rawResponse);
+
+        dataTask.response = dataTask.cache.put(dataTask.requestDataModel.method, dataTask.processResponse(rawResponse));
 
         dataTask.error = null;
       }

@@ -1,5 +1,5 @@
 abstract class RequestDataModel {
-  final String method;
+  String method;
   final Map<String, String>? headers;
 
   RequestDataModel(this.method, this.headers);

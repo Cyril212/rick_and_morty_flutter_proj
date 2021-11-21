@@ -57,7 +57,7 @@ class _ListWidgetState<T extends ListVM> extends State<ListWidget> {
 
         bool isInitialLoading = snapshot.state == ListState.idle || snapshot.state == ListState.loading && (listVM.currentList.isEmpty);
         if (isInitialLoading) {
-          return widget.itemBuilder != null ? widget.initialLoadingWidget!(context) : const Center(child: SizedBox(width: 50, height: 50, child: CircularProgressIndicator()));
+          return widget.initialLoadingWidget != null ? widget.initialLoadingWidget!(context) : const Center(child: SizedBox(width: 50, height: 50, child: CircularProgressIndicator()));
         } else if (snapshot.state == ListState.empty) {
           return widget.emptyListWidget != null ? widget.emptyListWidget!(context) : const Center(child: Text("There's no character by your preference :("));
         } else if (snapshot.state == ListState.error) {
@@ -77,7 +77,7 @@ class _ListWidgetState<T extends ListVM> extends State<ListWidget> {
             }),
           itemBuilder: (context, index) {
             if(index < listVM.currentList.length) {
-              return widget.itemBuilder!(context, index);
+              return widget.itemBuilder(context, index);
             }else{
               return widget.initialLoadingWidget != null ? widget.initialLoadingWidget!(context) : const Center(child: CircularProgressIndicator());
             }

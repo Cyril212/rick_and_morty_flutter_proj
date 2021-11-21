@@ -13,6 +13,7 @@ import '../source_exception.dart';
 class MockManager extends BaseDataManager {
 
   late Dio _dio;
+  late InMemoryStore inMemoryStore = InMemoryStore();
 
   /// Init
   MockManager({required String baseUrl, required UnauthorizedRequestHandler onUnauthenticatedRequest}) : super(baseUrl){
