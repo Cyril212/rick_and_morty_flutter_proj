@@ -21,22 +21,6 @@ class CharacterPaginationController extends PaginationController<Character> {
   @override
   bool get hasNextPage => service.response?.info.next != null;
 
-  List<Character> updateAllPages(List<Character> characterListFromResponse, List<Character> favouriteCharacterList, bool shouldFetch) {
-
-    //if (shouldFetch) {
-      //if it's second page of current response add it to list since some data already exist within the list
-      // if (allPagesList.isNotEmpty && service.requestDataModel.pageNum > 2) {
-      //   List<Character> tmp = List.from(allPagesList); // to avoid concurrent modification
-      //   tmp.addAll(characterListFromResponse);
-      //   allPagesList = tmp;
-      // } else {
-      //   allPagesList = characterListFromResponse;
-      // }
-   // }
-
-    return  _mergeWithFavouriteStorage(favouriteCharacterList, characterListFromResponse);
-  }
-
   @override
   void setDefaultPage() {
     super.setDefaultPage();
@@ -44,7 +28,7 @@ class CharacterPaginationController extends PaginationController<Character> {
   }
 
   /// Merges [favouriteCharacterList] isFavourite state with [allPagesList]
-  List<Character> _mergeWithFavouriteStorage(List<Character> favouriteCharacterList, List<Character> characterListFromResponse) {
+  List<Character> mergedCharacterListWithFavouriteStorage(List<Character> favouriteCharacterList, List<Character> characterListFromResponse) {
     List<Character> mergedCharacterList = [];
 
     for (var characterFromAllPageList in characterListFromResponse) {

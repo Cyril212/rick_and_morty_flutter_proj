@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/base_data_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/rest_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';
 
 import '../model/request_data_model.dart';
-import '../model/response_data_model.dart';
 import 'package:dio/dio.dart';
 
 import '../service.dart';
@@ -27,7 +27,7 @@ abstract class BaseDataManager {
   Future<Response> post(RequestDataModel dataRequest);
 
   @protected
-  Future<Response> get(RequestDataModel dataRequest);
+  Future<Response> get(RequestDataModel dataRequest, FetchPolicy fetchPolicy);
 
   @protected
   Future<Response> put(RequestDataModel dataRequest);
@@ -36,7 +36,7 @@ abstract class BaseDataManager {
   Future<Response> delete(RequestDataModel dataRequest);
 
   ///Process data after [query] was executed
-  Future<T> execute<T extends Service>(T dataTask, Store store, HttpOperation operation);
+  Future<T> execute<T extends Service>(T dataTask, Store store, HttpOperation operation,FetchPolicy fetchPolicy);
 
   ///Increment [serviceCounter] per [Service] initialization
   int generateDataSourceId() {

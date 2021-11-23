@@ -6,7 +6,6 @@ class CharacterListRequest extends RequestDataModel {
   /// Initial page, by default is 1
   int pageNum;
 
-  /// Initial page, by default is 1
   String? name;
 
   CharacterListRequest({Map<String, String>? headers,this.pageNum = 1}) : super("/character", headers);
@@ -17,7 +16,6 @@ class CharacterListRequest extends RequestDataModel {
 
     if(name != null && name!.isNotEmpty){
       data['name'] = name;
-      method += "/${name!}";
     }
 
     data['page'] = pageNum;

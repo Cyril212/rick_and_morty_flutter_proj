@@ -8,11 +8,11 @@ import 'package:rick_and_morty_flutter_proj/dataLayer/responses/character_list_r
 
 import '../character_pagination_controller.dart';
 
-class FavouritesStorageHelper<T extends BaseDataClient<BaseDataManager>>{
+class FavouritesStorageHelper<T extends BaseDataClient<BaseDataManager>> {
   T client;
 
-  late final CharacterPaginationController _basicListPagination;
-  late final CharacterPaginationController _searchListPagination;
+  final CharacterPaginationController _basicListPagination;
+  final CharacterPaginationController _searchListPagination;
 
   /// List tag to put/get current favourite list to [HiveStore]
   String get favouriteListTag => "favouriteList";
@@ -71,12 +71,12 @@ class FavouritesStorageHelper<T extends BaseDataClient<BaseDataManager>>{
     String characterListAsString = client.getDataFromStore(favouriteListTag) ?? "";
 
     List<Map<String, dynamic>> characterStringList =
-    characterListAsString.isNotEmpty ? (List<Map<String, dynamic>>.from(json.decode(characterListAsString))) : [];
+        characterListAsString.isNotEmpty ? (List<Map<String, dynamic>>.from(json.decode(characterListAsString))) : [];
 
     return characterStringList.map((json) => Character.fromJson(json)).toList();
   }
 
-  List<Character> filterFavouritesListBySearch(String? searchPhrase) {
+  List<Character> getFilteredFavouritesListBySearch(String? searchPhrase) {
     final favouriteList = getFavouriteCharacters();
     if (searchPhrase != null && searchPhrase.isNotEmpty) {
       final tmp = [...favouriteList];

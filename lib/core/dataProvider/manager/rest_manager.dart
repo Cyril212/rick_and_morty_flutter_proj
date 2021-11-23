@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/base_data_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/data_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/base_data_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/request_data_model.dart';
@@ -17,8 +18,7 @@ class RestManager extends BaseDataManager {
   late InMemoryStore inMemoryStore = InMemoryStore();
 
   /// Init
-  RestManager({required String baseUrl, required UnauthorizedRequestHandler onUnauthenticatedRequest})
-      : super(baseUrl) {
+  RestManager({required String baseUrl, required UnauthorizedRequestHandler onUnauthenticatedRequest}) : super(baseUrl) {
     _dio = Dio(BaseOptions(baseUrl: baseUrl))
       ..interceptors.add(InterceptorsWrapper(onRequest: (options, handler) {
         // Do something before request is sent
@@ -75,18 +75,27 @@ class RestManager extends BaseDataManager {
   }
 
   @override
-  Future<Response> get(RequestDataModel dataRequest) async {
-    final Response response = await _dio.get(
-      dataRequest.method,
-      queryParameters: dataRequest.toJson(),
-      options: Options(headers: dataRequest.headers),
-    );
+  Future<Response> get(RequestDataModel dataRequest, FetchPolicy fetchPolicy) async {
+    Response response;
+
+    switch (fetchPolicy) {
+      case FetchPolicy.cache:
+        response = Response(data: inMemoryStore.get(baseUrl + dataRequest.method), requestOptions: RequestOptions(path: dataRequest.method), statusCode: 200);
+        break;
+      case FetchPolicy.network:
+        response = await _dio.get(
+          dataRequest.method,
+          queryParameters: dataRequest.toJson(),
+          options: Options(headers: dataRequest.headers),
+        );
+        break;
+    }
 
     return response;
   }
 
   @override
-  Future<T> execute<T extends Service>(T dataTask, Store store, HttpOperation operation) async {
+  Future<T> execute<T extends Service>(T dataTask, Store store, HttpOperation operation, FetchPolicy fetchPolicy) async {
     try {
       late Response response;
       switch (operation) {
@@ -94,7 +103,7 @@ class RestManager extends BaseDataManager {
           response = await post(dataTask.requestDataModel);
           break;
         case HttpOperation.get:
-          response = await get(dataTask.requestDataModel);
+          response = await get(dataTask.requestDataModel, fetchPolicy);
           break;
         case HttpOperation.put:
           response = await put(dataTask.requestDataModel);
@@ -110,9 +119,9 @@ class RestManager extends BaseDataManager {
         );
       } else {
         final rawResponse = response.data;
-
-        dataTask.response = dataTask.cache.put(dataTask.requestDataModel.method, dataTask.processResponse(rawResponse));
-
+        dataTask.response = fetchPolicy == FetchPolicy.network
+            ? dataTask.cache.put(response.realUri.toString(), dataTask.processResponse(rawResponse))
+            : dataTask.processResponse(rawResponse);
         dataTask.error = null;
       }
     } catch (e) {

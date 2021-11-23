@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
 import 'package:rick_and_morty_flutter_proj/constants/theme_constants.dart';
@@ -23,12 +25,11 @@ class RickMortyDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     Widget mainContent;
+    final arguments = ModalRoute.of(context)?.settings.name?.routingArguments;
+    final characterId = int.parse(arguments!['characterId']!);
 
-    final arguments = ModalRoute.of(context)?.settings.name?.routingArguments as RickMortyDetailArgs;
-
-    character = context.read<RickMortyDetailVM>().getCharacterById(context,arguments.characterId);
+    character = context.read<RickMortyDetailVM>().getCharacterById(context, characterId);
 
     final isCharacterFound = character != null;
     if (isCharacterFound) {

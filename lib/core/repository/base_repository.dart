@@ -61,9 +61,9 @@ abstract class BaseRepository<R extends ResponseDataModel> {
 
   /// Broadcasts actual services
   @protected
-  void onBroadcastDataFromService(Service service){
+  void onBroadcastDataFromService(Service service) {
     for (var currentService in services) {
-      if(service.runtimeType == currentService.runtimeType){
+      if (currentService.runtimeType == service.runtimeType) {
         currentService = service;
       }
     }

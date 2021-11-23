@@ -39,7 +39,7 @@ abstract class ListVM extends Cubit<ListEvent> {
     _repository.result.listen((dataSource) {
       //to make bloc builder receive the same state
       if (_repository.mainService.error != null) {
-        if (dataSource.error?.httpStatusCode == AppConstants.kEmptyListErrorStatus) {
+        if (_repository.mainService.error!.httpStatusCode == AppConstants.kEmptyListErrorStatus) {
           emit(ListEvent(ListState.empty, error: dataSource.error));
         } else {
           emit(ListEvent(ListState.error, error: dataSource.error));

@@ -23,4 +23,19 @@ class Info extends ResponseDataModel {
     data['prev'] = prev;
     return data;
   }
+
+  int? get nextPageNum {
+    if (next != null) {
+      RegExp exp = RegExp('([?&]page=\\d+)');
+      Iterable<Match> matches = exp.allMatches(next!);
+
+      final nextPage = matches.first.group(0).toString().split(RegExp("=")).last;
+
+      print("nextPage: $nextPage");
+
+      return int.parse(nextPage);
+    } else {
+      return null;
+    }
+  }
 }

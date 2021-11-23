@@ -5,13 +5,14 @@ import 'package:rick_and_morty_flutter_proj/dataLayer/responses/character_list_r
 
 import 'cache/character_list_cache.dart';
 
-
-abstract class Pagination{}
 /// CharacterListSource data source
 class CharacterListService extends Service<CharacterListRequest, CharacterListResponse, CharacterListCache> {
-
   CharacterListService(RestManager restManager, CharacterListRequest requestDataModel, {Map<String, dynamic>? responseDataModel})
-      : super(requestDataModel, (Map<String, dynamic> json) => CharacterListResponse.fromJson(json),CharacterListCache(restManager.inMemoryStore));
+      : super(requestDataModel, (Map<String, dynamic> json) {
+          final response = CharacterListResponse.fromJson(json);
+          if (response.info.nextPageNum != null) {
+            requestDataModel.pageNum = response.info.nextPageNum!;
+          }
+          return CharacterListResponse.fromJson(json);
+        }, CharacterListCache(restManager.inMemoryStore));
 }
-
-
