@@ -34,7 +34,6 @@ class RestManager extends BaseDataManager {
         // you can reject a `DioError` object eg: `handler.reject(dioError)`
       }, onError: (DioError e, handler) {
         // Do something with response error
-
         return handler.next(e); //continue
         // If you want to resolve the request with some custom data，
         // you can resolve a `Response` object eg: `handler.resolve(response)`.
@@ -75,12 +74,13 @@ class RestManager extends BaseDataManager {
   }
 
   @override
-  Future<Response> get(RequestDataModel dataRequest, FetchPolicy fetchPolicy) async {
+  Future<Response> get(RequestDataModel dataRequest) async {
     Response response;
 
-    switch (fetchPolicy) {
+    switch (dataRequest.fetchPolicy) {
       case FetchPolicy.cache:
-        response = Response(data: inMemoryStore.get(baseUrl + dataRequest.method), requestOptions: RequestOptions(path: dataRequest.method), statusCode: 200);
+        response = Response(
+            data: inMemoryStore.get(baseUrl + dataRequest.method), requestOptions: RequestOptions(path: dataRequest.method), statusCode: 200);
         break;
       case FetchPolicy.network:
         response = await _dio.get(
@@ -89,13 +89,18 @@ class RestManager extends BaseDataManager {
           options: Options(headers: dataRequest.headers),
         );
         break;
+      case FetchPolicy.cacheFirst:
+        dataRequest.fetchPolicy = FetchPolicy.network;
+        response = Response(
+            data: inMemoryStore.get(baseUrl + dataRequest.method), requestOptions: RequestOptions(path: dataRequest.method), statusCode: 200);
+        break;
     }
 
     return response;
   }
 
   @override
-  Future<T> execute<T extends Service>(T dataTask, Store store, HttpOperation operation, FetchPolicy fetchPolicy) async {
+  Future<T> execute<T extends Service>(T dataTask, Store store, HttpOperation operation) async {
     try {
       late Response response;
       switch (operation) {
@@ -103,7 +108,7 @@ class RestManager extends BaseDataManager {
           response = await post(dataTask.requestDataModel);
           break;
         case HttpOperation.get:
-          response = await get(dataTask.requestDataModel, fetchPolicy);
+          response = await get(dataTask.requestDataModel);
           break;
         case HttpOperation.put:
           response = await put(dataTask.requestDataModel);
@@ -119,7 +124,7 @@ class RestManager extends BaseDataManager {
         );
       } else {
         final rawResponse = response.data;
-        dataTask.response = fetchPolicy == FetchPolicy.network
+        dataTask.response = dataTask.requestDataModel.fetchPolicy == FetchPolicy.network
             ? dataTask.cache.put(response.realUri.toString(), dataTask.processResponse(rawResponse))
             : dataTask.processResponse(rawResponse);
         dataTask.error = null;

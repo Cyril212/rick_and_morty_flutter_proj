@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/data_client.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/screens/authorization/authorization_screen.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_detail/rick_morty_detail_screen.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_detail/vm/rick_morty_detail_vm.dart';
@@ -24,7 +25,7 @@ Route<Object> onGenerateRoute(RouteSettings settings) {
       case RickMortyDetailScreen.route:
         return createRoute(
             (BuildContext context) => BlocProvider(
-                  create: (context) => RickMortyDetailVM(),
+                  create: (context) => RickMortyDetailVM(context.read<DataClient>()),
                   child: RickMortyDetailScreen(),
                 ),
             settings);

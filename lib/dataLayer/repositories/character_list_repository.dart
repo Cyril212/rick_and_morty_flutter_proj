@@ -12,12 +12,11 @@ import 'package:rick_and_morty_flutter_proj/dataLayer/services/character_list_se
 import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list/vm/list_vm.dart';
 
 import 'character_pagination_controller.dart';
-import 'helpers/favourites_storage_helper.dart';
+import 'helpers/character_storage_helper.dart';
 
 enum ListMode { basic, basicSearch }
 
 abstract class PaginationListMediator {
-
   bool hasNextPage();
 
   void setNextPageNumToListByListMode(int? nextPageNum);
@@ -33,17 +32,17 @@ class CharacterListMediator extends PaginationListMediator {
   final CharacterPaginationController _basicList;
   final CharacterPaginationController _basicSearchList;
 
-  late FavouritesStorageHelper favouritesStorageHelper;
+  late CharacterStorageHelper characterStorageHelper;
 
   final CharacterListService _characterListService;
 
   CharacterListMediator(DataClient client, this._characterListService)
       : _basicList = CharacterPaginationController(_characterListService),
         _basicSearchList = CharacterPaginationController(_characterListService) {
-    favouritesStorageHelper = FavouritesStorageHelper<DataClient>(client, _basicList, _basicSearchList);
+    characterStorageHelper = CharacterStorageHelper<DataClient>(client, _characterListService.cache);
   }
 
-  List<Character> get favouriteList => favouritesStorageHelper.getFilteredFavouritesListBySearch(_currentSearch);
+  List<Character> get favouriteList => characterStorageHelper.getFavouriteCharactersBySearch(_currentSearch);
 
   String? get _currentSearch => _characterListService.requestDataModel.name;
 
@@ -54,9 +53,9 @@ class CharacterListMediator extends PaginationListMediator {
   List<Character> mergedCharacterListWithFavouriteStorage(List<Character> characterListFromResponse) {
     switch (listMode) {
       case ListMode.basic:
-        return _basicList.mergedCharacterListWithFavouriteStorage(favouritesStorageHelper.getFavouriteCharacters(), characterListFromResponse);
+        return _basicList.mergedCharacterListWithFavouriteStorage(characterStorageHelper.getFavouriteCharacters(), characterListFromResponse);
       case ListMode.basicSearch:
-        return _basicSearchList.mergedCharacterListWithFavouriteStorage(favouritesStorageHelper.getFavouriteCharacters(), characterListFromResponse);
+        return _basicSearchList.mergedCharacterListWithFavouriteStorage(characterStorageHelper.getFavouriteCharacters(), characterListFromResponse);
     }
   }
 
@@ -131,25 +130,25 @@ class CharacterListRepository extends BaseRepository<Character> {
       : super(
             client: client,
             dataIdList: [AppConstants.kFavouriteListDataId],
-            serviceList: [CharacterListService(client.manager, CharacterListRequest())]) {
-    characterListsMediator = CharacterListMediator(client, _characterListService);
+            serviceList: [CharacterListService(client.manager, CharacterListRequest(FetchPolicy.network))]) {
+    characterListsMediator = CharacterListMediator(client, characterListService);
   }
 
   /// Gets [CharacterListSource]
-  CharacterListService get _characterListService => (services[0] as CharacterListService);
+  CharacterListService get characterListService => (services[0] as CharacterListService);
 
   /// Gets error to send error state in CharacterListVM
-  SourceException? get error => _characterListService.error;
+  SourceException? get error => characterListService.error;
 
   @override
   void onBroadcastDataFromService(service) {
     super.onBroadcastDataFromService(service);
-    _setCharacterListByType(type: currentListType);
+    _setCharacterListByType();
   }
 
   @override
   void onBroadcastDataFromStore(String dataId) {
-    _setCharacterListByType(type: currentListType);
+    _setCharacterListByType();
   }
 
   void setSearchPhrase(String searchPhrase) {
@@ -157,11 +156,11 @@ class CharacterListRepository extends BaseRepository<Character> {
   }
 
   ///Filters list by [listFilterMode], then in case [searchPhrase] != null filters list by searchPhrase
-  void _setCharacterListByType({ListType type = ListType.basic}) {
+  void _setCharacterListByType() {
     //merge new response with characters from store
-    List<Character> listFromResponse = _characterListService.response?.results ?? [];
+    List<Character> listFromResponse = characterListService.response?.results ?? [];
 
-    switch (type) {
+    switch (currentListType) {
       case ListType.basic:
         characterListByType = characterListsMediator.mergedCharacterListWithFavouriteStorage(listFromResponse);
         break;
@@ -182,11 +181,11 @@ class CharacterListRepository extends BaseRepository<Character> {
     switch (listType) {
       case ListType.basic:
         client
-            .executeService(_characterListService, HttpOperation.get, refreshList == true ? FetchPolicy.network : FetchPolicy.cache)
+            .executeService(characterListService, HttpOperation.get, refreshList == true ? FetchPolicy.network : FetchPolicy.cache)
             .then((service) => characterListsMediator.setNextPageNumToListByListMode(service.response?.info.nextPageNum));
         break;
       case ListType.favourite:
-        _setCharacterListByType(type: listType);
+        _setCharacterListByType();
         break;
     }
   }

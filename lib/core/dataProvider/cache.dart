@@ -5,8 +5,9 @@ import 'model/response_data_model.dart';
 
 abstract class Cache<T extends ResponseDataModel> {
   final InMemoryStore store;
+  final String method;
 
-  Cache(this.store);
+  Cache(this.store, this.method);
 
   T put(String query, T data) {
     print("Query: $query");

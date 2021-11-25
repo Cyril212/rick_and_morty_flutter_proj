@@ -19,45 +19,36 @@ class RickMortyDetailArgs {
 
 class RickMortyDetailScreen extends StatelessWidget {
   static const String route = '/rick_morty_detail';
-  late Character? character;
 
   RickMortyDetailScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    Widget mainContent;
     final arguments = ModalRoute.of(context)?.settings.name?.routingArguments;
     final characterId = int.parse(arguments!['characterId']!);
 
-    character = context.read<RickMortyDetailVM>().getCharacterById(context, characterId);
+    context.read<RickMortyDetailVM>().getCharacterById(context, characterId);
 
-    final isCharacterFound = character != null;
-    if (isCharacterFound) {
-      mainContent = Scaffold(
-        body: Container(
-          constraints: const BoxConstraints.expand(),
-          color: kColorPurple,
-          child: Stack(
-            children: <Widget>[
-              _getBackground(),
-              _getGradient(),
-              _getContent(context),
-              _getToolbar(context),
-            ],
-          ),
+    return Scaffold(
+      body: Container(
+        constraints: const BoxConstraints.expand(),
+        color: kColorPurple,
+        child: Stack(
+          children: <Widget>[
+            _getBackground(context),
+            _getGradient(),
+            _getContent(context),
+            _getToolbar(context),
+          ],
         ),
-      );
-    } else {
-      mainContent = Container();
-    }
-
-    return mainContent;
+      ),
+    );
   }
 
-  Container _getBackground() {
+  Container _getBackground(BuildContext context) {
     return Container(
       child: Image.network(
-        character!.image,
+        context.read<RickMortyDetailVM>().currentCharacter!.image,
         fit: BoxFit.cover,
         height: 300.0,
       ),
@@ -86,10 +77,10 @@ class RickMortyDetailScreen extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(0.0, 72.0, 0.0, 32.0),
       children: <Widget>[
         CharacterCardWidget(
-          character: character!,
+          character: context.read<RickMortyDetailVM>().currentCharacter!,
           horizontal: false,
           onFavoriteClick: (bool isChosen) {
-            context.read<RickMortyListVM>().setFavouriteCharacterState(0, isChosen);
+            context.read<RickMortyDetailVM>().setFavouriteCharacterState(isChosen);
           },
         ),
         Container(

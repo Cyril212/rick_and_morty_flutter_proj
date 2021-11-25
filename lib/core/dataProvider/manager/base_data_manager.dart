@@ -27,7 +27,7 @@ abstract class BaseDataManager {
   Future<Response> post(RequestDataModel dataRequest);
 
   @protected
-  Future<Response> get(RequestDataModel dataRequest, FetchPolicy fetchPolicy);
+  Future<Response> get(RequestDataModel dataRequest);
 
   @protected
   Future<Response> put(RequestDataModel dataRequest);
@@ -36,7 +36,7 @@ abstract class BaseDataManager {
   Future<Response> delete(RequestDataModel dataRequest);
 
   ///Process data after [query] was executed
-  Future<T> execute<T extends Service>(T dataTask, Store store, HttpOperation operation,FetchPolicy fetchPolicy);
+  Future<T> execute<T extends Service>(T dataTask, Store store, HttpOperation operation);
 
   ///Increment [serviceCounter] per [Service] initialization
   int generateDataSourceId() {

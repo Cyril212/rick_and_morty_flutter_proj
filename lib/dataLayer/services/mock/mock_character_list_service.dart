@@ -8,5 +8,6 @@ import 'package:rick_and_morty_flutter_proj/dataLayer/services/cache/character_l
 ///Mock model of [CharacterListSource]
 class MockCharacterListService extends Service<CharacterListRequest, CharacterListResponse, CharacterListCache> {
   MockCharacterListService(MockManager restManager, CharacterListRequest requestDataModel, {Map<String, dynamic>? responseDataModel})
-      : super(requestDataModel, (Map<String, dynamic> json) => CharacterListResponse.fromJson(json),CharacterListCache(restManager.inMemoryStore));
+      : super(requestDataModel, (Map<String, dynamic> json) => CharacterListResponse.fromJson(json),
+            CharacterListCache(restManager.inMemoryStore, requestDataModel.method));
 }

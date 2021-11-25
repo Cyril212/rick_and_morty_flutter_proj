@@ -70,9 +70,9 @@ class RickMortyListVM extends ListVM {
 
   /// Sets favourite character state
   void setFavouriteCharacterState(int characterId, bool state) =>
-      _repository.characterListsMediator.favouritesStorageHelper.putFavouriteCharacterStateById(characterId, state);
+      _repository.characterListsMediator.characterStorageHelper.putFavouriteCharacterStateById(characterId, state);
 
   /// Gets favourite character state
   bool getFavouriteCharacterState(int characterId) =>
-      _repository.characterListsMediator.favouritesStorageHelper.getFavouriteCharacterStateById(characterId);
+      _repository.characterListsMediator.characterStorageHelper.getFavouriteCharacterStateById(characterId);
 }

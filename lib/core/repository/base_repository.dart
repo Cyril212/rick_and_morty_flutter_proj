@@ -88,7 +88,7 @@ abstract class BaseRepository<R extends ResponseDataModel> {
 
   void unregisterSources() {
     for (var element in services) {
-      element.unregisterSource(client.manager, int.parse(element.serviceId));
+      element.unregisterService(client.manager, int.parse(element.serviceId));
     }
     _unregisterControllers();
   }

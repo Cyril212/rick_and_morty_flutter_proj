@@ -5,7 +5,7 @@ import 'package:rick_and_morty_flutter_proj/core/dataProvider/mock/mock_data_cli
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/source_exception.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/base_repository.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/repositories/character_list_repository.dart';
-import 'package:rick_and_morty_flutter_proj/dataLayer/repositories/helpers/favourites_storage_helper.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/repositories/helpers/character_storage_helper.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/requests/character_list_request.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/responses/character.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/services/character_list_service.dart';

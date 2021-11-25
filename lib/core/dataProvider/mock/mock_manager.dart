@@ -41,7 +41,7 @@ class MockManager extends BaseDataManager {
   }
 
   @override
-  Future<T> execute<T extends Service>(T dataTask, Store store, HttpOperation operation, FetchPolicy fetchPolicy) async {
+  Future<T> execute<T extends Service>(T dataTask, Store store, HttpOperation operation) async {
     try {
       late Response response;
       switch (operation) {
@@ -49,7 +49,7 @@ class MockManager extends BaseDataManager {
           response = await post(dataTask.requestDataModel);
           break;
         case HttpOperation.get:
-          response = await get(dataTask.requestDataModel, fetchPolicy);
+          response = await get(dataTask.requestDataModel);
           break;
         case HttpOperation.put:
           response = await put(dataTask.requestDataModel);
@@ -94,7 +94,7 @@ class MockManager extends BaseDataManager {
   }
 
   @override
-  Future<Response> get(RequestDataModel dataRequest, FetchPolicy fetchPolicy) {
+  Future<Response> get(RequestDataModel dataRequest) {
     Map<String, dynamic> testResponse = {
       "info": {"count": 671, "pages": 34, "next": "https://rickandmortyapi.com/api/character/?page=2", "prev": null},
       "results": [

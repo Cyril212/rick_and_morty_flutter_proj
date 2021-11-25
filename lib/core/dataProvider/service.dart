@@ -46,7 +46,7 @@ abstract class Service<T extends RequestDataModel, R extends ResponseDataModel, 
     serviceId = manager.registerService(this).toString();
   }
 
-  void unregisterSource(BaseDataManager manager, int serviceId) {
+  void unregisterService(BaseDataManager manager, int serviceId) {
     manager.unregisterService(serviceId);
   }
 }
