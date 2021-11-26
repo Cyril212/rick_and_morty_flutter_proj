@@ -1,23 +1,18 @@
 import 'dart:convert';
 
 import 'package:collection/src/iterable_extensions.dart';
+import 'package:rick_and_morty_flutter_proj/constants/app_constants.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/base_data_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/base_data_manager.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/responses/character.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/responses/character_list_response.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/services/cache/character_list_cache.dart';
 
-import '../character_pagination_controller.dart';
+class CharacterStorageHelper<T extends BaseDataClient<BaseDataManager>> {
+  final T _client;
+  final CharacterListCache _cache;
 
-class FavouritesStorageHelper<T extends BaseDataClient<BaseDataManager>>{
-  T client;
-
-  late final CharacterPaginationController _basicListPagination;
-  late final CharacterPaginationController _searchListPagination;
-
-  /// List tag to put/get current favourite list to [HiveStore]
-  String get favouriteListTag => "favouriteList";
-
-  FavouritesStorageHelper(this.client, this._basicListPagination, this._searchListPagination);
+  CharacterStorageHelper(this._client, this._cache);
 
   /// Returns merge of current response with favouriteCharacters from [HiveStore]
   List<Character> mergeFavouritesCharacterFromStore(CharacterListResponse? response) {
@@ -31,29 +26,42 @@ class FavouritesStorageHelper<T extends BaseDataClient<BaseDataManager>>{
   /// Puts favourite character to storage
   void putFavouriteCharacterStateById(int characterId, bool state) {
     //Get character
-    final Character? characterById = _basicListPagination.allPagesList.firstWhereOrNull((character) => character.id == characterId) ??
-        _searchListPagination.allPagesList.firstWhereOrNull((character) => character.id == characterId);
+    final Character characterById = getCharacterById(characterId)..isFavourite = state;
+    _updateFavouriteCharacter(characterById);
+  }
 
+  /// Puts favourite character to storage
+  void putFavouriteCharacter(Character newCharacter, bool state) {
+    //Get character
+    final Character characterWithNewState = newCharacter..isFavourite = state;
+    _updateFavouriteCharacter(characterWithNewState);
+  }
+
+  void _updateFavouriteCharacter(Character newCharacter) {
     //Get current list of favorite characters
     List<Character> filteredList = List<Character>.from(getFavouriteCharacters());
 
     //Find out if it already contains this char
-    final alreadyContainsFavourite = filteredList.firstWhereOrNull((character) => character.id == characterId) != null;
+    final alreadyContainsFavourite = filteredList.firstWhereOrNull((character) => character.id == newCharacter.id) != null;
 
     // if contains character and isFavourite(state) false remove item from list
-    if (state == false) {
-      filteredList.removeWhere((character) => character.id == characterId);
+    if (newCharacter.isFavourite == false) {
+      filteredList.removeWhere((character) => character.id == newCharacter.id);
     } else if (alreadyContainsFavourite) {
       //if contains character and state is true
-      filteredList.firstWhere((character) => character.id == characterId).isFavourite = state;
-    } else if (alreadyContainsFavourite == false && state) {
+      filteredList.firstWhere((character) => character.id == newCharacter.id).isFavourite = newCharacter.isFavourite;
+    } else if (alreadyContainsFavourite == false && newCharacter.isFavourite) {
       // if character hasn't been added
-      characterById?.isFavourite = state;
-      filteredList.add(characterById!);
+      filteredList.add(newCharacter);
     }
 
-    client.putDataToStore(favouriteListTag, json.encode(filteredList));
+    _client.putDataToStore(AppConstants.kFavouriteListDataId, json.encode(filteredList));
   }
+
+  Character getCharacterById(int characterId) => getFavouriteCharacterById(characterId) ?? _cache.getCharacterById(characterId);
+
+  /// Gets favourite state by [characterId]
+  Character? getFavouriteCharacterById(int characterId) => getFavouriteCharacters().firstWhereOrNull((character) => character.id == characterId);
 
   /// Gets favourite state by [characterId]
   bool getFavouriteCharacterStateById(int characterId) {
@@ -68,15 +76,15 @@ class FavouritesStorageHelper<T extends BaseDataClient<BaseDataManager>>{
 
   ///Gets favourite characters
   List<Character> getFavouriteCharacters() {
-    String characterListAsString = client.getDataFromStore(favouriteListTag) ?? "";
+    String characterListAsString = _client.getDataFromStore(AppConstants.kFavouriteListDataId) ?? "";
 
     List<Map<String, dynamic>> characterStringList =
-    characterListAsString.isNotEmpty ? (List<Map<String, dynamic>>.from(json.decode(characterListAsString))) : [];
+        characterListAsString.isNotEmpty ? (List<Map<String, dynamic>>.from(json.decode(characterListAsString))) : [];
 
     return characterStringList.map((json) => Character.fromJson(json)).toList();
   }
 
-  List<Character> filterFavouritesListBySearch(String? searchPhrase) {
+  List<Character> getFavouriteCharactersBySearch(String? searchPhrase) {
     final favouriteList = getFavouriteCharacters();
     if (searchPhrase != null && searchPhrase.isNotEmpty) {
       final tmp = [...favouriteList];

@@ -4,7 +4,7 @@ import 'package:rick_and_morty_flutter_proj/core/dataProvider/mock/mock_data_cli
 import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';
 import '../service.dart';
 
-
+enum FetchPolicy { cache, network, cacheFirst }
 
 /// Abstraction over data client, mainly used to create custom one and be able to Mock app by using [MockDataClient]
 /// Responsible for holding [store] and [manager] within scope tree and used as delegate for repository
@@ -16,7 +16,10 @@ abstract class BaseDataClient<T extends BaseDataManager> {
   BaseDataClient({required this.store, required this.manager});
 
   ///Executes query from repository to fetch data from [manager]
-  Future<R> executeService<R extends Service>(R service, HttpOperation operation) async {
+  Future<R> executeService<R extends Service>(R service, HttpOperation operation, {FetchPolicy? fetchPolicy}) {
+    if (fetchPolicy != null) {
+      service.requestDataModel.fetchPolicy = fetchPolicy;
+    }
     return manager.execute<R>(service, store, operation);
   }
 

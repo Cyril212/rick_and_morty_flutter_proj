@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/base_data_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/data_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/base_data_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/request_data_model.dart';
@@ -7,6 +8,7 @@ import 'package:dio/dio.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/source_exception.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';
 
+import '../../Logger.dart';
 import '../service.dart';
 
 enum HttpOperation { post, get, put, delete }
@@ -14,6 +16,7 @@ enum HttpOperation { post, get, put, delete }
 ///Fetches and processes data from Http.get request, for more [BaseDataManager]
 class RestManager extends BaseDataManager {
   late Dio _dio;
+  late InMemoryStore inMemoryStore = InMemoryStore();
 
   /// Init
   RestManager({required String baseUrl, required UnauthorizedRequestHandler onUnauthenticatedRequest}) : super(baseUrl) {
@@ -32,7 +35,6 @@ class RestManager extends BaseDataManager {
         // you can reject a `DioError` object eg: `handler.reject(dioError)`
       }, onError: (DioError e, handler) {
         // Do something with response error
-
         return handler.next(e); //continue
         // If you want to resolve the request with some custom data，
         // you can resolve a `Response` object eg: `handler.resolve(response)`.
@@ -74,11 +76,26 @@ class RestManager extends BaseDataManager {
 
   @override
   Future<Response> get(RequestDataModel dataRequest) async {
-    final Response response = await _dio.get(
-      dataRequest.method,
-      queryParameters: dataRequest.toJson(),
-      options: Options(headers: dataRequest.headers),
-    );
+    Response response;
+
+    switch (dataRequest.fetchPolicy) {
+      case FetchPolicy.cache:
+        response = Response(
+            data: inMemoryStore.get(baseUrl + dataRequest.method), requestOptions: RequestOptions(path: dataRequest.method), statusCode: 200);
+        break;
+      case FetchPolicy.network:
+        response = await _dio.get(
+          dataRequest.method,
+          queryParameters: dataRequest.toJson(),
+          options: Options(headers: dataRequest.headers),
+        );
+        break;
+      case FetchPolicy.cacheFirst:
+        dataRequest.fetchPolicy = FetchPolicy.network;
+        response = Response(
+            data: inMemoryStore.get(baseUrl + dataRequest.method), requestOptions: RequestOptions(path: dataRequest.method), statusCode: 200);
+        break;
+    }
 
     return response;
   }
@@ -101,22 +118,27 @@ class RestManager extends BaseDataManager {
           response = await delete(dataTask.requestDataModel);
           break;
       }
+      Logger.d("Query: ${response.realUri}", tag: "onExecute");
+
       if (response.statusCode! >= 400) {
-        dataTask.error = SourceException(
+        dataTask.response!.error = SourceException(
           originalException: null,
           httpStatusCode: response.statusCode,
         );
       } else {
         final rawResponse = response.data;
-        dataTask.response = dataTask.processResponse(rawResponse);
-
-        dataTask.error = null;
+        dataTask.response = dataTask.requestDataModel.fetchPolicy == FetchPolicy.network
+            ? dataTask.cache.put(response.realUri.toString(), dataTask.processResponse(rawResponse))
+            : dataTask.processResponse(rawResponse);
+        dataTask.response!.error = null;
       }
-    } catch (e) {
-      dataTask.error = SourceException(originalException: e);
+    } on DioError catch (error, _) {
+      Logger.d("onExecute: Query: ${error.response!.realUri}");
+
+      dataTask.response!.error = SourceException(originalException: error, httpStatusCode: error.response!.statusCode);
     }
 
-    dataTask.sink.add(dataTask);
+    dataTask.sink.add(dataTask.response!);
 
     broadcastServices(dataTask);
 

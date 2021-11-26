@@ -1,24 +1,26 @@
-import 'package:rick_and_morty_flutter_proj/constants/app_constants.dart';
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/request_data_model.dart';
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/response_data_model.dart';
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/service.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/base_data_client.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/data_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/base_repository.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/repositories/helpers/character_storage_helper.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/requests/character_list_request.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/responses/character.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/services/cache/character_list_cache.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/services/character_list_service.dart';
 
 class RickMortyDetailRepository extends BaseRepository {
-  RickMortyDetailRepository(client)
-      : super(
-      client: client,
-      dataIdList: [AppConstants.kFavouriteListDataId]);
+  late CharacterStorageHelper characterStorageHelper;
 
-  @override
-  void onBroadcastDataFromService(Service service) {
-    // TODO: implement onBroadcastDataFromService
+  RickMortyDetailRepository(DataClient client)
+      : super(client: client, serviceList: [CharacterListService(client.manager, CharacterListRequest(FetchPolicy.network))]) {
+    characterStorageHelper = CharacterStorageHelper(client, mainService.cache as CharacterListCache);
+  }
+
+  Character getCharacter(int characterId) => characterStorageHelper.getCharacterById(characterId);
+
+  void setFavouriteCharacter(Character character, bool state) {
+    characterStorageHelper.putFavouriteCharacter(character, state);
   }
 
   @override
-  void onBroadcastDataFromStore(String dataId) {
-    // TODO: implement onBroadcastDataFromStore
-  }
-
+  void onBroadcastDataFromStore(String dataId) {}
 }

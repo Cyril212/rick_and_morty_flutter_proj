@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:rick_and_morty_flutter_proj/constants/app_constants.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/base_data_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/data_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/rest_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/source_exception.dart';
@@ -11,120 +12,193 @@ import 'package:rick_and_morty_flutter_proj/dataLayer/services/character_list_se
 import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list/vm/list_vm.dart';
 
 import 'character_pagination_controller.dart';
-import 'helpers/favourites_storage_helper.dart';
+import 'helpers/character_storage_helper.dart';
+
+enum ListMode { basic, basicSearch }
+
+abstract class PaginationListMediator {
+  bool hasNextPage();
+
+  void setNextPageNumToListByListMode(int? nextPageNum);
+
+  void setPageNumToRequestByListMode([int? pageNum]);
+
+  void setDefaultPageNum();
+
+  void setSearchPhrase(String searchPhrase) {}
+}
+
+class CharacterListMediator extends PaginationListMediator {
+  final CharacterPaginationController _basicList;
+  final CharacterPaginationController _basicSearchList;
+
+  late CharacterStorageHelper characterStorageHelper;
+
+  final CharacterListService _characterListService;
+
+  CharacterListMediator(DataClient client, this._characterListService)
+      : _basicList = CharacterPaginationController(_characterListService),
+        _basicSearchList = CharacterPaginationController(_characterListService) {
+    characterStorageHelper = CharacterStorageHelper<DataClient>(client, _characterListService.cache);
+  }
+
+  List<Character> get favouriteList => characterStorageHelper.getFavouriteCharactersBySearch(_currentSearch);
+
+  String? get _currentSearch => _characterListService.requestDataModel.name;
+
+  bool get _isCurrentSearchNotEmpty => _currentSearch != null && _currentSearch!.replaceAll(" ", "").isNotEmpty;
+
+  ListMode get listMode => _isCurrentSearchNotEmpty ? ListMode.basicSearch : ListMode.basic;
+
+  List<Character> mergedCharacterListWithFavouriteStorage(List<Character> characterListFromResponse) {
+    switch (listMode) {
+      case ListMode.basic:
+        return _basicList.mergedCharacterListWithFavouriteStorage(characterStorageHelper.getFavouriteCharacters(), characterListFromResponse);
+      case ListMode.basicSearch:
+        return _basicSearchList.mergedCharacterListWithFavouriteStorage(characterStorageHelper.getFavouriteCharacters(), characterListFromResponse);
+    }
+  }
+
+  /// Gets true if response contains link to next page otherwise returns null
+  @override
+  bool hasNextPage() {
+    switch (listMode) {
+      case ListMode.basic:
+        return _basicList.hasNextPage;
+      case ListMode.basicSearch:
+        return _basicSearchList.hasNextPage;
+    }
+  }
+
+  @override
+  void setNextPageNumToListByListMode(int? nextPageNum) {
+    //we are at the last page
+    if (nextPageNum != null) {
+      switch (listMode) {
+        case ListMode.basic:
+          _basicList.pageNumber = nextPageNum;
+          break;
+        case ListMode.basicSearch:
+          _basicSearchList.pageNumber = nextPageNum;
+          break;
+      }
+    }
+
+    setPageNumToRequestByListMode(nextPageNum);
+  }
+
+  @override
+  void setPageNumToRequestByListMode([int? pageNum]) {
+    switch (listMode) {
+      case ListMode.basic:
+        _characterListService.requestDataModel.pageNum = pageNum ?? _basicList.pageNumber;
+        break;
+      case ListMode.basicSearch:
+        _characterListService.requestDataModel.pageNum = pageNum ?? _basicSearchList.pageNumber;
+        break;
+    }
+  }
+
+  @override
+  void setDefaultPageNum() {
+    switch (listMode) {
+      case ListMode.basic:
+        break;
+      case ListMode.basicSearch:
+        _basicSearchList.setDefaultPage();
+        break;
+    }
+  }
+
+  @override
+  void setSearchPhrase(String searchPhrase) {
+    _basicSearchList.service.requestDataModel.name = searchPhrase;
+  }
+}
 
 ///CharacterListSource to communicate between CharacterListVM and DataSource
-class CharacterListRepository extends BaseRepository<Character> {
-  late final CharacterPaginationController _basicListPagination;
-  late final CharacterPaginationController _searchListPagination;
+class CharacterListRepository extends BaseRepository {
+  late final CharacterListMediator characterListsMediator;
 
-  late FavouritesStorageHelper favouritesStorageHelper;
-
-  String? searchPhrase;
-
-  ListType lastListType = ListType.basic;
+  ListType currentListType = ListType.basic;
 
   /// Gets current character list
-  List<Character> characterListByMode = [];
+  List<Character> characterListByType = [];
 
   /// Init
   CharacterListRepository(client)
       : super(
             client: client,
             dataIdList: [AppConstants.kFavouriteListDataId],
-            serviceList: [CharacterListService(client.manager, CharacterListRequest())]) {
-    _basicListPagination = CharacterPaginationController(_characterListService);
-    _searchListPagination = CharacterPaginationController(_characterListService);
-
-    favouritesStorageHelper = FavouritesStorageHelper<DataClient>(client, _basicListPagination, _searchListPagination);
+            serviceList: [CharacterListService(client.manager, CharacterListRequest(FetchPolicy.network))]) {
+    characterListsMediator = CharacterListMediator(client, characterListService);
   }
 
   /// Gets [CharacterListSource]
-  CharacterListService get _characterListService => (services[0] as CharacterListService);
+  CharacterListService get characterListService => (services[0] as CharacterListService);
 
   /// Gets error to send error state in CharacterListVM
-  SourceException? get error => _characterListService.error;
-
-  bool get isSearchPhraseNotEmpty => searchPhrase != null && searchPhrase!.isEmpty;
+  SourceException? get error => characterListService.response?.error;
 
   @override
-  void onBroadcastDataFromService(service) {
-    _filterAllPagesListByFilterMode(true, type: lastListType);
-    notify();
+  void onBroadcastDataFromService(response) {
+    super.onBroadcastDataFromService(response);
+    _setCharacterListByType();
   }
 
   @override
   void onBroadcastDataFromStore(String dataId) {
-    _filterAllPagesListByFilterMode(false, type: lastListType);
-    notify();
+    _setCharacterListByType();
   }
 
-  /// Gets true if response contains link to next page otherwise returns null
-  bool hasNextPage() {
-    if (isSearchPhraseNotEmpty) {
-      return _basicListPagination.hasNextPage;
-    } else {
-      return _searchListPagination.hasNextPage;
-    }
+  void setSearchPhrase(String searchPhrase) {
+    characterListsMediator.setSearchPhrase(searchPhrase);
   }
 
   ///Filters list by [listFilterMode], then in case [searchPhrase] != null filters list by searchPhrase
-  void _filterAllPagesListByFilterMode(bool shouldFetch, {ListType type = ListType.basic}) {
+  void _setCharacterListByType() {
     //merge new response with characters from store
-    List<Character> listFromResponse = _characterListService.response?.results ?? [];
+    List<Character> listFromResponse = characterListService.response?.results ?? [];
 
-    switch (type) {
+    switch (currentListType) {
       case ListType.basic:
-        if (isSearchPhraseNotEmpty) {
-          characterListByMode = _searchListPagination.updateAllPages(
-              characterListByMode, listFromResponse, favouritesStorageHelper.getFavouriteCharacters(), shouldFetch);
-        } else {
-          characterListByMode = _basicListPagination.updateAllPages(
-              characterListByMode, listFromResponse, favouritesStorageHelper.getFavouriteCharacters(), shouldFetch);
-        }
+        characterListByType = characterListsMediator.mergedCharacterListWithFavouriteStorage(listFromResponse);
         break;
       case ListType.favourite:
-        characterListByMode = favouritesStorageHelper.filterFavouritesListBySearch(searchPhrase);
+        characterListByType = characterListsMediator.favouriteList;
         break;
     }
 
-    lastListType = type;
+    notify();
   }
 
-  void _incrementPage() {
-    int resultPage;
-    if (searchPhrase?.isEmpty ?? true) {
-      resultPage = _basicListPagination.incrementPage();
-    } else {
-      resultPage = _searchListPagination.incrementPage();
-    }
-    _characterListService.requestDataModel.pageNum = resultPage;
-  }
-
-  /// Gets new page if [refreshList] is true, otherwise calls [filterAllPagesListByFilterMode()] to update [characterListByMode]
+  /// Gets new page if [refreshList] is true, otherwise calls [filterAllPagesListByFilterMode()] to update [characterListByType]
   void getCharacterList([ListType listType = ListType.basic, bool refreshList = false]) async {
-    _characterListService.requestDataModel.name = searchPhrase;
+    currentListType = listType;
 
-    if (refreshList) {
-      client.executeService(_characterListService, HttpOperation.get).then((value) {
-        _incrementPage();
-        return value;
-      });
-    } else {
-      _filterAllPagesListByFilterMode(false, type: listType);
+    characterListsMediator.setPageNumToRequestByListMode();
 
-      notify();
+    switch (listType) {
+      case ListType.basic:
+        client
+            .executeService(characterListService, HttpOperation.get, fetchPolicy: refreshList == true ? FetchPolicy.network : FetchPolicy.cache)
+            .then((service) {
+          if (mainService.requestDataModel.fetchPolicy != FetchPolicy.cache) {
+            characterListsMediator.setNextPageNumToListByListMode(service.response?.info.nextPageNum);
+          }
+        });
+        break;
+      case ListType.favourite:
+        _setCharacterListByType();
+        break;
     }
   }
 
-  /// Resets page number, only called during search bar input
-  void _setDefaultSearchPage() {
-    _searchListPagination.setDefaultPage();
-  }
-
-  /// Resets page number and fetches new response
+  /// Resets page number due to new search phrase, and actualize list depending on [isSearchPhraseNotEmpty]
   void setDefaultPageAndGetCharacterList([ListType listFilterMode = ListType.basic]) {
-    _setDefaultSearchPage();
-    getCharacterList(listFilterMode, true);
+    //Each time there's new search phrase we should reset pageNumber.
+    characterListsMediator.setDefaultPageNum();
+
+    getCharacterList(listFilterMode, characterListsMediator._isCurrentSearchNotEmpty);
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
 import 'package:rick_and_morty_flutter_proj/constants/theme_constants.dart';
@@ -17,46 +19,36 @@ class RickMortyDetailArgs {
 
 class RickMortyDetailScreen extends StatelessWidget {
   static const String route = '/rick_morty_detail';
-  late Character? character;
 
   RickMortyDetailScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final arguments = ModalRoute.of(context)?.settings.name?.routingArguments;
+    final characterId = int.parse(arguments!['characterId']!);
 
-    Widget mainContent;
+    context.read<RickMortyDetailVM>().getCharacterById(context, characterId);
 
-    final arguments = ModalRoute.of(context)?.settings.name?.routingArguments as RickMortyDetailArgs;
-
-    character = context.read<RickMortyDetailVM>().getCharacterById(context,arguments.characterId);
-
-    final isCharacterFound = character != null;
-    if (isCharacterFound) {
-      mainContent = Scaffold(
-        body: Container(
-          constraints: const BoxConstraints.expand(),
-          color: kColorPurple,
-          child: Stack(
-            children: <Widget>[
-              _getBackground(),
-              _getGradient(),
-              _getContent(context),
-              _getToolbar(context),
-            ],
-          ),
+    return Scaffold(
+      body: Container(
+        constraints: const BoxConstraints.expand(),
+        color: kColorPurple,
+        child: Stack(
+          children: <Widget>[
+            _getBackground(context),
+            _getGradient(),
+            _getContent(context),
+            _getToolbar(context),
+          ],
         ),
-      );
-    } else {
-      mainContent = Container();
-    }
-
-    return mainContent;
+      ),
+    );
   }
 
-  Container _getBackground() {
+  Container _getBackground(BuildContext context) {
     return Container(
       child: Image.network(
-        character!.image,
+        context.read<RickMortyDetailVM>().currentCharacter.image,
         fit: BoxFit.cover,
         height: 300.0,
       ),
@@ -85,10 +77,10 @@ class RickMortyDetailScreen extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(0.0, 72.0, 0.0, 32.0),
       children: <Widget>[
         CharacterCardWidget(
-          character: character!,
+          character: context.read<RickMortyDetailVM>().currentCharacter,
           horizontal: false,
           onFavoriteClick: (bool isChosen) {
-            context.read<RickMortyListVM>().setFavouriteCharacterState(0, isChosen);
+            context.read<RickMortyDetailVM>().setFavouriteCharacterState(isChosen);
           },
         ),
         Container(

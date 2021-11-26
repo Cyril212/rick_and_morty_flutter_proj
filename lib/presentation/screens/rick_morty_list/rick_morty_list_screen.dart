@@ -37,13 +37,13 @@ class _RickMortyListScreenState extends RickMortyScreenState<RickMortyListScreen
           children: [
             ListWidget<RickMortyListVM>(
               itemBuilder: (context, index) {
-                   final rickMortyListVM = context.read<RickMortyListVM>();
+                final rickMortyListVM = context.read<RickMortyListVM>();
 
                 final Character character = rickMortyListVM.currentList[index];
                 return CharacterCardWidget(
                     character: character,
                     onClick: () {
-                      pushNamed(context, RickMortyDetailScreen.route,arguments: RickMortyDetailArgs(character.id).toJson());
+                      pushNamed(context, RickMortyDetailScreen.route, arguments: RickMortyDetailArgs(character.id).toJson());
                     },
                     onFavoriteClick: (bool isChosen) {
                       rickMortyListVM.setFavouriteCharacterState(character.id, isChosen);

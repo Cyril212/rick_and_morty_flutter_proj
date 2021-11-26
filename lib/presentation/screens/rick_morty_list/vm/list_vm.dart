@@ -14,10 +14,10 @@ enum ListType { basic, favourite }
 
 /// CharacterListEvent witch contains state and error status to process on UI
 class ListEvent extends UniqueEvent {
-  final ListState state;
+  final ListState listState;
   final SourceException? error;
 
-  ListEvent(this.state, {this.error});
+  ListEvent(this.listState, {this.error});
 }
 
 /// View model of [RickMortyListScreen]
@@ -30,19 +30,19 @@ abstract class ListVM extends Cubit<ListEvent> {
 
   late StreamSubscription listenOnDevice;
 
-  bool isFetching = false;
+  bool isNextPageFetching = false;
 
   /// Init
   ListVM(this._repository, {this.listType = ListType.basic}) : super(ListEvent(ListState.idle)) {
     registerSource();
 
-    _repository.result.listen((dataSource) {
+    _repository.result.listen((_) {
       //to make bloc builder receive the same state
-      if (_repository.mainService.error != null) {
-        if (dataSource.error?.httpStatusCode == AppConstants.kEmptyListErrorStatus) {
-          emit(ListEvent(ListState.empty, error: dataSource.error));
+      if (_repository.mainService.response?.error != null) {
+        if (_repository.mainService.response?.error!.httpStatusCode == AppConstants.kEmptyListErrorStatus) {
+          emit(ListEvent(ListState.empty, error: _repository.mainService.response!.error));
         } else {
-          emit(ListEvent(ListState.error, error: dataSource.error));
+          emit(ListEvent(ListState.error, error:  _repository.mainService.response!.error));
         }
       } else {
         if (currentList.isNotEmpty) {
@@ -58,6 +58,8 @@ abstract class ListVM extends Cubit<ListEvent> {
   List get currentList;
 
   bool get allowFetch;
+
+  bool get isInitialLoading;
 
   /// Called when list reached the [maxExtend] and allowed to fetch
   void onEndOfList();

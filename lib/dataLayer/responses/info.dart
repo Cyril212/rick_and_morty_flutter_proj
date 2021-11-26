@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+import 'package:rick_and_morty_flutter_proj/core/Logger.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/response_data_model.dart';
 
 /// Info response model
@@ -22,5 +24,20 @@ class Info extends ResponseDataModel {
     data['next'] = next;
     data['prev'] = prev;
     return data;
+  }
+
+  int? get nextPageNum {
+    if (next != null) {
+      RegExp exp = RegExp('([?&]page=\\d+)');
+      Iterable<Match> matches = exp.allMatches(next!);
+
+      final nextPage = matches.first.group(0).toString().split(RegExp("=")).last;
+
+      Logger.d(nextPage,tag:"nextPage");
+
+      return int.parse(nextPage);
+    } else {
+      return null;
+    }
   }
 }

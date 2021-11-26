@@ -7,7 +7,6 @@ import 'list_vm.dart';
 
 /// View model of [RickMortyListScreen]
 class RickMortyListVM extends ListVM {
-
   /// CharacterList repo
   final CharacterListRepository _repository;
 
@@ -15,15 +14,21 @@ class RickMortyListVM extends ListVM {
   RickMortyListVM(this._repository) : super(_repository);
 
   @override
-  List get currentList => _repository.characterListByMode;
+  List get currentList => _repository.characterListByType;
 
   bool get isBasic => listType == ListType.basic;
 
   @override
-  bool get allowFetch => isBasic && _repository.hasNextPage();
+  bool get allowFetch => isBasic && _repository.characterListsMediator.hasNextPage();
+
+  @override
+  bool get isInitialLoading => (_repository.characterListService.requestDataModel.pageNum == 1) && state.listState == ListState.loading;
 
   /// Emits current [state] depending on result of [fetchCharacterList()]
   void getCharacters(bool refreshList) {
+    if (refreshList) {
+      emit(ListEvent(ListState.loading));
+    }
     _repository.getCharacterList(listType, refreshList);
   }
 
@@ -31,12 +36,12 @@ class RickMortyListVM extends ListVM {
   @override
   void onEndOfList() {
     if (isBasic) {
-      if (_repository.hasNextPage()) {
-        isFetching = true;
+      if (_repository.characterListsMediator.hasNextPage()) {
+        isNextPageFetching = true;
 
         getCharacters(true);
       } else {
-        isFetching = false;
+        isNextPageFetching = false;
       }
     }
   }
@@ -47,14 +52,11 @@ class RickMortyListVM extends ListVM {
     getCharacters(false);
   }
 
-  /// Sets searchPhrase value
-  void _setSearchPhraseIfAvailable(String searchPhrase) => _repository.searchPhrase = searchPhrase;
-
   /// Sets searchPhrase value and fetches new result
   void updateCharacterListBySearchPhrase(String searchPhrase) {
-    _setSearchPhraseIfAvailable(searchPhrase);
+    _repository.setSearchPhrase(searchPhrase);
 
-    if(listType == ListType.basic) {
+    if (listType == ListType.basic) {
       emit(ListEvent(ListState.loading));
       _repository.setDefaultPageAndGetCharacterList();
     } else {
@@ -75,8 +77,10 @@ class RickMortyListVM extends ListVM {
   }
 
   /// Sets favourite character state
-  void setFavouriteCharacterState(int characterId, bool state) => _repository.favouritesStorageHelper.putFavouriteCharacterStateById(characterId, state);
+  void setFavouriteCharacterState(int characterId, bool state) =>
+      _repository.characterListsMediator.characterStorageHelper.putFavouriteCharacterStateById(characterId, state);
 
   /// Gets favourite character state
-  bool getFavouriteCharacterState(int characterId) => _repository.favouritesStorageHelper.getFavouriteCharacterStateById(characterId);
+  bool getFavouriteCharacterState(int characterId) =>
+      _repository.characterListsMediator.characterStorageHelper.getFavouriteCharacterStateById(characterId);
 }

@@ -40,14 +40,14 @@ void main() {
     test('Can filter list by ListFilterMode.none if source has no successful response', () async {
       repository.getCharacterList(ListType.basic, false);
 
-      expect(repository.characterListByMode.isEmpty, true);
+      expect(repository.characterListByType.isEmpty, true);
     });
 
     test('Can filter list by ListFilterMode.none if source has successful response', () async {
       await repository.getCharacterList(ListType.basic, true);
       repository.filterAllPagesListByFilterMode(ListType.basic, false);
 
-      expect(repository.characterListByMode.isNotEmpty, true);
+      expect(repository.characterListByType.isNotEmpty, true);
     });
 
     test('Does page number iterates after first fetch', () async {
