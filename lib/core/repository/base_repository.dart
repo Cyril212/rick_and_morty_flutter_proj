@@ -9,14 +9,14 @@ import 'package:rick_and_morty_flutter_proj/core/dataProvider/service.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/responses/character_list_response.dart';
 
 /// Used to communicate between VM and Manager
-abstract class BaseRepository<R extends ResponseDataModel> {
+abstract class BaseRepository {
   final BaseDataClient client;
 
   ///Controller to update VM
   final StreamController<void> _resultController;
 
   ///Controller to allow broadcasting services
-  StreamController<Service>? _serviceController;
+  StreamController<ResponseDataModel>? _serviceController;
 
   ///Controller to allow broadcasting store operations(put,delete,reset) by [dataId]
   StreamController<String>? _storeController;
@@ -25,7 +25,7 @@ abstract class BaseRepository<R extends ResponseDataModel> {
   Stream get result => _resultController.stream;
 
   ///Result of serviceBroadcast
-  Stream<Service>? get serviceBroadcastResult => _serviceController?.stream;
+  Stream<ResponseDataModel>? get serviceBroadcastResult => _serviceController?.stream;
 
   ///Result of storeBroadcast
   Stream<String>? get storeBroadcastResult => _storeController?.stream;
@@ -39,7 +39,7 @@ abstract class BaseRepository<R extends ResponseDataModel> {
     if (serviceList != null) {
       services = serviceList;
 
-      _serviceController = StreamController<Service>();
+      _serviceController = StreamController<ResponseDataModel>();
 
       for (var service in services) {
         service.stream.listen(onBroadcastDataFromService);
@@ -61,10 +61,10 @@ abstract class BaseRepository<R extends ResponseDataModel> {
 
   /// Broadcasts actual services
   @protected
-  void onBroadcastDataFromService(Service service) {
+  void onBroadcastDataFromService(ResponseDataModel response) {
     for (var currentService in services) {
-      if (currentService.runtimeType == service.runtimeType) {
-        currentService = service;
+      if (currentService.response.runtimeType == response.runtimeType) {
+        currentService.response = response;
       }
     }
   }

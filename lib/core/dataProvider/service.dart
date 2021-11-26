@@ -28,18 +28,15 @@ abstract class Service<T extends RequestDataModel, R extends ResponseDataModel, 
   /// Response object
   R? response;
 
-  late StreamController<Service> _controller;
+  late StreamController<R> _controller;
 
-  Sink<Service> get sink => _controller.sink;
+  Sink<R> get sink => _controller.sink;
 
-  Stream<Service> get stream => _controller.stream;
-
-  /// Error object to describe negative use cases
-  SourceException? error;
+  Stream<R> get stream => _controller.stream;
 
   /// Init
-  Service(this.requestDataModel, this.processResponse, this.cache, {this.error}) {
-    _controller = StreamController<Service<T, R, C>>.broadcast();
+  Service(this.requestDataModel, this.processResponse, this.cache) {
+    _controller = StreamController<R>();
   }
 
   void registerService(BaseDataManager manager) {

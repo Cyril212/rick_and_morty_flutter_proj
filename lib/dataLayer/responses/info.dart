@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+import 'package:rick_and_morty_flutter_proj/core/Logger.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/response_data_model.dart';
 
 /// Info response model
@@ -31,7 +33,7 @@ class Info extends ResponseDataModel {
 
       final nextPage = matches.first.group(0).toString().split(RegExp("=")).last;
 
-      print("nextPage: $nextPage");
+      Logger.d(nextPage,tag:"nextPage");
 
       return int.parse(nextPage);
     } else {

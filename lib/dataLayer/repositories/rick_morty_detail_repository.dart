@@ -7,7 +7,7 @@ import 'package:rick_and_morty_flutter_proj/dataLayer/responses/character.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/services/cache/character_list_cache.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/services/character_list_service.dart';
 
-class RickMortyDetailRepository extends BaseRepository<Character> {
+class RickMortyDetailRepository extends BaseRepository {
   late CharacterStorageHelper characterStorageHelper;
 
   RickMortyDetailRepository(DataClient client)
@@ -17,8 +17,8 @@ class RickMortyDetailRepository extends BaseRepository<Character> {
 
   Character getCharacter(int characterId) => characterStorageHelper.getCharacterById(characterId);
 
-  void setFavouriteCharacter(int characterId, bool state){
-    characterStorageHelper.putFavouriteCharacterStateById(characterId, state);
+  void setFavouriteCharacter(Character character, bool state) {
+    characterStorageHelper.putFavouriteCharacter(character, state);
   }
 
   @override

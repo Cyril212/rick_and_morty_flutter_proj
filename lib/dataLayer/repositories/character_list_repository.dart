@@ -46,7 +46,7 @@ class CharacterListMediator extends PaginationListMediator {
 
   String? get _currentSearch => _characterListService.requestDataModel.name;
 
-  bool get _isCurrentSearchNotEmpty => _currentSearch != null && _currentSearch!.isNotEmpty;
+  bool get _isCurrentSearchNotEmpty => _currentSearch != null && _currentSearch!.replaceAll(" ", "").isNotEmpty;
 
   ListMode get listMode => _isCurrentSearchNotEmpty ? ListMode.basicSearch : ListMode.basic;
 
@@ -117,7 +117,7 @@ class CharacterListMediator extends PaginationListMediator {
 }
 
 ///CharacterListSource to communicate between CharacterListVM and DataSource
-class CharacterListRepository extends BaseRepository<Character> {
+class CharacterListRepository extends BaseRepository {
   late final CharacterListMediator characterListsMediator;
 
   ListType currentListType = ListType.basic;
@@ -138,11 +138,11 @@ class CharacterListRepository extends BaseRepository<Character> {
   CharacterListService get characterListService => (services[0] as CharacterListService);
 
   /// Gets error to send error state in CharacterListVM
-  SourceException? get error => characterListService.error;
+  SourceException? get error => characterListService.response?.error;
 
   @override
-  void onBroadcastDataFromService(service) {
-    super.onBroadcastDataFromService(service);
+  void onBroadcastDataFromService(response) {
+    super.onBroadcastDataFromService(response);
     _setCharacterListByType();
   }
 
@@ -181,8 +181,12 @@ class CharacterListRepository extends BaseRepository<Character> {
     switch (listType) {
       case ListType.basic:
         client
-            .executeService(characterListService, HttpOperation.get, refreshList == true ? FetchPolicy.network : FetchPolicy.cache)
-            .then((service) => characterListsMediator.setNextPageNumToListByListMode(service.response?.info.nextPageNum));
+            .executeService(characterListService, HttpOperation.get, fetchPolicy: refreshList == true ? FetchPolicy.network : FetchPolicy.cache)
+            .then((service) {
+          if (mainService.requestDataModel.fetchPolicy != FetchPolicy.cache) {
+            characterListsMediator.setNextPageNumToListByListMode(service.response?.info.nextPageNum);
+          }
+        });
         break;
       case ListType.favourite:
         _setCharacterListByType();
@@ -195,6 +199,6 @@ class CharacterListRepository extends BaseRepository<Character> {
     //Each time there's new search phrase we should reset pageNumber.
     characterListsMediator.setDefaultPageNum();
 
-    getCharacterList(listFilterMode, true);
+    getCharacterList(listFilterMode, characterListsMediator._isCurrentSearchNotEmpty);
   }
 }

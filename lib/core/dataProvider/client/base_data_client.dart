@@ -16,7 +16,10 @@ abstract class BaseDataClient<T extends BaseDataManager> {
   BaseDataClient({required this.store, required this.manager});
 
   ///Executes query from repository to fetch data from [manager]
-  Future<R> executeService<R extends Service>(R service, HttpOperation operation, FetchPolicy fetchPolicy) {
+  Future<R> executeService<R extends Service>(R service, HttpOperation operation, {FetchPolicy? fetchPolicy}) {
+    if (fetchPolicy != null) {
+      service.requestDataModel.fetchPolicy = fetchPolicy;
+    }
     return manager.execute<R>(service, store, operation);
   }
 

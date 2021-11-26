@@ -48,7 +48,7 @@ class RickMortyDetailScreen extends StatelessWidget {
   Container _getBackground(BuildContext context) {
     return Container(
       child: Image.network(
-        context.read<RickMortyDetailVM>().currentCharacter!.image,
+        context.read<RickMortyDetailVM>().currentCharacter.image,
         fit: BoxFit.cover,
         height: 300.0,
       ),
@@ -77,7 +77,7 @@ class RickMortyDetailScreen extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(0.0, 72.0, 0.0, 32.0),
       children: <Widget>[
         CharacterCardWidget(
-          character: context.read<RickMortyDetailVM>().currentCharacter!,
+          character: context.read<RickMortyDetailVM>().currentCharacter,
           horizontal: false,
           onFavoriteClick: (bool isChosen) {
             context.read<RickMortyDetailVM>().setFavouriteCharacterState(isChosen);

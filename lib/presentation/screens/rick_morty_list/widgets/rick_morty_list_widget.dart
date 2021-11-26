@@ -37,17 +37,17 @@ class _ListWidgetState<T extends ListVM> extends State<ListWidget> {
       child: BlocConsumer<T, ListEvent>(listener: (context, characterListEvent) {
         final listVM = context.read<T>();
 
-        switch (characterListEvent.state) {
+        switch (characterListEvent.listState) {
           case ListState.idle:
           case ListState.loading:
             break;
           case ListState.success:
-            listVM.isFetching = false;
+            listVM.isNextPageFetching = false;
             break;
           case ListState.empty:
             break;
           case ListState.error:
-            listVM.isFetching = false;
+            listVM.isNextPageFetching = false;
             break;
         }
       }, builder: (BuildContext context, snapshot) {
@@ -55,12 +55,11 @@ class _ListWidgetState<T extends ListVM> extends State<ListWidget> {
 
         print("Length: ${listVM.currentList.length}");
 
-        bool isInitialLoading = snapshot.state == ListState.idle || snapshot.state == ListState.loading && (listVM.currentList.isEmpty);
-        if (isInitialLoading) {
+        if (listVM.isInitialLoading) {
           return widget.initialLoadingWidget != null ? widget.initialLoadingWidget!(context) : const Center(child: SizedBox(width: 50, height: 50, child: CircularProgressIndicator()));
-        } else if (snapshot.state == ListState.empty) {
+        } else if (snapshot.listState == ListState.empty) {
           return widget.emptyListWidget != null ? widget.emptyListWidget!(context) : const Center(child: Text("There's no character by your preference :("));
-        } else if (snapshot.state == ListState.error) {
+        } else if (snapshot.listState == ListState.error) {
           return widget.errorWidget != null ? widget.errorWidget!(context) : const Center(child: Text("Oops there's an error"));
         }
 
@@ -71,7 +70,7 @@ class _ListWidgetState<T extends ListVM> extends State<ListWidget> {
               bool isEndOfList = _scrollController.offset == _scrollController.position.maxScrollExtent;
               bool shouldFetch = isEndOfList && listVM.allowFetch;
 
-              if (shouldFetch && listVM.isFetching == false) {
+              if (shouldFetch && listVM.isNextPageFetching == false) {
                 listVM.onEndOfList();
             }
             }),

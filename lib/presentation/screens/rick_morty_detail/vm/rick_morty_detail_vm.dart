@@ -10,12 +10,12 @@ import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list
 
 class RickMortyDetailVM extends Cubit {
   final RickMortyDetailRepository repository;
+  late Character currentCharacter;
+
 
   RickMortyDetailVM(DataClient dataClient)
       : repository = RickMortyDetailRepository(dataClient),
         super(null);
-
-  Character? currentCharacter;
 
   /// Gets character id from parent [RickMortyListVM] bloc
   Character? getCharacterById(BuildContext context, int characterId) {
@@ -23,7 +23,6 @@ class RickMortyDetailVM extends Cubit {
   }
 
   void setFavouriteCharacterState(bool isChosen) {
-    repository.setFavouriteCharacter(currentCharacter!.id, state);
+    repository.setFavouriteCharacter(currentCharacter, isChosen);
   }
-
 }

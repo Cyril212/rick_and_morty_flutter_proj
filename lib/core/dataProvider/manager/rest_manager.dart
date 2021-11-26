@@ -8,6 +8,7 @@ import 'package:dio/dio.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/source_exception.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';
 
+import '../../Logger.dart';
 import '../service.dart';
 
 enum HttpOperation { post, get, put, delete }
@@ -117,8 +118,10 @@ class RestManager extends BaseDataManager {
           response = await delete(dataTask.requestDataModel);
           break;
       }
+      Logger.d("Query: ${response.realUri}", tag: "onExecute");
+
       if (response.statusCode! >= 400) {
-        dataTask.error = SourceException(
+        dataTask.response!.error = SourceException(
           originalException: null,
           httpStatusCode: response.statusCode,
         );
@@ -127,13 +130,15 @@ class RestManager extends BaseDataManager {
         dataTask.response = dataTask.requestDataModel.fetchPolicy == FetchPolicy.network
             ? dataTask.cache.put(response.realUri.toString(), dataTask.processResponse(rawResponse))
             : dataTask.processResponse(rawResponse);
-        dataTask.error = null;
+        dataTask.response!.error = null;
       }
-    } catch (e) {
-      dataTask.error = SourceException(originalException: e);
+    } on DioError catch (error, _) {
+      Logger.d("onExecute: Query: ${error.response!.realUri}");
+
+      dataTask.response!.error = SourceException(originalException: error, httpStatusCode: error.response!.statusCode);
     }
 
-    dataTask.sink.add(dataTask);
+    dataTask.sink.add(dataTask.response!);
 
     broadcastServices(dataTask);
 

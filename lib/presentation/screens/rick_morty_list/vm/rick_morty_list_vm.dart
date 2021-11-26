@@ -21,19 +21,27 @@ class RickMortyListVM extends ListVM {
   @override
   bool get allowFetch => isBasic && _repository.characterListsMediator.hasNextPage();
 
+  @override
+  bool get isInitialLoading => (_repository.characterListService.requestDataModel.pageNum == 1) && state.listState == ListState.loading;
+
   /// Emits current [state] depending on result of [fetchCharacterList()]
-  void getCharacters(bool refreshList) => _repository.getCharacterList(listType, refreshList);
+  void getCharacters(bool refreshList) {
+    if (refreshList) {
+      emit(ListEvent(ListState.loading));
+    }
+    _repository.getCharacterList(listType, refreshList);
+  }
 
   /// Called when list reached the [maxExtend] and allowed to fetch
   @override
   void onEndOfList() {
     if (isBasic) {
       if (_repository.characterListsMediator.hasNextPage()) {
-        isFetching = true;
+        isNextPageFetching = true;
 
         getCharacters(true);
       } else {
-        isFetching = false;
+        isNextPageFetching = false;
       }
     }
   }

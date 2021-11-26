@@ -6,6 +6,7 @@ import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/base_data_
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/rest_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/request_data_model.dart';
 import 'package:dio/dio.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/response_data_model.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';
 
 import '../service.dart';
@@ -60,21 +61,21 @@ class MockManager extends BaseDataManager {
       }
 
       if (response.statusCode! >= 400) {
-        dataTask.error = SourceException(
+        dataTask.response = ResponseDataModel.error(SourceException(
           originalException: null,
           httpStatusCode: response.statusCode,
-        );
+        ));
       } else {
         final rawResponse = response.data;
         dataTask.response = dataTask.processResponse(rawResponse);
-
-        dataTask.error = null;
       }
     } catch (e) {
-      dataTask.error = SourceException(originalException: e);
+      dataTask.response = ResponseDataModel.error(SourceException(
+        originalException: e,
+      ));
     }
 
-    dataTask.sink.add(dataTask);
+    dataTask.sink.add(dataTask.response!);
 
     broadcastServices(dataTask);
 
