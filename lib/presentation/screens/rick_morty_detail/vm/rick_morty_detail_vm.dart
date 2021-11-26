@@ -11,8 +11,7 @@ import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list
 class RickMortyDetailVM extends Cubit {
   final RickMortyDetailRepository repository;
   late Character currentCharacter;
-
-
+  
   RickMortyDetailVM(DataClient dataClient)
       : repository = RickMortyDetailRepository(dataClient),
         super(null);
