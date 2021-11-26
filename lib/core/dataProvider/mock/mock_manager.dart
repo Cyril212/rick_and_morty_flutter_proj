@@ -77,7 +77,7 @@ class MockManager extends BaseDataManager {
 
     dataTask.sink.add(dataTask.response!);
 
-    broadcastServices(dataTask);
+    broadcastResponseByService(dataTask);
 
     return dataTask;
   }

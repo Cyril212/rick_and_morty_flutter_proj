@@ -11,7 +11,6 @@ import '../service.dart';
 
 ///Used for fetching data from defined client
 abstract class BaseDataManager {
-
   ///Default Endpoint
   String baseUrl;
 
@@ -49,21 +48,20 @@ abstract class BaseDataManager {
   }
 
   int registerService(Service dataSource) {
-   sources.putIfAbsent(serviceCounter, () => dataSource);
+    sources.putIfAbsent(serviceCounter, () => dataSource);
 
-   return generateDataSourceId();
+    return generateDataSourceId();
   }
 
   @protected
-  void broadcastServices(Service task) {
-     sources.forEach((id, value) {
-       if(value.requestDataModel.toJson() == task.requestDataModel.toJson()){
-          if(id != int.parse(task.serviceId)){//make sure we don't update source which was already fetched
-            value.sink.add(task.response!);
-          }
-       }
-     });
+  void broadcastResponseByService(Service task) {
+    sources.forEach((id, value) {
+      if (task.requestDataModel.isRequestEqual(value.requestDataModel)) {
+        //make sure we don't update source which was already fetched
+        value.sink.add(task.response!);
+      }
+    });
   }
 
- void unregisterService(int serviceId) => sources.removeWhere((key, value) => serviceId == key);
+  void unregisterService(int serviceId) => sources.removeWhere((key, value) => serviceId == key);
 }

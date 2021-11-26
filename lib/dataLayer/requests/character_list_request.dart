@@ -22,4 +22,7 @@ class CharacterListRequest extends RequestDataModel {
 
     return data;
   }
+
+  @override
+  Map<String, dynamic> get resolveQuery => toJson()..removeWhere((key, value) => key == 'page');
 }

@@ -138,9 +138,7 @@ class RestManager extends BaseDataManager {
       dataTask.response!.error = SourceException(originalException: error, httpStatusCode: error.response!.statusCode);
     }
 
-    dataTask.sink.add(dataTask.response!);
-
-    broadcastServices(dataTask);
+    broadcastResponseByService(dataTask);
 
     return dataTask;
   }
