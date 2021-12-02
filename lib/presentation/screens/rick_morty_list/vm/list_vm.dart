@@ -45,7 +45,7 @@ abstract class ListVM extends Cubit<ListEvent> {
           emit(ListEvent(ListState.error, error:  _repository.mainService.response!.error));
         }
       } else {
-        if (currentList.isNotEmpty) {
+        if (characterList.isNotEmpty) {
           emit(ListEvent(ListState.success));
         } else {
           emit(ListEvent(ListState.empty));
@@ -55,7 +55,7 @@ abstract class ListVM extends Cubit<ListEvent> {
   }
 
   /// Current List
-  List get currentList;
+  List get characterList;
 
   bool get allowFetch;
 
@@ -64,7 +64,7 @@ abstract class ListVM extends Cubit<ListEvent> {
   /// Called when list reached the [maxExtend] and allowed to fetch
   void onEndOfList();
 
-  /// Locally updates [currentList]
+  /// Locally updates [characterList]
   void updateList();
 
   void registerSource() {

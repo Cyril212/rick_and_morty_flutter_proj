@@ -14,7 +14,7 @@ class RickMortyListVM extends ListVM {
   RickMortyListVM(this._repository) : super(_repository);
 
   @override
-  List get currentList => _repository.characterListByType;
+  List get characterList => _repository.currentList;
 
   bool get isBasic => listType == ListType.basic;
 
@@ -29,7 +29,7 @@ class RickMortyListVM extends ListVM {
     if (refreshList) {
       emit(ListEvent(ListState.loading));
     }
-    _repository.getCharacterList(listType, refreshList);
+    _repository.getCurrentCharacterList(listType, refreshList);
   }
 
   /// Called when list reached the [maxExtend] and allowed to fetch

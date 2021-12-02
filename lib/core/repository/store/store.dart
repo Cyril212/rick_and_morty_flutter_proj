@@ -60,6 +60,8 @@ class InMemoryStore extends Store {
     Map<String, dynamic>? data,
   ]) : data = data ?? HashMap<String, dynamic>();
 
+  List<MapEntry> getMapEntriesByKey(String key) => data.entries.where((entry) => entry.key.contains(key)).toList();
+
   @override
   Map<String, dynamic>? get(String dataId) => data[dataId];
 

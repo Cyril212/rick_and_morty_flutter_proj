@@ -133,7 +133,7 @@ class RestManager extends BaseDataManager {
         dataTask.response!.error = null;
       }
     } on DioError catch (error, _) {
-      Logger.d("onExecute: Query: ${error.response!.realUri}");
+      Logger.d("Query: ${error.response!.realUri}",tag: "Error onExecute");
 
       dataTask.response!.error = SourceException(originalException: error, httpStatusCode: error.response!.statusCode);
     }

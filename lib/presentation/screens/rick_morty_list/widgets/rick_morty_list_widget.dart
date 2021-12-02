@@ -53,7 +53,7 @@ class _ListWidgetState<T extends ListVM> extends State<ListWidget> {
       }, builder: (BuildContext context, snapshot) {
         final listVM = context.read<T>();
 
-        print("Length: ${listVM.currentList.length}");
+        print("Length: ${listVM.characterList.length}");
 
         if (listVM.isInitialLoading) {
           return widget.initialLoadingWidget != null ? widget.initialLoadingWidget!(context) : const Center(child: SizedBox(width: 50, height: 50, child: CircularProgressIndicator()));
@@ -75,14 +75,14 @@ class _ListWidgetState<T extends ListVM> extends State<ListWidget> {
             }
             }),
           itemBuilder: (context, index) {
-            if(index < listVM.currentList.length) {
+            if(index < listVM.characterList.length) {
               return widget.itemBuilder(context, index);
             }else{
               return widget.initialLoadingWidget != null ? widget.initialLoadingWidget!(context) : const Center(child: CircularProgressIndicator());
             }
           },
           separatorBuilder: (context, index) => widget.separatorBuilder != null ? widget.separatorBuilder!(context) : const SizedBox(height: 2),
-          itemCount: listVM.allowFetch ? listVM.currentList.length + 1 : listVM.currentList.length,
+          itemCount: listVM.allowFetch ? listVM.characterList.length + 1 : listVM.characterList.length,
         );
       }),
     );

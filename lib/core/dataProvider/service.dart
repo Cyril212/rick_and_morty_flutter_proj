@@ -8,12 +8,12 @@ import 'package:rick_and_morty_flutter_proj/dataLayer/requests/character_list_re
 import 'package:rick_and_morty_flutter_proj/dataLayer/responses/character.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/responses/character_list_response.dart';
 
-import 'cache.dart';
+import 'cache_handler.dart';
 import 'model/request_data_model.dart';
 import 'model/response_data_model.dart';
 import 'source_exception.dart';
 
-abstract class Service<T extends RequestDataModel, R extends ResponseDataModel, C extends Cache> {
+abstract class Service<T extends RequestDataModel, R extends ResponseDataModel, C extends CacheHandler> {
   /// The identity of this query within the [Manager]
   late String serviceId;
 

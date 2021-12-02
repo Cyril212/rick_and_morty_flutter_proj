@@ -45,13 +45,12 @@ class CharacterListMediator extends PaginationListMediator {
   List<Character> get favouriteList => characterStorageHelper.getFavouriteCharactersBySearch(_currentSearch);
 
   String? get _currentSearch => _characterListService.requestDataModel.name;
-
   bool get _isCurrentSearchNotEmpty => _currentSearch != null && _currentSearch!.replaceAll(" ", "").isNotEmpty;
 
-  ListMode get listMode => _isCurrentSearchNotEmpty ? ListMode.basicSearch : ListMode.basic;
+  ListMode get basicListMode => _isCurrentSearchNotEmpty ? ListMode.basicSearch : ListMode.basic;
 
   List<Character> mergedCharacterListWithFavouriteStorage(List<Character> characterListFromResponse) {
-    switch (listMode) {
+    switch (basicListMode) {
       case ListMode.basic:
         return _basicList.mergedCharacterListWithFavouriteStorage(characterStorageHelper.getFavouriteCharacters(), characterListFromResponse);
       case ListMode.basicSearch:
@@ -62,7 +61,7 @@ class CharacterListMediator extends PaginationListMediator {
   /// Gets true if response contains link to next page otherwise returns null
   @override
   bool hasNextPage() {
-    switch (listMode) {
+    switch (basicListMode) {
       case ListMode.basic:
         return _basicList.hasNextPage;
       case ListMode.basicSearch:
@@ -74,7 +73,7 @@ class CharacterListMediator extends PaginationListMediator {
   void setNextPageNumToListByListMode(int? nextPageNum) {
     //we are at the last page
     if (nextPageNum != null) {
-      switch (listMode) {
+      switch (basicListMode) {
         case ListMode.basic:
           _basicList.pageNumber = nextPageNum;
           break;
@@ -89,7 +88,7 @@ class CharacterListMediator extends PaginationListMediator {
 
   @override
   void setPageNumToRequestByListMode([int? pageNum]) {
-    switch (listMode) {
+    switch (basicListMode) {
       case ListMode.basic:
         _characterListService.requestDataModel.pageNum = pageNum ?? _basicList.pageNumber;
         break;
@@ -101,7 +100,7 @@ class CharacterListMediator extends PaginationListMediator {
 
   @override
   void setDefaultPageNum() {
-    switch (listMode) {
+    switch (basicListMode) {
       case ListMode.basic:
         break;
       case ListMode.basicSearch:
@@ -120,10 +119,12 @@ class CharacterListMediator extends PaginationListMediator {
 class CharacterListRepository extends BaseRepository {
   late final CharacterListMediator characterListsMediator;
 
-  ListType currentListType = ListType.basic;
+  ListType _currentListType = ListType.basic;
+
+  List<Character> _currentList = [];
 
   /// Gets current character list
-  List<Character> characterListByType = [];
+  List<Character> get currentList => _currentList;
 
   /// Init
   CharacterListRepository(client)
@@ -143,12 +144,12 @@ class CharacterListRepository extends BaseRepository {
   @override
   void onBroadcastDataFromService(response) {
     super.onBroadcastDataFromService(response);
-    _setCharacterListByType();
+    _setCurrentListByType();
   }
 
   @override
   void onBroadcastDataFromStore(String dataId) {
-    _setCharacterListByType();
+    _setCurrentListByType();
   }
 
   void setSearchPhrase(String searchPhrase) {
@@ -156,16 +157,16 @@ class CharacterListRepository extends BaseRepository {
   }
 
   ///Filters list by [listFilterMode], then in case [searchPhrase] != null filters list by searchPhrase
-  void _setCharacterListByType() {
+  void _setCurrentListByType() {
     //merge new response with characters from store
     List<Character> listFromResponse = characterListService.response?.results ?? [];
 
-    switch (currentListType) {
+    switch (_currentListType) {
       case ListType.basic:
-        characterListByType = characterListsMediator.mergedCharacterListWithFavouriteStorage(listFromResponse);
+        _currentList = characterListsMediator.mergedCharacterListWithFavouriteStorage(listFromResponse);
         break;
       case ListType.favourite:
-        characterListByType = characterListsMediator.favouriteList;
+        _currentList = characterListsMediator.favouriteList;
         break;
     }
 
@@ -173,8 +174,8 @@ class CharacterListRepository extends BaseRepository {
   }
 
   /// Gets new page if [refreshList] is true, otherwise calls [filterAllPagesListByFilterMode()] to update [characterListByType]
-  void getCharacterList([ListType listType = ListType.basic, bool refreshList = false]) async {
-    currentListType = listType;
+  void getCurrentCharacterList([ListType listType = ListType.basic, bool refreshList = false]) async {
+    _currentListType = listType;
 
     characterListsMediator.setPageNumToRequestByListMode();
 
@@ -189,7 +190,7 @@ class CharacterListRepository extends BaseRepository {
         });
         break;
       case ListType.favourite:
-        _setCharacterListByType();
+        _setCurrentListByType();
         break;
     }
   }
@@ -199,6 +200,6 @@ class CharacterListRepository extends BaseRepository {
     //Each time there's new search phrase we should reset pageNumber.
     characterListsMediator.setDefaultPageNum();
 
-    getCharacterList(listFilterMode, characterListsMediator._isCurrentSearchNotEmpty);
+    getCurrentCharacterList(listFilterMode, characterListsMediator._isCurrentSearchNotEmpty);
   }
 }

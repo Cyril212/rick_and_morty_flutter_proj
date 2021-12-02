@@ -6,11 +6,11 @@ import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/base_data_c
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/base_data_manager.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/responses/character.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/responses/character_list_response.dart';
-import 'package:rick_and_morty_flutter_proj/dataLayer/services/cache/character_list_cache.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/services/cache/character_list_cache_handler.dart';
 
 class CharacterStorageHelper<T extends BaseDataClient<BaseDataManager>> {
   final T _client;
-  final CharacterListCache _cache;
+  final CharacterListCacheHandler _cache;
 
   CharacterStorageHelper(this._client, this._cache);
 

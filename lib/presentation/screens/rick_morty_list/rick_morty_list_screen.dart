@@ -39,7 +39,7 @@ class _RickMortyListScreenState extends RickMortyScreenState<RickMortyListScreen
               itemBuilder: (context, index) {
                 final rickMortyListVM = context.read<RickMortyListVM>();
 
-                final Character character = rickMortyListVM.currentList[index];
+                final Character character = rickMortyListVM.characterList[index];
                 return CharacterCardWidget(
                     character: character,
                     onClick: () {
