@@ -30,7 +30,7 @@ class SearchBar extends StatelessWidget {
             Expanded(
               child: TextField(
                 onChanged: (searchPhrase){
-                  context.read<RickMortyListVM>().updateCharacterListBySearchPhrase(searchPhrase);
+                  context.read<RickMortyListVM>().getCharacterListBySearchPhrase(searchPhrase);
                 },
                 decoration: const InputDecoration(
                   hintText: 'Type a character name',

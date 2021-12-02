@@ -20,7 +20,4 @@ class RickMortyDetailRepository extends BaseRepository {
   void setFavouriteCharacter(Character character, bool state) {
     characterStorageHelper.putFavouriteCharacter(character, state);
   }
-
-  @override
-  void onBroadcastDataFromStore(String dataId) {}
 }

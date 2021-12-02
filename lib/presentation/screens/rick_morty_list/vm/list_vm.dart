@@ -34,7 +34,6 @@ abstract class ListVM extends Cubit<ListEvent> {
 
   /// Init
   ListVM(this._repository, {this.listType = ListType.basic}) : super(ListEvent(ListState.idle)) {
-    registerSource();
 
     _repository.result.listen((_) {
       //to make bloc builder receive the same state
@@ -66,10 +65,6 @@ abstract class ListVM extends Cubit<ListEvent> {
 
   /// Locally updates [characterList]
   void updateList();
-
-  void registerSource() {
-    _repository.registerSources();
-  }
 
   @override
   Future<void> close() {

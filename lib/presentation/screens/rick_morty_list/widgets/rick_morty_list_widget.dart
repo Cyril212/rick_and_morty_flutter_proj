@@ -26,7 +26,7 @@ class _ListWidgetState<T extends ListVM> extends State<ListWidget> {
     super.initState();
 
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      context.read<RickMortyListVM>().getCharacters(true);
+      context.read<RickMortyListVM>().getCharacters();
     });
   }
 

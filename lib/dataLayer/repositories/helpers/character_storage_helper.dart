@@ -84,9 +84,9 @@ class CharacterStorageHelper<T extends BaseDataClient<BaseDataManager>> {
     return characterStringList.map((json) => Character.fromJson(json)).toList();
   }
 
-  List<Character> getFavouriteCharactersBySearch(String? searchPhrase) {
+  List<Character> getFavouriteCharactersBySearch(String searchPhrase) {
     final favouriteList = getFavouriteCharacters();
-    if (searchPhrase != null && searchPhrase.isNotEmpty) {
+
       final tmp = [...favouriteList];
       favouriteList.clear();
       for (var item in tmp) {
@@ -94,7 +94,6 @@ class CharacterStorageHelper<T extends BaseDataClient<BaseDataManager>> {
           favouriteList.add(item);
         }
       }
-    }
     return favouriteList;
   }
 }

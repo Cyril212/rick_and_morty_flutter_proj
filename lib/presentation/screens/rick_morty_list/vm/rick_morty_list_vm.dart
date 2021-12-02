@@ -13,23 +13,23 @@ class RickMortyListVM extends ListVM {
   /// Init
   RickMortyListVM(this._repository) : super(_repository);
 
-  @override
-  List get characterList => _repository.currentList;
-
   bool get isBasic => listType == ListType.basic;
-
-  @override
-  bool get allowFetch => isBasic && _repository.characterListsMediator.hasNextPage();
 
   @override
   bool get isInitialLoading => (_repository.characterListService.requestDataModel.pageNum == 1) && state.listState == ListState.loading;
 
+  @override
+  List get characterList => _repository.currentList;
+
+  @override
+  bool get allowFetch => isBasic && _repository.characterListsMediator.hasNextPage();
+
   /// Emits current [state] depending on result of [fetchCharacterList()]
-  void getCharacters(bool refreshList) {
-    if (refreshList) {
+  void getCharacters({bool shouldFetch = true}) {
+    if (shouldFetch) {
       emit(ListEvent(ListState.loading));
     }
-    _repository.getCurrentCharacterList(listType, refreshList);
+    _repository.getCharacterList(listType: listType, shouldFetch: shouldFetch);
   }
 
   /// Called when list reached the [maxExtend] and allowed to fetch
@@ -39,7 +39,7 @@ class RickMortyListVM extends ListVM {
       if (_repository.characterListsMediator.hasNextPage()) {
         isNextPageFetching = true;
 
-        getCharacters(true);
+        getCharacters();
       } else {
         isNextPageFetching = false;
       }
@@ -49,24 +49,24 @@ class RickMortyListVM extends ListVM {
   /// Locally updates list, in case user changed [ListType] or [isFavourite] value of [Character]
   @override
   void updateList() {
-    getCharacters(false);
+    getCharacters(shouldFetch: false);
   }
 
   /// Sets searchPhrase value and fetches new result
-  void updateCharacterListBySearchPhrase(String searchPhrase) {
-    _repository.setSearchPhrase(searchPhrase);
-
-    if (listType == ListType.basic) {
-      emit(ListEvent(ListState.loading));
-      _repository.setDefaultPageAndGetCharacterList();
-    } else {
-      updateList();
+  void getCharacterListBySearchPhrase(String searchPhrase) {
+    switch (listType) {
+      case ListType.basic:
+        emit(ListEvent(ListState.loading));
+        _repository.getCharacterListBySearchPhrase(searchPhrase: searchPhrase);
+        break;
+      case ListType.favourite:
+        _repository.getCharacterListBySearchPhrase(listFilterType: ListType.favourite, searchPhrase: searchPhrase);
+        break;
     }
   }
 
   /// Sets current list
   void setListMode(bool isFilter) {
-    //move to func
     if (isFilter) {
       listType = ListType.favourite;
     } else {
@@ -79,8 +79,4 @@ class RickMortyListVM extends ListVM {
   /// Sets favourite character state
   void setFavouriteCharacterState(int characterId, bool state) =>
       _repository.characterListsMediator.characterStorageHelper.putFavouriteCharacterStateById(characterId, state);
-
-  /// Gets favourite character state
-  bool getFavouriteCharacterState(int characterId) =>
-      _repository.characterListsMediator.characterStorageHelper.getFavouriteCharacterStateById(characterId);
 }
