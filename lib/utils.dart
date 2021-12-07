@@ -31,7 +31,18 @@ late AndroidNotificationChannel channel;
 /// Initialize the [FlutterLocalNotificationsPlugin] package.
 late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
+
+/// Request permission on iOS & Web platforms
+Future<NotificationSettings> requestNotificationPermission() => FirebaseMessaging.instance.requestPermission(
+  sound: true,
+  badge: true,
+  alert: true,
+);
+
 Future<void> _firebaseMessagingHandler() async {
+
+  await requestNotificationPermission();
+
   await Firebase.initializeApp(
       // options: const FirebaseOptions(
       //   apiKey: 'AIzaSyAHAsf51D0A407EklG1bs-5wA7EbyfNFg0',
