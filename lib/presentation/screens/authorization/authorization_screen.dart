@@ -19,6 +19,13 @@ class AuthorizationScreen extends StatefulWidget {
 
 class _AuthorizationScreenState extends State<AuthorizationScreen> {
   @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) => context.read<AuthenticationManager>().autologinIfPossible());
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kColorPrimary,
@@ -53,7 +60,9 @@ class _AuthorizationScreenState extends State<AuthorizationScreen> {
                         context.read<AuthenticationManager>().authorizeWithGoogle();
                       }),
                 ),
-                SizedBox(height: 20,),
+                SizedBox(
+                  height: 20,
+                ),
                 Flexible(
                   child: PrimaryButton(
                       label: "Proceed as anonymous",

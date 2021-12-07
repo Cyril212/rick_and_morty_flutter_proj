@@ -25,14 +25,14 @@ class CharacterListMediator extends PaginationListMediator {
 
   bool get _isCurrentSearchNotEmpty => _currentSearch != null && _currentSearch!.replaceAll(" ", "").isNotEmpty;
 
-  ListMode get basicListMode => _isCurrentSearchNotEmpty ? ListMode.basicSearch : ListMode.basic;
+  ListMode get _basicListMode => _isCurrentSearchNotEmpty ? ListMode.basicSearch : ListMode.basic;
 
   List<Character> get favouriteList => _isCurrentSearchNotEmpty
       ? characterStorageHelper.getFavouriteCharactersBySearch(_currentSearch!)
       : characterStorageHelper.getFavouriteCharacters();
 
   List<Character> mergedCharacterListWithFavouriteStorage(List<Character> characterListFromResponse) {
-    switch (basicListMode) {
+    switch (_basicListMode) {
       case ListMode.basic:
         return _basicList.mergedCharacterListWithFavouriteStorage(characterStorageHelper.getFavouriteCharacters(), characterListFromResponse);
       case ListMode.basicSearch:
@@ -43,7 +43,7 @@ class CharacterListMediator extends PaginationListMediator {
   /// Gets true if response contains link to next page otherwise returns null
   @override
   bool hasNextPage() {
-    switch (basicListMode) {
+    switch (_basicListMode) {
       case ListMode.basic:
         return _basicList.hasNextPage;
       case ListMode.basicSearch:
@@ -55,7 +55,7 @@ class CharacterListMediator extends PaginationListMediator {
   void setNextPageNumToListByListMode(int? nextPageNum) {
     //we are at the last page
     if (nextPageNum != null) {
-      switch (basicListMode) {
+      switch (_basicListMode) {
         case ListMode.basic:
           _basicList.pageNumber = nextPageNum;
           break;
@@ -70,7 +70,7 @@ class CharacterListMediator extends PaginationListMediator {
 
   @override
   void setPageNumToRequestByListMode([int? pageNum]) {
-    switch (basicListMode) {
+    switch (_basicListMode) {
       case ListMode.basic:
         _characterListService.requestDataModel.pageNum = pageNum ?? _basicList.pageNumber;
         break;
@@ -82,7 +82,7 @@ class CharacterListMediator extends PaginationListMediator {
 
   @override
   void setDefaultPageNum() {
-    switch (basicListMode) {
+    switch (_basicListMode) {
       case ListMode.basic:
         break;
       case ListMode.basicSearch:

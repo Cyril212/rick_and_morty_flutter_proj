@@ -5,7 +5,7 @@ import 'package:rick_and_morty_flutter_proj/dataLayer/modules/google_sign_in_aut
 abstract class BaseAuthenticationRepository {
   CommonUser? getUser();
 
-  bool isLoggedIn();
+  bool get isLoggedIn;
 
   Future<AuthStatus> signIn();
 

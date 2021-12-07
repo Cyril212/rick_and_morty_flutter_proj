@@ -30,7 +30,7 @@ abstract class BaseRepository {
 
   Service get mainService => services[0];
 
-  BaseRepository({required this.client, List<Service>? serviceList, List<String>? dataIdList})
+  BaseRepository({required this.client, List<Service>? serviceList, List<String>? storageIdList})
       : _serviceSubscriptions = [],
         _storeSubscriptions = [],
         _repositoryNotifier = StreamController<RepositoryNotifyState>() {
@@ -45,9 +45,9 @@ abstract class BaseRepository {
       }
     }
 
-    if (dataIdList != null) {
-      for (var dataId in dataIdList) {
-        final storeSubscription = client.broadcastDataFromStore(dataId).listen(onBroadcastDataFromStore);
+    if (storageIdList != null) {
+      for (var storageId in storageIdList) {
+        final storeSubscription = client.broadcastDataFromStore(storageId).listen(onBroadcastDataFromStore);
         _storeSubscriptions.add(storeSubscription);
       }
     }

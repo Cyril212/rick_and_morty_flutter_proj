@@ -12,30 +12,30 @@ import 'package:meta/meta.dart';
 abstract class Store {
   final StreamController<String> _storeController = StreamController<String>.broadcast();
 
-  final List<String> dataIdList = [];
+  final List<String> storageIdList = [];
 
   Sink<String> get sink => _storeController.sink;
 
   Stream<String> get stream => _storeController.stream;
 
-  dynamic get(String dataId);
+  dynamic get(String storageId);
 
-  /// Write [value] into this store under the key [dataId]
-  void put(String dataId, dynamic value) {
-    dataIdList.add(dataId);
-    sink.add(dataId);
+  /// Write [value] into this store under the key [storageId]
+  void put(String storageId, dynamic value) {
+    storageIdList.add(storageId);
+    sink.add(storageId);
   }
 
-  /// Delete the value of the [dataId] from the store, if preset
-  void delete(String dataId) {
-    dataIdList.add(dataId);
-    sink.add(dataId);
+  /// Delete the value of the [storageId] from the store, if preset
+  void delete(String storageId) {
+    storageIdList.add(storageId);
+    sink.add(storageId);
   }
 
   /// Empty the store
   void reset() {
-    for (var dataId in dataIdList) {
-      sink.add(dataId);
+    for (var storageId in storageIdList) {
+      sink.add(storageId);
     }
   }
 
@@ -63,16 +63,16 @@ class InMemoryStore extends Store {
   List<MapEntry> getMapEntriesByKey(String key) => data.entries.where((entry) => entry.key.contains(key)).toList();
 
   @override
-  Map<String, dynamic>? get(String dataId) => data[dataId];
+  Map<String, dynamic>? get(String storageId) => data[storageId];
 
   @override
-  void put(String dataId, dynamic value) {
-    data[dataId] = value;
-    super.put(dataId, value);
+  void put(String storageId, dynamic value) {
+    data[storageId] = value;
+    super.put(storageId, value);
   }
 
   @override
-  void delete(String dataId) => data.remove(dataId);
+  void delete(String storageId) => data.remove(storageId);
 
   /// Return the  underlying [data] as an unmodifiable [Map].
   @override
@@ -120,22 +120,22 @@ class HiveStore extends Store {
   HiveStore([Box? box]) : this.box = box ?? Hive.box(defaultBoxName);
 
   @override
-  dynamic get(String dataId) {
-    final result = box.get(dataId);
+  dynamic get(String storageId) {
+    final result = box.get(storageId);
     if (result == null) return null;
     return result;
   }
 
   @override
-  void put(String dataId, dynamic value) {
-    box.put(dataId, value);
-    super.put(dataId, value);
+  void put(String storageId, dynamic value) {
+    box.put(storageId, value);
+    super.put(storageId, value);
   }
 
   @override
-  void delete(String dataId) {
-    box.delete(dataId);
-    super.delete(dataId);
+  void delete(String storageId) {
+    box.delete(storageId);
+    super.delete(storageId);
   }
 
   @override

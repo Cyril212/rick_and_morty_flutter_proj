@@ -24,10 +24,10 @@ abstract class BaseDataClient<T extends BaseDataManager> {
   }
 
   ///Fetches data from store ([Hive] or [inMemory])
-  void putDataToStore(String dataId, dynamic data) => store.put(dataId, data);
+  void putDataToStore(String storageId, dynamic data) => store.put(storageId, data);
 
   ///Gets data from store ([Hive] or [inMemory])
-  dynamic getDataFromStore(String dataId) => store.get(dataId);
+  dynamic getDataFromStore(String storageId) => store.get(storageId);
 
-  Stream<String> broadcastDataFromStore(String dataId) => store.stream.where((id) => dataId == id);
+  Stream<String> broadcastDataFromStore(String storageId) => store.stream.where((id) => storageId == id);
 }

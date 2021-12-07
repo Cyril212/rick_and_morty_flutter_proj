@@ -7,11 +7,18 @@ class AuthenticationManager extends BaseAuthenticationManager {
 
   GoogleSignInAuthModule get _googleSignInAuthModule => auths[0] as GoogleSignInAuthModule;
 
-  bool get isAuthorized => _googleSignInAuthModule.isLoggedIn();
+  bool get isAuthorized => _googleSignInAuthModule.isLoggedIn;
 
   void authorizeWithGoogle() {
     emit(AuthStatus.loading);
     _googleSignInAuthModule.signIn().then((state) => emit(state));
+  }
+
+  void autologinIfPossible() {
+    if (isAuthorized) {
+      emit(AuthStatus.loading);
+      authorizeWithGoogle();
+    }
   }
 
   void logOut() {

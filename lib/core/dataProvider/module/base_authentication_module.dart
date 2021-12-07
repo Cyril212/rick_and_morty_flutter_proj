@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:prefs/prefs.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/user_chat.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/modules/google_sign_in_auth_module.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/base_authentication_repository.dart';
@@ -10,9 +11,11 @@ class BaseAuthenticationModule extends Cubit<AuthStatus> {
 
   BaseAuthenticationModule(this.store, this.repository) : super(AuthStatus.uninitialized);
 
-  CommonUser? getUser() => repository.getUser();
+  CommonUser? get user => repository.getUser();
 
-  bool isLoggedIn() => repository.isLoggedIn();
+  bool get isLoggedIn => repository.isLoggedIn;
+
+  bool get isAbleToAutoLogin => false;
 
   Future<AuthStatus> signIn() async {
     emit(AuthStatus.loading);

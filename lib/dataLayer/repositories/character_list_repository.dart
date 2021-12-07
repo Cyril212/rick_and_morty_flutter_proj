@@ -19,21 +19,21 @@ enum ListMode { basic, basicSearch }
 class CharacterListRepository extends BaseRepository {
   late final CharacterListMediator characterListsMediator;
 
-  ListType _currentListType = ListType.basic;
+  late ListType _currentListType = ListType.basic;
 
-  List<Character> _currentList = [];
-
-  /// Gets current character list
-  List<Character> get currentList => _currentList;
+  late List<Character> _currentList = [];
 
   /// Init
   CharacterListRepository(client)
       : super(
             client: client,
-            dataIdList: [AppConstants.kFavouriteListDataId],
+            storageIdList: [AppConstants.kFavouriteListDataId],
             serviceList: [CharacterListService(client.manager, CharacterListRequest(FetchPolicy.network))]) {
     characterListsMediator = CharacterListMediator(client, characterListService);
   }
+
+  /// Gets current character list
+  List<Character> get currentList => _currentList;
 
   /// Gets [CharacterListSource]
   CharacterListService get characterListService => (services[0] as CharacterListService);
@@ -54,7 +54,6 @@ class CharacterListRepository extends BaseRepository {
 
   ///Filters list by [listFilterMode], then in case [searchPhrase] != null filters list by searchPhrase
   void _setCurrentListByType(RepositoryNotifyState state) {
-
     switch (_currentListType) {
       case ListType.basic:
         List<Character> listFromResponse = characterListService.response?.results ?? [];
