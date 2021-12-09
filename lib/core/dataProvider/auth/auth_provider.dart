@@ -1,9 +1,9 @@
 import 'package:rick_and_morty_flutter_proj/dataLayer/modules/google_sign_in_auth_module.dart';
 
-import 'base_authentication_manager.dart';
+import 'base_auth_provider.dart';
 
-class AuthenticationManager extends BaseAuthenticationManager {
-  AuthenticationManager(store) : super(store, [GoogleSignInAuthModule(store)]);
+class AuthProvider extends BaseAuthProvider {
+  AuthProvider(store) : super(store, [GoogleSignInAuthModule(store)]);
 
   GoogleSignInAuthModule get _googleSignInAuthModule => auths[0] as GoogleSignInAuthModule;
 
@@ -16,7 +16,6 @@ class AuthenticationManager extends BaseAuthenticationManager {
 
   void autologinIfPossible() {
     if (isAuthorized) {
-      emit(AuthStatus.loading);
       authorizeWithGoogle();
     }
   }

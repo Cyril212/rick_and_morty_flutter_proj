@@ -41,13 +41,7 @@ class GoogleSignInRepository extends BaseAuthenticationRepository {
   }
 
   @override
-  bool get isLoggedIn {
-    if (getUser() != null) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+  bool get isLoggedIn => getUser() != null ? true : false;
 
   @override
   Future<AuthStatus> signIn() async {
@@ -62,10 +56,7 @@ class GoogleSignInRepository extends BaseAuthenticationRepository {
           FirestoreConstants.kNickname: firebaseUser.displayName,
           FirestoreConstants.kPhotoUrl: firebaseUser.photoURL,
           FirestoreConstants.kId: firebaseUser.uid,
-          FirestoreConstants.kCreatedAt: DateTime
-              .now()
-              .millisecondsSinceEpoch
-              .toString(),
+          FirestoreConstants.kCreatedAt: DateTime.now().millisecondsSinceEpoch.toString(),
           FirestoreConstants.kChattingWith: null
         });
 
@@ -73,7 +64,7 @@ class GoogleSignInRepository extends BaseAuthenticationRepository {
         User? currentUser = firebaseUser;
 
         CommonUser commonUser =
-        CommonUser(id: currentUser.uid, nickname: currentUser.displayName ?? "", aboutMe: "", photoUrl: currentUser.photoURL ?? "");
+            CommonUser(id: currentUser.uid, nickname: currentUser.displayName ?? "", aboutMe: "", photoUrl: currentUser.photoURL ?? "");
 
         store.put(AppConstants.kUserDB, commonUser.toJson());
         return Future.value(AuthStatus.authenticated);

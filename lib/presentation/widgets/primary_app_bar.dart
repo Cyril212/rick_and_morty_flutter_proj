@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
 import 'package:rick_and_morty_flutter_proj/constants/theme_constants.dart';
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/auth_manager.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/auth/auth_provider.dart';
 import 'package:rick_and_morty_flutter_proj/core/router/router_v1.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/screens/authorization/authorization_screen.dart';
 
@@ -21,13 +21,13 @@ class PrimaryAppbar extends StatelessWidget implements PreferredSizeWidget {
       height: preferredSize.height + statusBarHeight(context),
       child: Stack(
         children: [
-          if(context.read<AuthenticationManager>().isAuthorized)
+          if(context.read<AuthProvider>().isAuthorized)
           Align(
             alignment: Alignment.centerLeft,
             child: IconButton(
               icon: const Icon(Icons.login_outlined,color: kColorAmber,),
               onPressed: () {
-                context.read<AuthenticationManager>().logOut();
+                context.read<AuthProvider>().logOut();
                 pushNamedNewStack(context, AuthorizationScreen.route);
               },
             ),

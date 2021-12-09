@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/auth_manager.dart';
-import 'package:rick_and_morty_flutter_proj/dataLayer/modules/google_sign_in_auth_module.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/auth/auth_provider.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/screens/authorization/authorization_screen.dart';
-import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list/rick_morty_list_screen.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 
 import 'constants/text_constants.dart';
@@ -27,13 +25,13 @@ class RickAndMortyApp extends StatelessWidget {
             lazy: false,
             create: (context) => HiveStore(),
           ),
-          Provider<AuthenticationManager>(
+          Provider<AuthProvider>(
             lazy: false,
-            create: (context) => AuthenticationManager(context.read<HiveStore>()),
+            create: (context) => AuthProvider(context.read<HiveStore>()),
           ),
           Provider<DataClient>(
             lazy: false,
-            create: (context) => DataClient(store: context.read<HiveStore>(), authenticationManager: context.read<AuthenticationManager>()),
+            create: (context) => DataClient(store: context.read<HiveStore>(), authenticationManager: context.read<AuthProvider>()),
           ),
           BlocProvider(create: (context) => RickMortyListVM(CharacterListRepository(context.read<DataClient>()))),
         ],
