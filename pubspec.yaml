@@ -71,6 +71,9 @@ dev_dependencies:
   hive_generator: ^1.1.1
   build_runner: ^2.1.4
   flutter_flavorizr: ^2.1.0
+  form_field_validator: ^1.1.0
+  font_awesome_flutter: ^9.2.0
+  sign_button: ^2.0.2
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

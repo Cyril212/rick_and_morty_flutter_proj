@@ -2,11 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/src/provider.dart';
 import 'package:rick_and_morty_flutter_proj/constants/theme_constants.dart';
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/auth/auth_provider.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/modules/auth_provider.dart';
 import 'package:rick_and_morty_flutter_proj/core/router/router_v1.dart';
-import 'package:rick_and_morty_flutter_proj/presentation/screens/authorization/authorization_screen.dart';
+import 'package:rick_and_morty_flutter_proj/presentation/screens/login/login_screen.dart';
 
-import '../../utils.dart';
+import '../../utils/utils.dart';
 import '../screens/rick_morty_list/widgets/favourite_mode_widget.dart';
 
 class PrimaryAppbar extends StatelessWidget implements PreferredSizeWidget {
@@ -21,17 +21,19 @@ class PrimaryAppbar extends StatelessWidget implements PreferredSizeWidget {
       height: preferredSize.height + statusBarHeight(context),
       child: Stack(
         children: [
-          if(context.read<AuthProvider>().isAuthorized)
-          Align(
-            alignment: Alignment.centerLeft,
-            child: IconButton(
-              icon: const Icon(Icons.login_outlined,color: kColorAmber,),
-              onPressed: () {
-                context.read<AuthProvider>().logOut();
-                pushNamedNewStack(context, AuthorizationScreen.route);
-              },
+          if (context.read<AuthProvider>().isAuthorized)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: IconButton(
+                icon: const Icon(
+                  Icons.login_outlined,
+                  color: kColorAmber,
+                ),
+                onPressed: () {
+                  context.read<AuthProvider>().logOut().then((value) => pushNamedNewStack(context, LoginScreen.route));
+                },
+              ),
             ),
-          ),
           Center(child: Text(title, style: kAppBarTextStyle)),
           Align(
             alignment: Alignment.centerRight,

@@ -6,7 +6,7 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:rick_and_morty_flutter_proj/dataLayer/modules/google_sign_in_auth_module.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/modules/google_sign_in/google_sign_in_auth_module.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/mock/mock_data_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/mock/mock_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';

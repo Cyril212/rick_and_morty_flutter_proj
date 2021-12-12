@@ -31,6 +31,13 @@ const kHintTextStyle = TextStyle(
 
 const kTextTheme = TextTheme(bodyText1: kPrimaryTextStyle, bodyText2: kPrimaryTextStyle);
 
+const kTextFieldInputDecoration = InputDecoration(
+    hintText: "Email", filled: true, fillColor: Colors.white, focusColor: Colors.white, hoverColor: Colors.white, border: OutlineInputBorder());
+
+InputDecoration kEmailTextFieldInputDecoration = kTextFieldInputDecoration.copyWith(hintText: "Email", prefixIcon: const Icon(Icons.email));
+InputDecoration kPasswordTextFieldInputDecoration = kTextFieldInputDecoration.copyWith(hintText: "Password", prefixIcon: const Icon(Icons.lock));
+InputDecoration kPasswordAgainTextFieldInputDecoration = kPasswordTextFieldInputDecoration.copyWith(hintText: "Confirm Password");
+
 ButtonStyle get kPrimaryBtnStyle => ButtonStyle(
       backgroundColor: MaterialStateProperty.resolveWith<Color>(
         (Set<MaterialState> states) {

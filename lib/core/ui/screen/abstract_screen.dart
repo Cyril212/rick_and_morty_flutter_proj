@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/auth/auth_provider.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/modules/auth_provider.dart';
 import 'package:rick_and_morty_flutter_proj/core/router/router_v1.dart';
-import 'package:rick_and_morty_flutter_proj/dataLayer/modules/google_sign_in_auth_module.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/modules/google_sign_in/google_sign_in_auth_module.dart';
 
 import 'abstract_stateful_screen.dart';
 

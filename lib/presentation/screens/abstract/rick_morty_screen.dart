@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/auth/auth_provider.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/modules/auth_provider.dart';
 import 'package:rick_and_morty_flutter_proj/core/ui/screen/abstract_screen.dart';
-import 'package:rick_and_morty_flutter_proj/dataLayer/modules/google_sign_in_auth_module.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/modules/google_sign_in/google_sign_in_auth_module.dart';
 
 abstract class RickMortyScreenState<T extends AbstractScreen> extends AbstractScreenState {
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AuthProvider, AuthStatus>(listener: (context, state) {
-      final String message;
-      switch (state) {
+    return BlocConsumer<AuthProvider, AuthEvent>(listener: (context, authEvent) {
+      String? message;
+      switch (authEvent.status) {
         case AuthStatus.loading:
           message = "loading";
           break;
         case AuthStatus.uninitialized:
-          message = "uninitialized";
           break;
         case AuthStatus.authenticateError:
           message = "authenticateError";
@@ -31,11 +30,16 @@ abstract class RickMortyScreenState<T extends AbstractScreen> extends AbstractSc
         case AuthStatus.authenticated:
           message = "authenticated";
           break;
+        case AuthStatus.registered:
+          message = "user has been registered";
+          break;
       }
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-      ));
+      if (message != null) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(message),
+          backgroundColor: Colors.red,
+        ));
+      }
     }, builder: (context, authStatus) {
       return super.build(context);
     });

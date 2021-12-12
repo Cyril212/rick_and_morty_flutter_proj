@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/auth/auth_provider.dart';
-import 'package:rick_and_morty_flutter_proj/presentation/screens/authorization/authorization_screen.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/modules/auth_provider.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/modules/email/email_auth_module.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/modules/google_sign_in/google_sign_in_auth_module.dart';
+import 'package:rick_and_morty_flutter_proj/presentation/screens/login/login_screen.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 
 import 'constants/text_constants.dart';
@@ -25,9 +27,18 @@ class RickAndMortyApp extends StatelessWidget {
             lazy: false,
             create: (context) => HiveStore(),
           ),
+          Provider<GoogleSignInAuthModule>(
+            lazy: false,
+            create: (context) => GoogleSignInAuthModule(context.read<HiveStore>()),
+          ),
+          Provider<EmailAuthModule>(
+            lazy: false,
+            create: (context) => EmailAuthModule(context.read<HiveStore>()),
+          ),
           Provider<AuthProvider>(
             lazy: false,
-            create: (context) => AuthProvider(context.read<HiveStore>()),
+            create: (context) => AuthProvider(context.read<HiveStore>(),
+                emailSignInAuthModule: context.read<EmailAuthModule>(), googleSignInAuthModule: context.read<GoogleSignInAuthModule>()),
           ),
           Provider<DataClient>(
             lazy: false,
@@ -38,7 +49,7 @@ class RickAndMortyApp extends StatelessWidget {
         child: MaterialApp(
           title: TextConstants.kAppTitle,
           onGenerateRoute: onGenerateRoute,
-          initialRoute: AuthorizationScreen.route,
+          initialRoute: LoginScreen.route,
           theme: ThemeData(
             primarySwatch: kMaterialColorBlue,
             backgroundColor: kColorPrimary,

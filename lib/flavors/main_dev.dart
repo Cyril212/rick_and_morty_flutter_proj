@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../app.dart';
-import '../utils.dart';
+import '../utils/utils.dart';
 import 'flavors.dart';
 
 void main() async {

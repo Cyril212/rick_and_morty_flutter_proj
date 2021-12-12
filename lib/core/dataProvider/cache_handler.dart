@@ -10,6 +10,7 @@ abstract class CacheHandler<T extends ResponseDataModel> {
 
   CacheHandler(this.store, this.method);
 
+  @protected
   T put(String query, T data) {
     Logger.d("Query: $query", tag: "onPut");
 
@@ -21,6 +22,7 @@ abstract class CacheHandler<T extends ResponseDataModel> {
     return data;
   }
 
+  @protected
   T get(String dataId) => store.get(dataId) as T;
 
   @protected
