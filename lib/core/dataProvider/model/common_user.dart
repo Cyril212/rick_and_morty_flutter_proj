@@ -3,6 +3,7 @@ import 'package:rick_and_morty_flutter_proj/constants/firestore_constants.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/data_model.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/response_data_model.dart';
 
+
 class CommonUser extends DataModel{
   late String id;
   late String photoUrl;

@@ -10,6 +10,7 @@ import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list
 import 'constants/text_constants.dart';
 import 'constants/theme_constants.dart';
 import 'core/dataProvider/client/data_client.dart';
+import 'core/repository/store/credentials_store.dart';
 import 'core/repository/store/store.dart';
 import 'core/router/router_v1.dart';
 import 'dataLayer/repositories/character_list_repository.dart';
@@ -27,18 +28,25 @@ class RickAndMortyApp extends StatelessWidget {
             lazy: false,
             create: (context) => HiveStore(),
           ),
+          Provider<CredentialsStore>(
+            lazy: false,
+            create: (context) => const CredentialsStore(),
+          ),
           Provider<GoogleSignInAuthModule>(
             lazy: false,
             create: (context) => GoogleSignInAuthModule(context.read<HiveStore>()),
           ),
           Provider<EmailAuthModule>(
             lazy: false,
-            create: (context) => EmailAuthModule(context.read<HiveStore>()),
+            create: (context) => EmailAuthModule(context.read<HiveStore>(), context.read<CredentialsStore>()),
           ),
+
           Provider<AuthProvider>(
             lazy: false,
             create: (context) => AuthProvider(context.read<HiveStore>(),
-                emailSignInAuthModule: context.read<EmailAuthModule>(), googleSignInAuthModule: context.read<GoogleSignInAuthModule>()),
+                credentialsStore: context.read<CredentialsStore>(),
+                emailSignInAuthModule: context.read<EmailAuthModule>(),
+                googleSignInAuthModule: context.read<GoogleSignInAuthModule>()),
           ),
           Provider<DataClient>(
             lazy: false,

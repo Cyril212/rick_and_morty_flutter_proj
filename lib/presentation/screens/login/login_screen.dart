@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rick_and_morty_flutter_proj/dataLayer/modules/email/email_sign_in_credentials.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/modules/email/model/email_sign_in_credentials.dart';
+import 'package:rick_and_morty_flutter_proj/dataLayer/modules/models/auth_event.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/screens/registration/registration_screen.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/widgets/buttons/rm_text_form.dart';
 import 'package:sign_button/sign_button.dart';
@@ -96,7 +97,7 @@ class LoginScreen extends StatelessWidget {
                   SignInButton(
                     buttonType: ButtonType.google,
                     onPressed: () {
-                      context.read<AuthProvider>().signUpUserWithGoogle();
+                      context.read<AuthProvider>().signInWithGoogle();
                     },
                   ),
                 ],
