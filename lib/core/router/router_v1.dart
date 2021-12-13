@@ -7,6 +7,7 @@ import 'package:rick_and_morty_flutter_proj/presentation/screens/registration/re
 import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_detail/rick_morty_detail_screen.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_detail/vm/rick_morty_detail_vm.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list/rick_morty_list_screen.dart';
+import 'package:rick_and_morty_flutter_proj/presentation/screens/splash/splash_screen.dart';
 
 import 'fade_animation_page_route.dart';
 import 'no_animation_page_route.dart';
@@ -19,6 +20,8 @@ Route<Object> onGenerateRoute(RouteSettings settings) {
 
   if (arguments != null) {
     switch (arguments.route) {
+      case SplashScreen.route:
+        return createRoute((BuildContext context) => const SplashScreen(), settings);
       case LoginScreen.route:
         return createRoute((BuildContext context) => LoginScreen(), settings);
       case RegistrationScreen.route:

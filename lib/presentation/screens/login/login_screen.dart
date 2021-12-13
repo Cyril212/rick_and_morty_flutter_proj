@@ -8,12 +8,11 @@ import 'package:sign_button/sign_button.dart';
 import 'package:rick_and_morty_flutter_proj/constants/theme_constants.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/modules/auth_provider.dart';
 import 'package:rick_and_morty_flutter_proj/core/router/router_v1.dart';
-import 'package:rick_and_morty_flutter_proj/dataLayer/modules/google_sign_in/google_sign_in_auth_module.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list/rick_morty_list_screen.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/widgets/primary_button.dart';
 
 class LoginScreen extends StatelessWidget {
-  static const String route = '/';
+  static const String route = '/login';
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -27,8 +26,6 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) => context.read<AuthProvider>().autologinIfPossible());
-
     return Scaffold(
       backgroundColor: kColorPrimary,
       body: BlocConsumer<AuthProvider, AuthEvent>(

@@ -6,6 +6,7 @@ import 'package:rick_and_morty_flutter_proj/dataLayer/modules/email/email_auth_m
 import 'package:rick_and_morty_flutter_proj/dataLayer/modules/google_sign_in/google_sign_in_auth_module.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/screens/login/login_screen.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
+import 'package:rick_and_morty_flutter_proj/presentation/screens/splash/splash_screen.dart';
 
 import 'constants/text_constants.dart';
 import 'constants/theme_constants.dart';
@@ -40,7 +41,6 @@ class RickAndMortyApp extends StatelessWidget {
             lazy: false,
             create: (context) => EmailAuthModule(context.read<HiveStore>(), context.read<CredentialsStore>()),
           ),
-
           Provider<AuthProvider>(
             lazy: false,
             create: (context) => AuthProvider(context.read<HiveStore>(),
@@ -57,7 +57,7 @@ class RickAndMortyApp extends StatelessWidget {
         child: MaterialApp(
           title: TextConstants.kAppTitle,
           onGenerateRoute: onGenerateRoute,
-          initialRoute: LoginScreen.route,
+          initialRoute: SplashScreen.route,
           theme: ThemeData(
             primarySwatch: kMaterialColorBlue,
             backgroundColor: kColorPrimary,
