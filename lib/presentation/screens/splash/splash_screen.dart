@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rick_and_morty_flutter_proj/constants/theme_constants.dart';
+import 'package:rick_and_morty_flutter_proj/core/logger.dart';
 import 'package:rick_and_morty_flutter_proj/core/router/router_v1.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/modules/auth_provider.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/modules/models/auth_event.dart';
@@ -26,6 +27,8 @@ class SplashScreen extends StatelessWidget {
         pushNamedNewStack(context, LoginScreen.route);
       }
     }, builder: (context, state) {
+
+      Logger.d("Device ratio:${MediaQuery.of(context).devicePixelRatio}");
       return Scaffold(
         backgroundColor: kColorWhite,
         body: Stack(
