@@ -7,6 +7,7 @@ import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/rest_manag
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/request_data_model.dart';
 import 'package:dio/dio.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/response_data_model.dart';
+import 'package:rick_and_morty_flutter_proj/core/logger.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';
 
 import '../service.dart';
@@ -43,41 +44,44 @@ class MockManager extends BaseDataManager {
 
   @override
   Future<T> execute<T extends Service>(T dataTask, Store store, HttpOperation operation) async {
+    late ResponseDataModel serializedResponse;
+
     try {
-      late Response response;
+      late Response dioResponse;
       switch (operation) {
         case HttpOperation.post:
-          response = await post(dataTask.requestDataModel);
+          dioResponse = await post(dataTask.requestDataModel);
           break;
         case HttpOperation.get:
-          response = await get(dataTask.requestDataModel);
+          dioResponse = await get(dataTask.requestDataModel);
           break;
         case HttpOperation.put:
-          response = await put(dataTask.requestDataModel);
+          dioResponse = await put(dataTask.requestDataModel);
           break;
         case HttpOperation.delete:
-          response = await delete(dataTask.requestDataModel);
+          dioResponse = await delete(dataTask.requestDataModel);
           break;
       }
+      Logger.d("Query: ${dioResponse.realUri}", tag: "onExecute");
 
-      if (response.statusCode! >= 400) {
-        dataTask.response = ResponseDataModel.error(SourceException(
+      if (dioResponse.statusCode! >= 400) {
+        serializedResponse = ResponseDataModel.error(SourceException(
           originalException: null,
-          httpStatusCode: response.statusCode,
+          httpStatusCode: dioResponse.statusCode,
         ));
       } else {
-        final rawResponse = response.data;
-        dataTask.response = dataTask.processResponse(rawResponse);
+        serializedResponse = dataTask.requestDataModel.fetchPolicy == FetchPolicy.network
+            ? dataTask.cache.put(dioResponse.realUri.toString(), dataTask.processResponse(dioResponse.data))
+            : dataTask.processResponse(dioResponse.data);
+        // dataTask.response!.error = null;
       }
-    } catch (e) {
-      dataTask.response = ResponseDataModel.error(SourceException(
-        originalException: e,
-      ));
+    } on DioError catch (error, _) {
+      Logger.d("Query: ${error.response!.realUri}", tag: "Error onExecute");
+
+      serializedResponse = ResponseDataModel.error(SourceException(originalException: error, httpStatusCode: error.response!.statusCode));
     }
 
-    dataTask.sink.add(dataTask.response!);
-
-    broadcastResponseByService(dataTask);
+    broadcastResponseByService(dataTask.requestDataModel, serializedResponse);
 
     return dataTask;
   }

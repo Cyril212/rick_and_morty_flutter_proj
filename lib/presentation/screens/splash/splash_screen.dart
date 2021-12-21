@@ -36,7 +36,7 @@ class SplashScreen extends StatelessWidget {
                 "assets/images/splash/ic_splash.png",
               ),
             ),
-            const SplashLoadingIndicatorWidget()
+            if (state.status == AuthStatus.loading) const SplashLoadingIndicatorWidget()
           ],
         ),
       );

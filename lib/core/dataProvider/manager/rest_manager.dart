@@ -5,6 +5,7 @@ import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/data_client
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/base_data_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/request_data_model.dart';
 import 'package:dio/dio.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/response_data_model.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/source_exception.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';
 
@@ -102,43 +103,45 @@ class RestManager extends BaseDataManager {
 
   @override
   Future<T> execute<T extends Service>(T dataTask, Store store, HttpOperation operation) async {
+    late ResponseDataModel serializedResponse;
+
     try {
-      late Response response;
+      late Response dioResponse;
       switch (operation) {
         case HttpOperation.post:
-          response = await post(dataTask.requestDataModel);
+          dioResponse = await post(dataTask.requestDataModel);
           break;
         case HttpOperation.get:
-          response = await get(dataTask.requestDataModel);
+          dioResponse = await get(dataTask.requestDataModel);
           break;
         case HttpOperation.put:
-          response = await put(dataTask.requestDataModel);
+          dioResponse = await put(dataTask.requestDataModel);
           break;
         case HttpOperation.delete:
-          response = await delete(dataTask.requestDataModel);
+          dioResponse = await delete(dataTask.requestDataModel);
           break;
       }
-      Logger.d("Query: ${response.realUri}", tag: "onExecute");
+      Logger.d("Query: ${dioResponse.realUri}", tag: "onExecute");
 
-      if (response.statusCode! >= 400) {
-        dataTask.response!.error = SourceException(
+      if (dioResponse.statusCode! >= 400) {
+        serializedResponse = ResponseDataModel.error(SourceException(
           originalException: null,
-          httpStatusCode: response.statusCode,
-        );
+          httpStatusCode: dioResponse.statusCode,
+        ));
       } else {
-        final rawResponse = response.data;
-        dataTask.response = dataTask.requestDataModel.fetchPolicy == FetchPolicy.network
-            ? dataTask.cache.put(response.realUri.toString(), dataTask.processResponse(rawResponse))
-            : dataTask.processResponse(rawResponse);
-        dataTask.response!.error = null;
+        serializedResponse = dataTask.requestDataModel.fetchPolicy == FetchPolicy.network
+            ? dataTask.cache.put(dioResponse.realUri.toString(), dataTask.processResponse(dioResponse.data))
+            : dataTask.processResponse(dioResponse.data);
+
+        dataTask.response ??= serializedResponse;
       }
     } on DioError catch (error, _) {
-      Logger.d("Query: ${error.response!.realUri}",tag: "Error onExecute");
+      Logger.d("Query: ${error.response!.realUri}", tag: "Error onExecute");
 
-      dataTask.response!.error = SourceException(originalException: error, httpStatusCode: error.response!.statusCode);
+      serializedResponse = ResponseDataModel.error(SourceException(originalException: error, httpStatusCode: error.response!.statusCode));
     }
 
-    broadcastResponseByService(dataTask);
+    broadcastResponseByService(dataTask.requestDataModel, serializedResponse);
 
     return dataTask;
   }

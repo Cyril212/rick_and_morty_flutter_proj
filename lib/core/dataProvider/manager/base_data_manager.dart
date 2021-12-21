@@ -54,11 +54,11 @@ abstract class BaseDataManager {
   }
 
   @protected
-  void broadcastResponseByService(Service newService) {
+  void broadcastResponseByService(RequestDataModel request, ResponseDataModel response) {
     sources.forEach((id, service) {
-      if (newService.requestDataModel.isRequestEqual(service.requestDataModel)) {
+      if (request.isRequestEqual(service.requestDataModel)) {
         //make sure we don't update source which was already fetched
-        service.sink.add(newService.response!);
+        service.sink.add(response);
       }
     });
   }
