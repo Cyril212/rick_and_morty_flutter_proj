@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:prefs/prefs.dart';
@@ -10,6 +11,7 @@ double statusBarHeight(BuildContext context) => MediaQuery.of(context).padding.t
 
 Future<void> initDependencies() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.bottom, SystemUiOverlay.top]);
 
   await _initHiveForFlutter();
   await Prefs.init();
