@@ -57,7 +57,6 @@ abstract class BaseDataManager {
   void broadcastResponseByService(RequestDataModel request, ResponseDataModel response) {
     sources.forEach((id, service) {
       if (request.isRequestEqual(service.requestDataModel)) {
-        //make sure we don't update source which was already fetched
         service.sink.add(response);
       }
     });

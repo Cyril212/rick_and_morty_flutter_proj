@@ -102,23 +102,23 @@ class RestManager extends BaseDataManager {
   }
 
   @override
-  Future<T> execute<T extends Service>(T dataTask, Store store, HttpOperation operation) async {
+  Future<T> execute<T extends Service>(T service, Store store, HttpOperation operation) async {
     late ResponseDataModel serializedResponse;
 
     try {
       late Response dioResponse;
       switch (operation) {
         case HttpOperation.post:
-          dioResponse = await post(dataTask.requestDataModel);
+          dioResponse = await post(service.requestDataModel);
           break;
         case HttpOperation.get:
-          dioResponse = await get(dataTask.requestDataModel);
+          dioResponse = await get(service.requestDataModel);
           break;
         case HttpOperation.put:
-          dioResponse = await put(dataTask.requestDataModel);
+          dioResponse = await put(service.requestDataModel);
           break;
         case HttpOperation.delete:
-          dioResponse = await delete(dataTask.requestDataModel);
+          dioResponse = await delete(service.requestDataModel);
           break;
       }
       Logger.d("Query: ${dioResponse.realUri}", tag: "onExecute");
@@ -129,11 +129,11 @@ class RestManager extends BaseDataManager {
           httpStatusCode: dioResponse.statusCode,
         ));
       } else {
-        serializedResponse = dataTask.requestDataModel.fetchPolicy == FetchPolicy.network
-            ? dataTask.cache.put(dioResponse.realUri.toString(), dataTask.processResponse(dioResponse.data))
-            : dataTask.processResponse(dioResponse.data);
+        serializedResponse = service.requestDataModel.fetchPolicy == FetchPolicy.network
+            ? service.cache.put(dioResponse.realUri.toString(), service.processResponse(dioResponse.data))
+            : service.processResponse(dioResponse.data);
 
-        dataTask.response ??= serializedResponse;
+        service.response ??= serializedResponse;
       }
     } on DioError catch (error, _) {
       Logger.d("Query: ${error.response!.realUri}", tag: "Error onExecute");
@@ -141,8 +141,8 @@ class RestManager extends BaseDataManager {
       serializedResponse = ResponseDataModel.error(SourceException(originalException: error, httpStatusCode: error.response!.statusCode));
     }
 
-    broadcastResponseByService(dataTask.requestDataModel, serializedResponse);
+    broadcastResponseByService(service.requestDataModel, serializedResponse);
 
-    return dataTask;
+    return service;
   }
 }
