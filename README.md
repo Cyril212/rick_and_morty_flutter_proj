@@ -1,5 +1,5 @@
 # Rick And Morty Showcase Project
-<img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/Cyril212/rick_and_morty_flutter_proj"> <a href="https://opensource.org/licenses/MIT" rel="ugc"><img src="https://img.shields.io/badge/license-MIT-purple.svg" alt="License: MIT">
+<img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/Cyril212/rick_and_morty_flutter_proj"> <a href="https://opensource.org/licenses/MIT" rel="ugc"><img src="https://img.shields.io/badge/license-MIT-purple.svg" alt="License: MIT"></a>
 
 Rick And Morty TP is a Flutter application made in order to demonstrate basic View-ViewModel-Repository architecture by utilizing [Provider](https://pub.dev/packages/provider) and [BLoC](https://pub.dev/packages/bloc) libs. 
 
