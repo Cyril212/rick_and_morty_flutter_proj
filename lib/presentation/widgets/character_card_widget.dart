@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/src/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:rick_and_morty_flutter_proj/constants/theme_constants.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/responses/character.dart';
-import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list/widgets/favorite_widget.dart';
 
 class CharacterCardWidget extends StatelessWidget {
@@ -113,12 +111,6 @@ class CharacterCardWidget extends StatelessWidget {
     return GestureDetector(
         onTap: horizontal
             ? onClick
-            // () {
-            //       ;
-            //     // context.read<RickMortyListVM>()
-            //     //   ..currentCharacterId = character.id
-            //     //   ..moveToDetailScreen(context);
-            //   }
             : null,
         child: Container(
           margin: const EdgeInsets.symmetric(
