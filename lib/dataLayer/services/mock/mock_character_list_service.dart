@@ -1,4 +1,3 @@
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/cache_handler.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/mock/mock_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/service.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/requests/character_list_request.dart';

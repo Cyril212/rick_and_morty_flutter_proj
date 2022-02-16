@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/base_data_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/rest_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/response_data_model.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';

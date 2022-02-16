@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/modules/auth_provider.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/modules/email/email_auth_module.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/modules/google_sign_in/google_sign_in_auth_module.dart';
-import 'package:rick_and_morty_flutter_proj/presentation/screens/login/login_screen.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/screens/splash/splash_screen.dart';
 

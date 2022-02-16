@@ -1,11 +1,6 @@
-import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:rick_and_morty_flutter_proj/constants/app_constants.dart';
-import 'package:rick_and_morty_flutter_proj/constants/firestore_constants.dart';
-import 'package:rick_and_morty_flutter_proj/dataLayer/modules/google_sign_in/google_sign_in_auth_module.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/common_user.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/base_authentication_repository.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';

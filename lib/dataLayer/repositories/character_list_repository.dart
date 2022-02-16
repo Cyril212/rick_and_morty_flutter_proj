@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:rick_and_morty_flutter_proj/constants/app_constants.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/base_data_client.dart';
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/data_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/rest_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/source_exception.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/base_repository.dart';

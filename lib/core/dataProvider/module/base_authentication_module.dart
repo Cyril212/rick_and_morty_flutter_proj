@@ -1,7 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:prefs/prefs.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/common_user.dart';
-import 'package:rick_and_morty_flutter_proj/dataLayer/modules/google_sign_in/google_sign_in_auth_module.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/base_authentication_repository.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/store/store.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/modules/models/auth_event.dart';

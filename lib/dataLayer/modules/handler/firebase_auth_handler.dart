@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rick_and_morty_flutter_proj/constants/firestore_constants.dart';
 import 'package:rick_and_morty_flutter_proj/core/repository/store/credentials_store.dart';

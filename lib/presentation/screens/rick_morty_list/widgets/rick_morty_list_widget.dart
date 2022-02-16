@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list/vm/list_vm.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
-import 'package:rick_and_morty_flutter_proj/presentation/widgets/character_card_widget.dart';
 
 class ListWidget<T extends ListVM> extends StatefulWidget {
 

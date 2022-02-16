@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:prefs/prefs.dart';
 import 'package:rick_and_morty_flutter_proj/dataLayer/modules/push_messages_module.dart';

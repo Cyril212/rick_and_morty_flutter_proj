@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:rick_and_morty_flutter_proj/core/Logger.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/response_data_model.dart';
 

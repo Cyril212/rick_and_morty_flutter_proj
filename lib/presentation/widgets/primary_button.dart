@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/src/provider.dart';
 import 'package:rick_and_morty_flutter_proj/constants/theme_constants.dart';
 
 class PrimaryButton extends StatelessWidget {

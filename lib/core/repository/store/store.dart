@@ -117,7 +117,7 @@ class HiveStore extends Store {
   /// This lets us decouple the async initialization logic, making store usage elsewhere much more straightforward.
   ///
   /// [opened]: https://docs.hivedb.dev/#/README?id=open-a-box
-  HiveStore([Box? box]) : this.box = box ?? Hive.box(defaultBoxName);
+  HiveStore([Box? box]) : box = box ?? Hive.box(defaultBoxName);
 
   @override
   dynamic get(String storageId) {

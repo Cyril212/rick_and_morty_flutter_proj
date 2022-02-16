@@ -13,6 +13,7 @@ class CredentialsStore {
         if (credentials != null) {
           return EmailSignInCredentials.fromJson(json.decode(credentials));
         }
+        return null;
       });
 
   Future<void> write(EmailSignInCredentials credentials) => _storage.write(key: AppConstants.kCredentials, value: json.encode(credentials.toJson()));

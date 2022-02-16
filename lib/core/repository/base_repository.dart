@@ -2,11 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/base_data_client.dart';
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/data_client.dart';
-import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/base_data_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/response_data_model.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/service.dart';
-import 'package:rick_and_morty_flutter_proj/dataLayer/responses/character_list_response.dart';
 
 enum RepositoryNotifyState { service, store }
 

@@ -1,6 +1,4 @@
-/**
- * This class will have more sense once we start using flavors
- */
+/// This class will have more sense once we start using flavors
 
 import 'package:flutter/foundation.dart';
 

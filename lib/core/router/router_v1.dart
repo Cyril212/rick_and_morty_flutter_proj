@@ -32,7 +32,7 @@ Route<Object> onGenerateRoute(RouteSettings settings) {
         return createRoute(
             (BuildContext context) => BlocProvider(
                   create: (context) => RickMortyDetailVM(context.read<DataClient>()),
-                  child: RickMortyDetailScreen(),
+                  child: const RickMortyDetailScreen(),
                 ),
             settings);
       default:
@@ -83,7 +83,7 @@ class RoutingArguments {
 extension StringExtension on String {
   /// Covert String into RoutingArguments
   RoutingArguments? get routingArguments {
-    if (this.isEmpty) {
+    if (isEmpty) {
       return null;
     }
 

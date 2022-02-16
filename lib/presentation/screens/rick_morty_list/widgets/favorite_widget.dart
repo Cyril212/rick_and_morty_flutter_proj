@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/src/provider.dart';
-import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 
 class FavoriteWidget extends StatefulWidget {
   final int characterId;

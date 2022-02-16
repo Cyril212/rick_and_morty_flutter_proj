@@ -5,7 +5,7 @@ enum Flavor {
 }
 
 extension FlavorName on Flavor {
-  String get name => this.toString().split('.').last;
+  String get name => toString().split('.').last;
 }
 
 class FlavorManager {
