@@ -27,31 +27,30 @@ void main() {
     final repository = MockCharacterListRepository(client);
 
     test('isFetchPage successful', () async {
-      repository.getCharacterList(ListType.basic, false);
+      repository.getCharacterList();
       expect(repository.characterListService.response != null && repository.characterListService.response!.results.isNotEmpty, true);
     });
 
     test('Does fetchPage has no error', () async {
-      repository.getCharacterList(ListType.basic, false);
-      expect(repository.characterListService.error == null, true);
+      repository.getCharacterList();
+      expect(repository.characterListService.response?.error == null, true);
     });
 
-    test('Can filter list by ListFilterMode.none if source has no successful response', () async {
-      repository.getCharacterList(ListType.basic, false);
+    test('Can filter list by [ListFilterMode.none] if source has no successful response', () async {
+      repository.getCharacterList();
 
-      expect(repository.characterListByType.isEmpty, true);
+      expect(repository.currentList.isEmpty, true);
     });
 
     test('Can filter list by ListFilterMode.none if source has successful response', () async {
-      repository.getCharacterList(ListType.basic, true);
-      repository.filterAllPagesListByFilterMode(ListType.basic, false);
+      repository.getCharacterList(shouldFetch: true);
 
-      expect(repository.characterListByType.isNotEmpty, true);
+      expect(repository.currentList.isNotEmpty, true);
     });
 
     test('Does page number iterates after first fetch', () async {
       repository.characterListService.requestDataModel.pageNum = 1;
-      repository.getCharacterList(ListType.basic, true);
+      repository.getCharacterList(shouldFetch: true);
 
       expect(repository.characterListService.requestDataModel.pageNum, 2);
     });
