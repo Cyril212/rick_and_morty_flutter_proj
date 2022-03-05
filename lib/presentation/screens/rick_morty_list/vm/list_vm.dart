@@ -34,14 +34,13 @@ abstract class ListVM extends Cubit<ListEvent> {
 
   /// Init
   ListVM(this._repository, {this.listType = ListType.basic}) : super(ListEvent(ListState.idle)) {
-
     _repository.result.listen((_) {
       //to make bloc builder receive the same state
       if (_repository.mainService.response?.error != null) {
         if (_repository.mainService.response?.error!.httpStatusCode == AppConstants.kEmptyListErrorStatus) {
           emit(ListEvent(ListState.empty, error: _repository.mainService.response!.error));
         } else {
-          emit(ListEvent(ListState.error, error:  _repository.mainService.response!.error));
+          emit(ListEvent(ListState.error, error: _repository.mainService.response!.error));
         }
       } else {
         if (characterList.isNotEmpty) {

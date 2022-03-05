@@ -19,7 +19,7 @@ class RestManager extends BaseDataManager {
   late InMemoryStore inMemoryStore = InMemoryStore();
 
   /// Init
-  RestManager({required String baseUrl, required UnauthorizedRequestHandler onUnauthenticatedRequest}) : super(baseUrl) {
+  RestManager({required String baseUrl, UnauthorizedRequestHandler? onUnauthenticatedRequest}) : super(baseUrl) {
     _dio = Dio(BaseOptions(baseUrl: baseUrl))
       ..interceptors.add(InterceptorsWrapper(onRequest: (options, handler) {
         // Do something before request is sent

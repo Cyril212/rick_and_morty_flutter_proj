@@ -49,7 +49,7 @@ class RickAndMortyApp extends StatelessWidget {
           ),
           Provider<DataClient>(
             lazy: false,
-            create: (context) => DataClient(store: context.read<HiveStore>(), authenticationManager: context.read<AuthProvider>()),
+            create: (context) => DataClient(authenticationManager: context.read<AuthProvider>(), store: context.read<HiveStore>()),
           ),
           BlocProvider(create: (context) => RickMortyListVM(CharacterListRepository(context.read<DataClient>()))),
         ],
