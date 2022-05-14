@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rick_and_morty_flutter_proj/core/logger.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list/vm/list_vm.dart';
 import 'package:rick_and_morty_flutter_proj/presentation/screens/rick_morty_list/vm/rick_morty_list_vm.dart';
 
@@ -52,7 +53,7 @@ class _ListWidgetState<T extends ListVM> extends State<ListWidget> {
       }, builder: (BuildContext context, snapshot) {
         final listVM = context.read<T>();
 
-        print("Length: ${listVM.characterList.length}");
+        Logger.d("Length: ${listVM.characterList.length}");
 
         if (listVM.isInitialLoading) {
           return widget.initialLoadingWidget != null ? widget.initialLoadingWidget!(context) : const Center(child: SizedBox(width: 50, height: 50, child: CircularProgressIndicator()));
