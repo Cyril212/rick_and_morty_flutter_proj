@@ -1,6 +1,6 @@
-
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/base_data_client.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/client/data_client.dart';
+import 'package:rick_and_morty_flutter_proj/core/dataProvider/interceptor/default_interceptor.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/manager/base_data_manager.dart';
 import 'package:rick_and_morty_flutter_proj/core/dataProvider/model/request_data_model.dart';
 import 'package:dio/dio.dart';
@@ -16,29 +16,16 @@ enum HttpOperation { post, get, put, delete }
 ///Fetches and processes data from Http.get request, for more [BaseDataManager]
 class RestManager extends BaseDataManager {
   late Dio _dio;
-  late InMemoryStore inMemoryStore = InMemoryStore();
+  final InMemoryStore inMemoryStore = InMemoryStore();
 
   /// Init
-  RestManager({required String baseUrl, UnauthorizedRequestHandler? onUnauthenticatedRequest}) : super(baseUrl) {
+  RestManager(
+      {required String baseUrl,
+      UnauthorizedRequestHandler? onUnauthenticatedRequest,
+      Interceptor? customInterceptor})
+      : super(baseUrl) {
     _dio = Dio(BaseOptions(baseUrl: baseUrl))
-      ..interceptors.add(InterceptorsWrapper(onRequest: (options, handler) {
-        // Do something before request is sent
-        return handler.next(options); //continue
-        // If you want to resolve the request with some custom data，
-        // you can resolve a `Response` object eg: `handler.resolve(response)`.
-        // If you want to reject the request with a error message,
-        // you can reject a `DioError` object eg: `handler.reject(dioError)`
-      }, onResponse: (response, handler) {
-        // Do something with response data
-        return handler.next(response); // continue
-        // If you want to reject the request with a error message,
-        // you can reject a `DioError` object eg: `handler.reject(dioError)`
-      }, onError: (DioError e, handler) {
-        // Do something with response error
-        return handler.next(e); //continue
-        // If you want to resolve the request with some custom data，
-        // you can resolve a `Response` object eg: `handler.resolve(response)`.
-      }));
+      ..interceptors.add(customInterceptor ?? DefaultInterceptor());
   }
 
   @override
@@ -81,7 +68,9 @@ class RestManager extends BaseDataManager {
     switch (dataRequest.fetchPolicy) {
       case FetchPolicy.cache:
         response = Response(
-            data: inMemoryStore.get(baseUrl + dataRequest.method), requestOptions: RequestOptions(path: dataRequest.method), statusCode: 200);
+            data: inMemoryStore.get(baseUrl + dataRequest.method),
+            requestOptions: RequestOptions(path: dataRequest.method),
+            statusCode: 200);
         break;
       case FetchPolicy.network:
         response = await _dio.get(
@@ -93,7 +82,9 @@ class RestManager extends BaseDataManager {
       case FetchPolicy.cacheFirst:
         dataRequest.fetchPolicy = FetchPolicy.network;
         response = Response(
-            data: inMemoryStore.get(baseUrl + dataRequest.method), requestOptions: RequestOptions(path: dataRequest.method), statusCode: 200);
+            data: inMemoryStore.get(baseUrl + dataRequest.method),
+            requestOptions: RequestOptions(path: dataRequest.method),
+            statusCode: 200);
         break;
     }
 
@@ -101,7 +92,8 @@ class RestManager extends BaseDataManager {
   }
 
   @override
-  Future<T> execute<T extends Service>(T service, Store store, HttpOperation operation) async {
+  Future<T> execute<T extends Service>(
+      T service, Store store, HttpOperation operation) async {
     late ResponseDataModel serializedResponse;
 
     try {
@@ -128,16 +120,20 @@ class RestManager extends BaseDataManager {
           httpStatusCode: dioResponse.statusCode,
         ));
       } else {
-        serializedResponse = service.requestDataModel.fetchPolicy == FetchPolicy.network
-            ? service.cache.put(dioResponse.realUri.toString(), service.processResponse(dioResponse.data))
-            : service.processResponse(dioResponse.data);
+        serializedResponse =
+            service.requestDataModel.fetchPolicy == FetchPolicy.network
+                ? service.cache.put(dioResponse.realUri.toString(),
+                    service.processResponse(dioResponse.data))
+                : service.processResponse(dioResponse.data);
 
         service.response ??= serializedResponse;
       }
     } on DioError catch (error, _) {
       Logger.d("Query: ${error.response!.realUri}", tag: "Error onExecute");
 
-      serializedResponse = ResponseDataModel.error(SourceException(originalException: error, httpStatusCode: error.response!.statusCode));
+      serializedResponse = ResponseDataModel.error(SourceException(
+          originalException: error,
+          httpStatusCode: error.response!.statusCode));
     }
 
     broadcastResponseByService(service.requestDataModel, serializedResponse);

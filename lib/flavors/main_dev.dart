@@ -7,5 +7,5 @@ void main() async {
   await initDependencies();
 
   FlavorManager.appFlavor = Flavor.DEV;
-  runApp(const RickAndMortyApp());
+  runApp(const RickAndMortyApp(options: RickAndMortyAppOptions(isMock: true),));
 }
